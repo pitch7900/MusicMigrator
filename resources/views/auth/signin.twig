@@ -1,0 +1,17 @@
+{% extends 'templates/auth.twig' %}
+
+{% block content %}
+   
+        <form class="form-signin" action="{{ path_for('auth.signin') }}" method="post">
+
+            <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+            <label for="login" class="sr-only">Login</label>
+            <input type="login" id="login" name="login" class="form-control" placeholder="Login" autocomplete="username" required autofocus>
+            <label for="password" class="sr-only">Password</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="Password" autocomplete="current-password" required>
+            
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+           
+        </form>
+
+{% endblock %}

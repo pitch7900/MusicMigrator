@@ -17,31 +17,14 @@ $app = new \Slim\App([
 $app->add(new \Slim\HttpCache\Cache('public', 0));
 $container = $app->getContainer();
 
-
-
 require_once __DIR__ . '/container_view.php';
-
-
-//$container['flash'] = function($container) {
-//    return new \Slim\Flash\Messages;
-//};
 
 
 $container['HomeController'] = function($container) {
     return new \App\Controllers\HomeController($container);
 };
 
-
-//$container['validator'] = function ($container) {
-//    return new App\Validation\Validator;
-//};
-//
-//$container['csrf'] = function($container) {
-//    return new \Slim\Csrf\Guard;
-//};
-//
-//$container['AuthController'] = function($container) {
-//    return new \App\Controllers\Auth\AuthController($container);
-//};
-
+$container['FileController'] = function($container) {
+    return new \App\Controllers\FileController($container);
+};
 require __DIR__ . '/../app/routes.php';

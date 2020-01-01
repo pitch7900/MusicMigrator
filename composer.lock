@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f4c6f6290de4dd0de1bf6e542c553563",
+    "content-hash": "6df9b13de582071e71303e8fcee6a6c2",
     "packages": [
         {
             "name": "fig/http-message-util",
@@ -389,6 +389,50 @@
             ],
             "description": "A polyfill for getallheaders.",
             "time": "2019-03-08T08:55:37+00:00"
+        },
+        {
+            "name": "rodneyrehm/plist",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/TECLIB/CFPropertyList.git",
+                "reference": "af62811f3d03737a7a8f60b6ffaf1581cd0188b1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/TECLIB/CFPropertyList/zipball/af62811f3d03737a7a8f60b6ffaf1581cd0188b1",
+                "reference": "af62811f3d03737a7a8f60b6ffaf1581cd0188b1",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "CFPropertyList": "classes/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Christian Kruse",
+                    "email": "cjk@wwwtech.de"
+                },
+                {
+                    "name": "Rodney Rehm",
+                    "email": "mail+github@rodneyrehm.de"
+                }
+            ],
+            "description": "Library for reading and writing Apple's CFPropertyList (plist) files in XML as well as binary format.",
+            "homepage": "https://github.com/rodneyrehm/CFPropertyList",
+            "keywords": [
+                "plist"
+            ],
+            "time": "2018-04-18T13:23:51+00:00"
         },
         {
             "name": "slim/http-cache",
@@ -822,7 +866,9 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "rodneyrehm/plist": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

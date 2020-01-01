@@ -400,6 +400,52 @@
         "description": "A polyfill for getallheaders."
     },
     {
+        "name": "rodneyrehm/plist",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/TECLIB/CFPropertyList.git",
+            "reference": "af62811f3d03737a7a8f60b6ffaf1581cd0188b1"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/TECLIB/CFPropertyList/zipball/af62811f3d03737a7a8f60b6ffaf1581cd0188b1",
+            "reference": "af62811f3d03737a7a8f60b6ffaf1581cd0188b1",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3"
+        },
+        "time": "2018-04-18T13:23:51+00:00",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "psr-0": {
+                "CFPropertyList": "classes/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Christian Kruse",
+                "email": "cjk@wwwtech.de"
+            },
+            {
+                "name": "Rodney Rehm",
+                "email": "mail+github@rodneyrehm.de"
+            }
+        ],
+        "description": "Library for reading and writing Apple's CFPropertyList (plist) files in XML as well as binary format.",
+        "homepage": "https://github.com/rodneyrehm/CFPropertyList",
+        "keywords": [
+            "plist"
+        ]
+    },
+    {
         "name": "slim/http-cache",
         "version": "0.4.0",
         "version_normalized": "0.4.0.0",

@@ -16,7 +16,8 @@
         "psr/log": "^1.1",
         "psr/container": "* 1.0.0",
         "psr/http-factory": "* 1.0.1",
-        "slim/psr7": "0.6"
+        "slim/psr7": "0.6",
+        "rodneyrehm/plist": "dev-master"
     },
     "config": {
         "preferred-install": "dist"

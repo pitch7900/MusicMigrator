@@ -1,7 +1,7 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
+$("input[type=file]").change(function () {
+  var fieldVal = $(this).val();
+  if (fieldVal != undefined || fieldVal != "") {
+    $(this).next(".custom-file-label").text(fieldVal);
+  }
+});
 

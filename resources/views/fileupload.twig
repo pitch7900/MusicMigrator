@@ -1,0 +1,33 @@
+{% extends "main.twig" %}
+
+{% block content %}
+    {#{{ dump(playlists) }}#}
+    <div id="main_page" class="container-fluid row" class="row">
+        <div class="container">
+
+            {% for playlist in playlists %}
+                <ul> 
+                    <li>{{ playlist.Name }}</li>
+                    <ul>
+                        {% for item in playlist.Playlist %}
+                            <li>{{ item.Song }}</li>
+                            {% endfor %}
+                    </ul>
+                    {#                    {{ dump(playlist) }}#}
+                </ul>
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+{% endblock %}
+
+
+{% block footer %}
+    <footer class="footer  py-3 bg-light fixed-bottom">
+        <div class="container">
+
+        </div>
+    </footer>
+{%endblock%}

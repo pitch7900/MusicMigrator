@@ -1,11 +1,15 @@
 <?php
-//use Slim\Factory\AppFactory;
-//use Respect\Validation\Validator as validator;
+use App\Deezer\ITunesLibrary as iTunesLibrary;
+
 session_cache_limiter('public');
 //session_cache_limiter('private_no_expire:');
 session_start();
 
+
+
 require __DIR__ . '/../vendor/autoload.php';
+
+
 
 
 $app = new \Slim\App([

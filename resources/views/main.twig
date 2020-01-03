@@ -14,9 +14,9 @@
         </div>
       
 
-        {% block menu %}{% endblock %}
+        {% block menu %}{{ include('menu.twig') }}{% endblock %}
         <main class="container-fluid center" role="main">
-            {% block alphaindex %}{% endblock %}
+
             {% block interactivemenus %}{% endblock %}
             {% block content %}{% endblock %}
         </main>

@@ -1,0 +1,6 @@
+.custom-file-input ~ .custom-file-label:lang(fr)::after {
+  content: "Choisir...";
+}
+.custom-file-input ~ .custom-file-label:lang(es)::after {
+  content: "Elegir...`";
+}

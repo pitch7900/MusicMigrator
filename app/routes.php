@@ -16,3 +16,10 @@ $app->group('/file', function () {
     
 });
 
+$app->group('/playlist', function () {
+
+    $this->get('/{playlistid}.json', 'PlaylistController:getPlaylistItems')
+            ->setName('playlist.getitems');
+    $this->get('/song/{songid}.html', 'PlaylistController:getItemDetails')
+            ->setName('playlist.getitemdetails');
+});

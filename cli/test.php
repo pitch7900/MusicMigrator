@@ -6,4 +6,5 @@ $file = 'Library.xml';
 $xmldata = file_get_contents($file);
 $library = new iTunesLibrary();
 $library->loadXML($xmldata);
-$library->getPlaylists();
+//var_dump($library->library_array);
+var_dump($library->getPlaylistItems(86924));

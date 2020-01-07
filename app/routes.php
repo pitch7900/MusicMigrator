@@ -18,7 +18,9 @@ $app->group('/file', function () {
 
 $app->group('/playlist', function () {
 
-    $this->get('/{playlistid}.json', 'PlaylistController:getPlaylistItems')
+    $this->get('/{playlistid}.json', 'PlaylistController:getJsonPlaylistItems')
+            ->setName('playlist.getjsonitems');
+    $this->get('/{playlistid}.html', 'PlaylistController:getPlaylistItems')
             ->setName('playlist.getitems');
     $this->get('/song/{songid}.html', 'PlaylistController:getItemDetails')
             ->setName('playlist.getitemdetails');

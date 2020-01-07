@@ -18,16 +18,19 @@ class HomeController extends Controller {
      * @return HTML
      */
     public function home(Request $request, Response $response) {
-        
-        $filename=__DIR__."/../../libfiles/".session_id().".xml";
-        $arguments['fileuploaded']=false;
-        if (is_readable($filename)) {
-            $arguments['fileuploaded']=true;
-            $Library= new \App\Deezer\ITunesLibrary();
-            $Library->loadXMLFile($filename);
-            $arguments['playlists']=$Library->getPlaylists();
+//        $arguments['debugdata']=json_encode($_SESSION['Library']);
+//        $filename=__DIR__."/../../libfiles/".session_id().".xml";
+        $arguments['fileuploaded'] = false;
+//        if (is_readable($filename)) {
+        if (isset($_SESSION['Library'])) {
+            $arguments['fileuploaded'] = true;
+
+//            $Library= new \App\Deezer\ITunesLibrary();
+//        unserialize($_SESSION["Library"])->loadXMLFile($filename);
+
+            $arguments['playlists'] = unserialize($_SESSION["Library"])->getPlaylists();
         }
-        
+
         return $this->view->render($response, 'home.twig', $arguments);
     }
 

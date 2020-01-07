@@ -6,7 +6,7 @@ session_start();
 
 
 require __DIR__ . '/../vendor/autoload.php';
-$_SESSION["Library"] = new App\Deezer\ITunesLibrary();
+
 
 $app = new \Slim\App([
     'settings' => [

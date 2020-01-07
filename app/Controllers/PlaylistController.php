@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
+use App\Deezer\ITunesLibrary as iTunesLibrary;
 
 /**
  * Description of PlaylistController
@@ -17,31 +18,25 @@ class PlaylistController extends Controller {
         parent::__construct($container);
     }
 
+    public function getJsonPlaylistItems(Request $request, Response $response, $args) {
+        $playlistid = $args['playlistid'];
+        return $response->withJson(unserialize($_SESSION["Library"])->getPlaylistItems($playlistid));
+    }
+
     public function getPlaylistItems(Request $request, Response $response, $args) {
         $playlistid = $args['playlistid'];
-        $filename = __DIR__ . "/../../libfiles/" . session_id() . ".xml";
-        if (is_readable($filename)) {
-
-            $Library = new \App\Deezer\ITunesLibrary();
-            $Library->loadXMLFile($filename);
-        }
-        return $response->withJson($Library->getPlaylistItems($playlistid));
+        $arguments['playlist']=unserialize($_SESSION["Library"])->getPlaylistItems($playlistid);
+        return $this->view->render($response, 'songs.twig', $arguments);
     }
 
     public function getItemDetails(Request $request, Response $response, $args) {
         $trackid = $args['songid'];
-      
-
         $arguments['songid'] = $trackid;
-        $filename = __DIR__ . "/../../libfiles/" . session_id() . ".xml";
-        if (is_readable($filename)) {
-            $Library = new \App\Deezer\ITunesLibrary();
-            $Library->loadXMLFile($filename);
-            $track = $Library->getTrack($trackid);
-            $arguments['song'] = $track['Song'];
-            $arguments['artist'] = $track['Artist'];
-            $arguments['album'] = $track['Album'];
-        }
+        $track = unserialize($_SESSION["Library"])->getTrack($trackid);
+        $arguments['song'] = $track['Song'];
+        $arguments['artist'] = $track['Artist'];
+        $arguments['album'] = $track['Album'];
+
         return $this->view->render($response, 'elements/song.twig', $arguments);
     }
 

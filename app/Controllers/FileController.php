@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
+use App\Deezer\ITunesLibrary as iTunesLibrary;
 
 class FileController extends Controller {
 
@@ -18,44 +19,26 @@ class FileController extends Controller {
      * @return HTML
      */
     public function upload(Request $request, Response $response) {
-//        var_dump($request);
-
+        $lib = new iTunesLibrary();
         $files = $request->getUploadedFiles();
-//        var_dump($files);
         $newfile = $files['file'];
-//        echo $newfile->getStream();
-
         if ($newfile != null) {
-
-
-                file_put_contents(__DIR__."/../../libfiles/".session_id().".xml",$newfile->getStream());
-            $_SESSION["Library"]->loadXML($newfile->getStream());
-     
-//            echo "<p>Tracks : " . $_SESSION["Library"]->countTracks() . "</p>\n";
-//            echo "<p>Playlists : " . $_SESSION["Library"]->countPlaylists() . "</p>\n";
-//            $arguments['playlists'] = $library->getPlaylists();
+            $lib->loadXML($newfile->getStream());
+            $_SESSION["Library"] = serialize($lib);
         }
 
-
-        if (!$_SESSION["Library"]->isInitialized()) {
+        if (!$lib->isInitialized()) {
             return $this->response
                             ->withStatus(303)
                             ->withHeader('Location', $this->router->pathFor('home'))
                             ->withHeader('Status', 'NOK');
         }
-       
         return $this->response
                         ->withStatus(303)
                         ->withHeader('Location', $this->router->pathFor('home'))
                         ->withHeader('Status', 'OK')
-                        ->withHeader('debug', json_encode($_SESSION["Library"]))
-                        ->withHeader('Tracks', $_SESSION["Library"]->countTracks())
-                        ->withHeader('Playlists', $_SESSION["Library"]->countPlaylists());
-
-
-//        return $this->view->render($response, $this->router->pathFor('home'), $arguments);
+                        ->withHeader('Tracks', $lib->countTracks())
+                        ->withHeader('Playlists', $lib->countPlaylists());
     }
-    
-    
 
 }

@@ -1,7 +1,29 @@
 {% macro navplaylistitem(id,name) %}
     <li class="nav-item">
-        <a class="nav-link" id="ShowPlaylist_{{id}}">
+        <a class="nav-link" id="ShowPlaylist" playlistid="{{ id }}">
             <i class="fas fa-list"></i>{{name}}
         </a>
     </li>
+{% endmacro %}
+
+
+{% macro playlistsong(artist,album,song) %}
+    <tr>
+        <td><i class="far fa-question-circle"></i></td>
+        <td>{{ artist }}</td>
+        <td>{{ album }}</td>
+        <td>{{ song }}</td>
+    </tr>
+   {# <div albumname="{{album}}" class="list-group-item list-group-item-action song">
+        <ul class="list-inline">
+            <li class="list-inline-item">
+                <i class="far fa-question-circle"></i>
+            </li>
+            <li class="list-inline-item">
+                <span class="title tag-title">{{ album }}</span><br>
+                {{ artist }} - {{ song }}
+            </li>
+        </ul>
+    </div>#}
+
 {% endmacro %}

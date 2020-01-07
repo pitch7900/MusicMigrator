@@ -1,6 +1,13 @@
 .custom-file-input ~ .custom-file-label:lang(fr)::after {
-  content: "Choisir...";
+    content: "Choisir...";
 }
 .custom-file-input ~ .custom-file-label:lang(es)::after {
-  content: "Elegir...`";
+    content: "Elegir...`";
+}
+
+.song,ul.list-inline{
+    cursor: default;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    margin-bottom: 0px;
 }

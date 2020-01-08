@@ -25,3 +25,11 @@ $app->group('/playlist', function () {
     $this->get('/song/{songid}.html', 'PlaylistController:getItemDetails')
             ->setName('playlist.getitemdetails');
 });
+
+$app->group('/deezer', function () {
+
+    
+    $this->post('/search.json', 'DeezerController:postSearch')
+            ->setName('deezer.search');
+    
+});

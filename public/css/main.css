@@ -11,3 +11,8 @@
     padding-bottom: 0px;
     margin-bottom: 0px;
 }
+
+
+li.navitem, a#ShowPlaylist.nav-link{
+    cursor: default;
+}

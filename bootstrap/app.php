@@ -1,6 +1,5 @@
 <?php
 session_cache_limiter('public');
-//session_cache_limiter('private_no_expire:');
 session_start();
 
 
@@ -34,6 +33,10 @@ $container['FileController'] = function($container) {
 
 $container['PlaylistController'] = function($container) {
     return new \App\Controllers\PlaylistController($container);
+};
+
+$container['DeezerController'] = function($container) {
+    return new \App\Controllers\DeezerController($container);
 };
 
 require __DIR__ . '/../app/routes.php';

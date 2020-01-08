@@ -7,33 +7,31 @@
 {% block content %}
 
     <div id="main_page" class="container-fluid row">
-        
-
-            {% if fileuploaded %}
-                <div class="col-sm-4">
-                    <div class="sidebar-sticky">
-                        <ul class="nav flex-column">
-                            {% for playlist in playlists%}
-                                {{ macrohome.navplaylistitem(playlist.id,playlist.name) }}
-                            {% endfor %}
-                        </ul>
-                    </div>
 
 
+        {% if fileuploaded %}
+            <div class="col-sm-4">
+                <div class="sidebar-sticky">
+                    <ul class="nav flex-column">
+                        {% for playlist in playlists%}
+                            {{ macrohome.navplaylistitem(playlist.id,playlist.name) }}
+                        {% endfor %}
+                    </ul>
                 </div>
-                        <div class="col-sm-8">
-                
-                    <div id="songlist" >
-                    </div>
-                        
+
+
+            </div>
+            <div class="col-sm-8">
+                <div id="songlist" >
                 </div>
-            {% else %}
-                
-            {% endif %}
+            </div>
+        {% else %}
+
+        {% endif %}
 
 
 
-        
+
     </div>
 
 {% endblock %}

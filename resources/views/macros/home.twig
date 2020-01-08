@@ -7,12 +7,13 @@
 {% endmacro %}
 
 
-{% macro playlistsong(artist,album,song) %}
-    <tr>
-        <td><i class="far fa-question-circle"></i></td>
-        <td>{{ artist }}</td>
-        <td>{{ album }}</td>
-        <td>{{ song }}</td>
+{% macro playlistsong(trackid,artist,album,song) %}
+    <tr id="track" trackid="{{ trackid }}">
+        <td id="image" ><i class="far fa-question-circle"></i></td>
+        <td id="artist" class="editable">{{ artist }}</td>
+        <td id="album" class="editable">{{ album }}</td>
+        <td id="song" class="editable">{{ song }}</td>
+        <td id="refresh"><i class="fas fa-sync" onclick='refreshDeezer("{{trackid}}","{{artist}}","{{album}}","{{song}}")'></i></td>
     </tr>
    {# <div albumname="{{album}}" class="list-group-item list-group-item-action song">
         <ul class="list-inline">

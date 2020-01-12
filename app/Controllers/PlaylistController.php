@@ -4,7 +4,6 @@ namespace App\Controllers;
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
-use App\Deezer\ITunesLibrary as iTunesLibrary;
 
 /**
  * Description of PlaylistController
@@ -36,7 +35,9 @@ class PlaylistController extends Controller {
         $arguments['song'] = $track['Song'];
         $arguments['artist'] = $track['Artist'];
         $arguments['album'] = $track['Album'];
-
+        $arguments['duration'] = $track['Time'];
+        $arguments['track'] = $track['Track'];
+        $arguments['totaltracks'] = $track['TotalTracks'];
         return $this->view->render($response, 'elements/song.twig', $arguments);
     }
 

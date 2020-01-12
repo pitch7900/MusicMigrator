@@ -4,11 +4,13 @@ namespace App\Controllers;
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
+use \App\Utils\Logs as Logs;
 
 class HomeController extends Controller {
-
+    private $logs;
     public function __construct($container) {
         parent::__construct($container);
+        $this->logs = new Logs();
     }
 
     /**
@@ -18,15 +20,38 @@ class HomeController extends Controller {
      * @return HTML
      */
     public function home(Request $request, Response $response) {
-//        $arguments['debugdata']=json_encode($_SESSION['Library']);
-//        $filename=__DIR__."/../../libfiles/".session_id().".xml";
+
+        if (!isset($_SESSION['dzapi'])) {
+            $this->logs->write("debug",Logs::$MODE_FILE,"debug.log","Creating a new Deezer API class instance");
+            $_SESSION['dzapi'] = serialize(new \App\Deezer\DZApi());
+        }
+        
+        $arguments['deezerauthurl'] = unserialize($_SESSION['dzapi'])->getAuthUrl(getenv("SITEURL")."/deezer/auth");
+        $this->logs->write("debug",Logs::$MODE_FILE,"debug.log","Deezer Auth URL is : ".$arguments['deezerauthurl']);
+        $arguments['deezerauthenticated'] = 0;
+        
+
+        if (isset($_SESSION['deezer_token'])) {
+            $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "Session token stored in Session : ".$_SESSION['deezer_token']);
+            $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "Session token stored in class : ".unserialize($_SESSION['dzapi'])->getSToken());
+            $userinfo = unserialize($_SESSION['dzapi'])->getUserInformation();
+            $this->logs->write("debug",Logs::$MODE_FILE,"debug.log",json_encode($userinfo));
+            $arguments['deezertoken'] = $_SESSION['deezer_token'];
+            $arguments['deezerauthenticated'] = 1;
+            $arguments['deezerUserInformations'] = $userinfo;
+            $arguments['deezerusername'] = $userinfo['name'];
+            $arguments['deezerpict'] = $userinfo['picture'];
+            $arguments['deezeruserlink'] = $userinfo['link'];
+            $arguments['deezerauthenticated'] = 1;
+        }
+//          
+
         $arguments['fileuploaded'] = false;
-//        if (is_readable($filename)) {
+
+
         if (isset($_SESSION['Library'])) {
             $arguments['fileuploaded'] = true;
 
-//            $Library= new \App\Deezer\ITunesLibrary();
-//        unserialize($_SESSION["Library"])->loadXMLFile($filename);
 
             $arguments['playlists'] = unserialize($_SESSION["Library"])->getPlaylists();
         }

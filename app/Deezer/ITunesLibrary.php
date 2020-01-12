@@ -94,7 +94,14 @@ class ITunesLibrary {
                 $trackid = $Item["Track ID"];
                 $key = $this->getTrack($trackid);
 
-                array_push($list, ["ID" => $Item["Track ID"], "Artist" => $key["Artist"], "Album" => $key["Album"], "Song" => $key["Name"]]);
+                array_push($list, ["ID" => $Item["Track ID"],
+                    "Artist" => $key["Artist"],
+                    "Album" => $key["Album"],
+                    "Song" => $key["Name"],
+                    "Time" => $key["Total Time"],
+                    "Track" => $key["Track Number"],
+                    "TotalTracks" => $key["Track Count"]
+                ]);
             }
             return $list;
         }

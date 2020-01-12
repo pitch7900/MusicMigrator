@@ -9,6 +9,9 @@
                 <th scope="col">Artist</th>
                 <th scope="col">Album</th>
                 <th scope="col">Song</th>
+                <th scope="col">Duration</th>
+                <th scope="col">Track</th>
+                <th scope="col">Total Tracks</th>
                 <th scope="col"></th>
             </tr>
         </thead>
@@ -16,7 +19,7 @@
             {% set trackid = 0 %}
             {% for song in playlist%}
                 {% set trackid = trackid + 1 %}
-                {{ macrohome.playlistsong(trackid,song.Artist,song.Album,song.Song) }}
+                {{ macrohome.playlistsong(trackid,song.Artist,song.Album,song.Song,song.Time,song.Track,song.TotalTracks) }}
             {% endfor %}
         </tbody>
     </table>

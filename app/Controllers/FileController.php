@@ -24,7 +24,7 @@ class FileController extends Controller {
         $newfile = $files['file'];
         if ($newfile != null) {
             $lib->loadXML($newfile->getStream());
-            $_SESSION["Library"] = serialize($lib);
+            $_SESSION['Library'] = serialize($lib);
         }
 
         if (!$lib->isInitialized()) {

@@ -6,25 +6,47 @@
     </li>
 {% endmacro %}
 
+{#From : https://caffeinecreations.ca/blog/twig-macro-convert-seconds-to-hhmmss/#}
+{% macro secondsToMinutes(seconds) %}
 
-{% macro playlistsong(trackid,artist,album,song) %}
+    {# set hours minus minutes/seconds #}
+    {% set hours = seconds / 3600 % 60 %}
+
+    {% if hours  < 1 %}
+        {# set hours to nothing #}
+        {% set hours = null %}
+    {% else %}
+        {# output hours with a colon: #}
+        {% set hours = hours|number_format ~ ':' %}
+    {% endif %}
+
+    {# set minutes remain but no seconds and with a colon #}
+    {% set minutes = seconds / 60 % 60  ~ ':' %}
+
+    {# set seconds but no minutes or hours #}
+    {% set seconds = seconds % 60 %}
+    {% if seconds < 10 %}
+        {# add a leading zero if seconds are less than 10 #}
+        {% set seconds = '0' ~ seconds %}
+    {% endif %}
+
+    {{ hours }}{{ minutes}}{{ seconds }}
+
+{% endmacro %}
+
+{% macro playlistsong(trackid,artist,album,song,duration,track,totaltracks) %}
+    {% import _self as macros %}
     <tr id="track" trackid="{{ trackid }}">
         <td id="image" ><i class="far fa-question-circle"></i></td>
         <td id="artist" class="editable">{{ artist }}</td>
         <td id="album" class="editable">{{ album }}</td>
         <td id="song" class="editable">{{ song }}</td>
-        <td id="refresh"><i class="fas fa-sync" onclick='refreshDeezer("{{trackid}}","{{artist}}","{{album}}","{{song}}")'></i></td>
+        <td id="duration" class="editable" duration="{{ duration }}">{{ macros.secondsToMinutes( duration/1000 )}}</td>
+        <td id="track" class="editable">{{ track }}</td>
+        <td id="totaltracks" class="editable">{{ totaltracks }}</td>
+
+        <td id="refresh"><i class="fas fa-sync" onclick='refreshDeezer("{{trackid}}", "{{artist}}", "{{album}}", "{{song}}",{{duration}})'></i></td>
     </tr>
-   {# <div albumname="{{album}}" class="list-group-item list-group-item-action song">
-        <ul class="list-inline">
-            <li class="list-inline-item">
-                <i class="far fa-question-circle"></i>
-            </li>
-            <li class="list-inline-item">
-                <span class="title tag-title">{{ album }}</span><br>
-                {{ artist }} - {{ song }}
-            </li>
-        </ul>
-    </div>#}
+
 
 {% endmacro %}

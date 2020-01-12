@@ -5,7 +5,7 @@
     {{include('interactivemenus/DeezerLogin.twig')}}
 {% endblock %}
 {% block content %}
-
+   
     <div id="main_page" class="container-fluid row">
 
 
@@ -26,7 +26,8 @@
                 </div>
             </div>
         {% else %}
-
+            <h1>Please upload an iTunes Libraray file first</h1>
+            <h4>Format should be xml plist</h4>
         {% endif %}
 
 

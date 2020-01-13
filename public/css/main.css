@@ -27,6 +27,9 @@ li.navitem, a#ShowPlaylist.nav-link{
 }
 
 .deezererror{
-    background-color:lightcoral;
-        
+    background-color:lightcoral !important; 
+}
+
+a.dropdown-item {
+    cursor:pointer;
 }

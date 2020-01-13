@@ -1,0 +1,55 @@
+{
+    "name": "hamburgscleanest/guzzle-advanced-throttle",
+    "description": "A Guzzle middleware that can throttle requests according to (multiple) defined rules. It is also possible to define a caching strategy, e.g. get response from cache when rate limit is exceeded or always get cached value to spare your rate limits.",
+    "keywords": [
+        "hamburgscleanest",
+        "api",
+        "ratelimit",
+        "rate limit",
+        "rate limiting",
+        "throttle",
+        "request",
+        "guzzle",
+        "cache",
+        "advanced",
+        "response",
+        "laravel",
+        "wildcard",
+        "wildcards"
+    ],
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Timo",
+            "email": "chroma91@gmail.com",
+            "homepage": "https://www.timo-pruesse.de/",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.2",
+        "guzzlehttp/guzzle": "~6.3.0 || ~6.4.0",
+        "illuminate/cache": "^5.8.2|^6.0.0",
+        "illuminate/container": "^5.8.2|^6.0.0",
+        "illuminate/config": "^5.8.2|^6.0.0",
+        "illuminate/filesystem": "^5.8.2|^6.0.0",
+        "illuminate/redis": "^5.8.2|^6.0.0",
+        "illuminate/database": "^5.8.2|^6.0.0",
+        "predis/predis": "^1.1",
+        "symfony/http-kernel": "~3|~4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.0.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "hamburgscleanest\\GuzzleAdvancedThrottle\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "hamburgscleanest\\GuzzleAdvancedThrottle\\Tests\\": "tests"
+        }
+    }
+}

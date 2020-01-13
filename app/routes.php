@@ -33,5 +33,9 @@ $app->group('/deezer', function () {
             ->setName('deezer.search');
     $this->get('/auth', 'DeezerController:getAuth')
             ->setName('deezer.auth');
+    $this->get('/me/about.json', 'DeezerController:getAboutme')
+            ->setName('deezer.me.about');
+    $this->get('/me/playlists.json', 'DeezerController:getMyPlaylists')
+            ->setName('deezer.me.playlists');
     
 });

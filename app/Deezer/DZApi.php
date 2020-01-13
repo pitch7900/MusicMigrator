@@ -3,6 +3,7 @@
 namespace App\Deezer;
 
 use \App\Utils\Logs as Logs;
+use \hamburgscleanest\GuzzleAdvancedThrottle as GuzzleAdvancedThrottle;
 
 //getenv('ELASTICSEARCH_HOST')
 /**
@@ -57,22 +58,27 @@ class DZApi {
      * @var string
      */
     private $_sApiUrl = "https://api.deezer.com";
+    private $_sApiMaxRequest = "50";
+    private $_sApiRequestInterval = "5";
+    private $ThrottlerRules;
+    private $ThrottlerStack;
 
-    
-    private $_MaxRequest="50";
-    private $_RequestInterval="5";
-    
+//    private $throttle;
     public function __construct() {
 
         $this->_sApiKey = getenv('DZAPIKEY');
         $this->_sSecretKey = getenv('DZAPI_SECRETKEY');
         $this->logs = new Logs();
         $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "New DZAPI Constructor called ");
-    }
 
-    public function debug() {
-        echo $this->_sApiKey = getenv('DZAPIKEY') . "\n";
-        echo $this->_sSecretKey = getenv('DZAPI_SECRETKEY') . "\n";
+        $this->ThrottlerRules = new GuzzleAdvancedThrottle\RequestLimitRuleset([
+            $this->_sApiUrl => [
+                [
+                    'max_requests' => $this->_sApiMaxRequest,
+                    'request_interval' => $this->_sApiRequestInterval
+                ]
+            ]
+        ]);
     }
 
     /**
@@ -85,13 +91,24 @@ class DZApi {
      */
     public function sendRequest($sUrl) {
         $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(sendRequest) Deezer request recieved : " . $sUrl);
-        $c = curl_init();
-        curl_setopt($c, CURLOPT_URL, $sUrl);
-        curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($c, CURLOPT_HEADER, false);
-        $output = curl_exec($c);
+        $this->ThrottlerStack = new \GuzzleHttp\HandlerStack();
+        $this->ThrottlerStack->setHandler(new \GuzzleHttp\Handler\CurlHandler());
 
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(sendRequest) Deezer response recieved : " . json_encode($output));
+        $throttle = new GuzzleAdvancedThrottle\Middleware\ThrottleMiddleware($this->ThrottlerRules);
+
+        $this->ThrottlerStack->push($throttle());
+//        $c = curl_init();
+//        curl_setopt($c, CURLOPT_URL, $sUrl);
+//        curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
+//        curl_setopt($c, CURLOPT_HEADER, false);
+//        $output = curl_exec($c);
+        $client = new \GuzzleHttp\Client(['base_uri' => $this->_sApiUrl, 'handler' => $this->ThrottlerStack]);
+        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(sendRequest) Client : " . var_export($client, true));
+//        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(sendRequest) ThrottlerRules: " . var_export($this->ThrottlerRules, true));
+        $response = $client->get($sUrl);
+        $output = $response->getBody();
+//        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(sendRequest) Deezer response recieved HEADERS : " . var_export($response, true) . "\n" . var_export($response->getHeaders(), true));
+//        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(sendRequest) Deezer response recieved BODY : " . var_export($response, true) . "\n" . var_export($response->getBody(), true));
         if ($output === false) {
             $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(sendRequest) Error curl : " . curl_error($c), E_USER_WARNING);
             trigger_error('Erreur curl : ' . curl_error($c), E_USER_WARNING);
@@ -154,8 +171,8 @@ class DZApi {
             preg_match_all('/(.*)\(.*\)| - .*/m', urldecode($track), $matches, PREG_SET_ORDER, 0);
             if (strlen($matches[0][1]) !== 0) {
                 $param = '"' . urlencode($matches[0][1]) . '"';
-                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "Remove unecesssary chars from title : " . $track . "\n\t" . json_encode($matches));
-                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "Deezer Search query " . $param);
+                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(search) Remove unecesssary chars from title : " . $track . "\n\t" . json_encode($matches));
+                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(search) Deezer Search query " . $param);
                 $output = $this->search_params($param);
             }
         }
@@ -212,7 +229,10 @@ class DZApi {
     public function getUserInformation() {
         return $this->api("/user/me");
     }
-
+    public function getUserPlaylists(){
+        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(getUserPlaylists)".var_export($this->getUserInformation(),true));
+        return $this->api("/user/".$this->getUserInformation()['id']."/playlists");
+    }
     public function getSToken() {
         return $_SESSION['deezer_token'];
     }

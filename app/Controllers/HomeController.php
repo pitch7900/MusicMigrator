@@ -43,8 +43,10 @@ class HomeController extends Controller {
             $arguments['deezerpict'] = $userinfo['picture'];
             $arguments['deezeruserlink'] = $userinfo['link'];
             $arguments['deezerauthenticated'] = 1;
+            
+//            var_dump(unserialize($_SESSION['dzapi'])->getUserPlaylists()['data']);
         }
-//          
+          
 
         $arguments['fileuploaded'] = false;
 
@@ -55,7 +57,7 @@ class HomeController extends Controller {
 
             $arguments['playlists'] = unserialize($_SESSION["Library"])->getPlaylists();
         }
-
+        
         return $this->view->render($response, 'home.twig', $arguments);
     }
 

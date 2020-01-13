@@ -73,6 +73,15 @@ class ITunesLibrary {
         //var_dump($key);
         return $key;
     }
+    
+    public function getPlaylistName($playlistID){
+        foreach ($this->library_array["Playlists"] as $Playlist) {
+            if ($Playlist["Playlist ID"] == $playlistID) {
+                return $Playlist["Name"];
+            }
+        }
+        return null;
+    }
 
     public function getPlaylist($playlistID) {
         foreach ($this->library_array["Playlists"] as $Playlist) {

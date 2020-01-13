@@ -34,7 +34,28 @@ class DeezerController extends Controller {
         $this->logs->write("debug", Logs::$MODE_FILE,"debug.log", "Searching for : \n\t - ".$artist."\n\t - ".$album."\n\t - ".$song."\n\t - ".$duration);
         return $response->withJson($dz->search($artist, $album, $song, $duration));
     }
-
+    
+    public function getAboutme(Request $request, Response $response) {
+        if (!isset($_SESSION['dzapi'])) {
+            return $this->response
+                        ->withStatus(401)
+                        ->withHeader('Error','Not logged in to Deezer');
+        } else {
+            return $response->withJson(unserialize($_SESSION['dzapi'])->getUserInformation());
+        }
+    }
+    
+    public function getMyPlaylists(Request $request, Response $response) {
+        if (!isset($_SESSION['dzapi'])) {
+            return $this->response
+                        ->withStatus(401)
+                        ->withHeader('Error','Not logged in to Deezer');
+        } else {
+            return $response->withJson(unserialize($_SESSION['dzapi'])->getUserPlaylists());
+        }
+    }
+    
+    
     public function getAuth(Request $request, Response $response) {
         if (!isset($_SESSION['dzapi'])) {
             $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "Creating a new Deezer API class instance");

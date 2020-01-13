@@ -1,4 +1,5 @@
 <?php
+
 session_cache_limiter('public');
 session_start();
 
@@ -8,7 +9,10 @@ require __DIR__ . '/../vendor/autoload.php';
 try {
     $dotenv = (Dotenv\Dotenv::createImmutable(__DIR__ . '/../config/'))->load();
 } catch (\Dotenv\Exception\InvalidPathException $e) {
+    
 }
+
+
 
 $app = new \Slim\App([
     'settings' => [

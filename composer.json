@@ -18,7 +18,8 @@
         "psr/http-factory": "* 1.0.1",
         "slim/psr7": "0.6",
         "rodneyrehm/plist": "dev-master",
-        "vlucas/phpdotenv": "v4.1.0"
+        "vlucas/phpdotenv": "v4.1.0",
+        "hamburgscleanest/guzzle-advanced-throttle": "v4.1.1"
     },
     "config": {
         "preferred-install": "dist"

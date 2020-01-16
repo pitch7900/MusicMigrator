@@ -33,6 +33,8 @@ $app->group('/deezer', function () {
             ->setName('deezer.search');
     $this->post('/searchlist.json', 'DeezerController:postSearchList')
             ->setName('deezer.searchlist');
+    $this->get('/searchlist.json', 'DeezerController:getSearchList')
+            ->setName('deezer.searchlist');
     $this->get('/auth', 'DeezerController:getAuth')
             ->setName('deezer.auth');
     $this->get('/me/about.json', 'DeezerController:getAboutme')

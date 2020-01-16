@@ -57,7 +57,7 @@ class DZApi {
      *
      * @var string
      */
-    private $_sApiUrl = "http://api.deezer.com";
+    private $_sApiUrl = "https://api.deezer.com";
     private $_sApiMaxRequest = "50";
     private $_sApiRequestInterval = "5";
     private $ThrottlerRules;
@@ -175,7 +175,9 @@ class DZApi {
     }
 
     public function SearchList($tracklist) {
+        $_SESSION['deezersearchlist']=['status'=>'Searching','current'=>0,'total'=>count($tracklist)];
         $results = array();
+        $current=0;
         foreach ($tracklist as $track) {
             $trackarray = (array) $track;
             $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(SearchList) searching for  TrackID : " . $trackarray['trackid']);
@@ -189,10 +191,11 @@ class DZApi {
                     sleep(1);
                 }
             } while ($RequestToBeDone);
-
+            $current++;
+            $_SESSION['deezersearchlist']=['status'=>'Finished','current'=>$current,'total'=>count($tracklist)];
             array_push($results, ['trackid' => $trackarray['trackid'], 'accuracy' => $search_result['accuracy'] ,'info' => $search_result]);
         }
-//        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(SearchList) End processing. Returning\n".($results));
+        $_SESSION['deezersearchlist']=['status'=>'Finished','current'=>count($tracklist),'total'=>count($tracklist)];
         return $results;
     }
 
@@ -309,30 +312,43 @@ class DZApi {
 
         $client = new \GuzzleHttp\Client(['base_uri' => $this->_sApiUrl, 'handler' => $this->ThrottlerStack]);
 
+       
 
-
-        $prefix = $songsList = '';
         foreach ($tracklist as $track) {
-            $songsList .= $prefix . $track;
-            $prefix = ',';
+            
+            $RequestToBeDone = true;
+            do {
+                try {
+                    $sUrl = $this->_sApiUrl . "/playlist/" . $playlistid . "/tracks" . "?access_token=" . $this->getSToken() . "&songs=".$track;
+                    $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(AddTracksToPlaylist) URL : " . $sUrl);
+                    $response = $client->post($sUrl);
+                    $RequestToBeDone = false;
+                } catch (\Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException $e) {
+                    $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(AddTracksToPlaylist) Too many requests. Waiting 1 second ");
+                    sleep(1);
+                }
+            } while ($RequestToBeDone);
+
+            
+            
+//            $songsList .= $prefix . $track;
+//            $prefix = ',';
         }
-        $songsList = rtrim($songsList, ',');
+//        $songsList = rtrim($songsList, ',');
 
-        $sUrl = $this->_sApiUrl . "/playlist/" . $playlistid . "/tracks" . "?access_token=" . $this->getSToken() . "&songs=" . $songsList;
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(AddTracksToPlaylist) URL : " . $sUrl);
+        
 
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(AddTracksToPlaylist) Should add : " . $songsList);
 
-        $response = $client->post($sUrl);
-        $response->getBody()->rewind();
-        $output = $response->getBody()->getContents();
-        if ($output === false) {
-            $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(createPlaylist) Error curl : " . curl_error($c), E_USER_WARNING);
-            trigger_error('Erreur curl : ' . curl_error($c), E_USER_WARNING);
-        } else {
-            curl_close($c);
-            return $output;
-        }
+//        $response = $client->post($sUrl);
+//        $response->getBody()->rewind();
+//        $output = $response->getBody()->getContents();
+//        if ($output === false) {
+//            $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(createPlaylist) Error curl : " . curl_error($c), E_USER_WARNING);
+//            trigger_error('Erreur curl : ' . curl_error($c), E_USER_WARNING);
+//        } else {
+//            curl_close($c);
+//            return $output;
+//        }
     }
 
 }

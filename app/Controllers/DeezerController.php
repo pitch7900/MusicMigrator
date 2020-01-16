@@ -28,52 +28,88 @@ class DeezerController extends Controller {
         $album = urlencode($request->getParsedBody()['album']);
         $song = urlencode($request->getParsedBody()['song']);
         $duration = urlencode($request->getParsedBody()['duration']);
-        
+
         $dz = new DZApi();
 //        echo "Should Search : " .$artist." ".$album." ".$song;
-        $this->logs->write("debug", Logs::$MODE_FILE,"debug.log", "Searching for : \n\t - ".$artist."\n\t - ".$album."\n\t - ".$song."\n\t - ".$duration);
+        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DeezerController.php(postSearch) Searching for : \n\t - " . $artist . "\n\t - " . $album . "\n\t - " . $song . "\n\t - " . $duration);
         return $response->withJson($dz->search($artist, $album, $song, $duration));
     }
-    
+
     public function getAboutme(Request $request, Response $response) {
         if (!isset($_SESSION['dzapi'])) {
             return $this->response
-                        ->withStatus(401)
-                        ->withHeader('Error','Not logged in to Deezer');
+                            ->withStatus(401)
+                            ->withHeader('Error', 'Not logged in to Deezer');
         } else {
             return $response->withJson(unserialize($_SESSION['dzapi'])->getUserInformation());
         }
     }
-    
+
     public function getMyPlaylists(Request $request, Response $response) {
         if (!isset($_SESSION['dzapi'])) {
             return $this->response
-                        ->withStatus(401)
-                        ->withHeader('Error','Not logged in to Deezer');
+                            ->withStatus(401)
+                            ->withHeader('Error', 'Not logged in to Deezer');
         } else {
             return $response->withJson(unserialize($_SESSION['dzapi'])->getUserPlaylists());
         }
     }
-    
-    
+
     public function getAuth(Request $request, Response $response) {
         if (!isset($_SESSION['dzapi'])) {
-            $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "Creating a new Deezer API class instance");
+            $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DeezerController.php(getAuth) Creating a new Deezer API class instance");
             $_SESSION['dzapi'] = serialize(new \App\Deezer\DZApi());
         }
 
 
 
         $code = $request->getQueryParam('code');
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "Deezer code recieved");
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "Generating app token");
+        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DeezerController.php(getAuth) Deezer code recieved");
+        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DeezerController.php(getAuth) Generating app token");
         $token = unserialize($_SESSION['dzapi'])->apiconnect($code);
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "Token set to : " . $token);
+        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DeezerController.php(getAuth) Token set to : " . $token);
         $_SESSION['deezer_token'] = $token;
         return $this->response
                         ->withStatus(303)
                         ->withHeader('Location', $this->router->pathFor('home'))
                         ->withHeader('Status', 'Authenticated on deezer');
+    }
+    
+    
+    public function postSearchList(Request $request, Response $response) {
+
+        $tracklist = json_decode($request->getParsedBody()['tracklist']);
+       
+        $dz = new DZApi();
+//        echo "Should Search : " .$artist." ".$album." ".$song;
+        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DeezerController.php(postSearch) Searching for : \n\t - " . $artist . "\n\t - " . $album . "\n\t - " . $song . "\n\t - " . $duration);
+        return $response->withJson($dz->SearchList($tracklist));
+    }
+    
+    
+    
+    
+    
+    public function postCreatePlaylist(Request $request, Response $response) {
+        $playlistname = urlencode($request->getParsedBody()['name']);
+        $playlistpublic = urlencode($request->getParsedBody()['public']);
+        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DeezerController.php(postCreatePlaylist)recieved query to create a playlist :",$playlistname." - ".$playlistpublic);
+        if (!isset($_SESSION['dzapi'])) {
+            return $this->response
+                            ->withStatus(401)
+                            ->withHeader('Error', 'Not logged in to Deezer');
+        } else {
+            return $response->withJson(unserialize($_SESSION['dzapi'])->CreatePlaylist($playlistname,$playlistpublic));
+        }
+    }
+    
+    public function postPlaylistAddSongs(Request $request, Response $response,$args) {
+        
+        $playlistid = $args['playlistid'];
+        
+        $tracklist = json_decode($request->getParsedBody()['tracklist']);
+        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DeezerController.php(postPlaylistAddSongs)recieved query to add to a playlist :". $playlistid."\n\t".var_export($tracklist,true));
+        return $response->withJson(unserialize($_SESSION['dzapi'])->AddTracksToPlaylist($playlistid,$tracklist));
     }
 
 }

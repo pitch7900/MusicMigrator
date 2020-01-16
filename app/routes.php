@@ -31,11 +31,17 @@ $app->group('/deezer', function () {
     
     $this->post('/search.json', 'DeezerController:postSearch')
             ->setName('deezer.search');
+    $this->post('/searchlist.json', 'DeezerController:postSearchList')
+            ->setName('deezer.searchlist');
     $this->get('/auth', 'DeezerController:getAuth')
             ->setName('deezer.auth');
     $this->get('/me/about.json', 'DeezerController:getAboutme')
             ->setName('deezer.me.about');
     $this->get('/me/playlists.json', 'DeezerController:getMyPlaylists')
             ->setName('deezer.me.playlists');
+    $this->post('/me/createplaylist','DeezerController:postCreatePlaylist')
+            ->setName('deezer.me.createplaylist');
+    $this->post('/playlist/{playlistid}/addsongs','DeezerController:postPlaylistAddSongs')
+            ->setName('deezer.playlist.addsongs');
     
 });

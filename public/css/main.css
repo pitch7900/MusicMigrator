@@ -14,22 +14,22 @@
 
 
 li.navitem, a#ShowPlaylist.nav-link{
-    cursor: default;
+    cursor: pointer;
 }
 
 .profilepict {
     border-radius:50%;
-    
+
 }
 
 .deezerupdated{
-    
+
 }
 
 .deezererror{
     background-color:lightcoral !important; 
 }
 
-a.dropdown-item {
+a.dropdown-item,.nav-item,.tableheaderssortable,.nav-link{
     cursor:pointer;
 }

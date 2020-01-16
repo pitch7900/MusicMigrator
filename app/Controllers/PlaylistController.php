@@ -24,9 +24,14 @@ class PlaylistController extends Controller {
 
     public function getPlaylistItems(Request $request, Response $response, $args) {
         $playlistid = $args['playlistid'];
-        $arguments['playlist']=unserialize($_SESSION["Library"])->getPlaylistItems($playlistid);
-        $arguments['playlistname']=unserialize($_SESSION["Library"])->getPlaylistName($playlistid);
-        $arguments['deezerplaylists'] = unserialize($_SESSION['dzapi'])->getUserPlaylists()['data'];
+        $arguments['playlist'] = unserialize($_SESSION["Library"])->getPlaylistItems($playlistid);
+        $arguments['playlistname'] = unserialize($_SESSION["Library"])->getPlaylistName($playlistid);
+        if (isset($_SESSION['deezer_token'])) {
+            $arguments['deezerauthenticated'] = true;
+            $arguments['deezerplaylists'] = unserialize($_SESSION['dzapi'])->getUserPlaylists();
+        } else {
+            $arguments['deezerauthenticated'] = false;
+        }
         return $this->view->render($response, 'songs.twig', $arguments);
     }
 
@@ -34,7 +39,7 @@ class PlaylistController extends Controller {
         $trackid = $args['songid'];
         $arguments['songid'] = $trackid;
         $track = unserialize($_SESSION["Library"])->getTrack($trackid);
-        
+
         $arguments['song'] = $track['Song'];
         $arguments['artist'] = $track['Artist'];
         $arguments['album'] = $track['Album'];

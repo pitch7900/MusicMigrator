@@ -7,28 +7,33 @@
                 <h5 class="modal-title">Import to Deezer</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true"></span>
-
                 </button>
             </div>
             <div class="modal-body mx-auto">
-                
+
                 <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuPlaylist" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        New Playlist
+                    <button class="btn btn-secondary dropdown-toggle" playlistid="0" type="button" id="dropdownMenuPlaylist" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Choose playlist
                     </button>
-                    
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuPlaylist">
-                         {% for playlist in deezerplaylists%} 
-                        <a class="dropdown-item" >{{ playlist.title }}</a>
+
+                    <div id="dropdownMenuPlaylistItems" class="dropdown-menu" aria-labelledby="dropdownMenuPlaylist">
+                        <a class="dropdown-item" playlistid="0">New Playlist</a>
+                        <div class="dropdown-divider"></div>
+                        {% for playlist in deezerplaylists%} 
+                            <a id="deezer_playlist_{{ playlist.id }}" playlistname="{{ playlist.title }}" class="dropdown-item" playlistid="{{ playlist.id }}">{{ playlist.title }}</a>
                         {% endfor %}
-                        
+
                     </div>
                 </div>
+                <div id="InputGroupDeezerPlaylistName" class="input-group mb-3 invisible">
+                    <input id="InputDeezerPlaylistName" type="text" class="form-control" value="{{ playlistname }}" aria-describedby="basic-addon1">
+                </div>
+
             </div>
             <div class="modal-footer">
-                   
-                <button class="btn btn-lg btn-primary btn-block" >Import</button>
-{#                {{ dump(deezerplaylists) }}#}
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="ImportToDeezer();">Import</button>
+                {#                {{ dump(deezerplaylists) }}#}
             </div>
         </div>
     </div>

@@ -57,7 +57,7 @@ class DZApi {
      *
      * @var string
      */
-    private $_sApiUrl = "https://api.deezer.com";
+    private $_sApiUrl = "http://api.deezer.com";
     private $_sApiMaxRequest = "50";
     private $_sApiRequestInterval = "5";
     private $ThrottlerRules;
@@ -103,7 +103,8 @@ class DZApi {
 //        curl_setopt($c, CURLOPT_HEADER, false);
 //        $output = curl_exec($c);
         $client = new \GuzzleHttp\Client(['base_uri' => $this->_sApiUrl, 'handler' => $this->ThrottlerStack]);
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(sendRequest) Client : " . var_export($client, true));
+
+//        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(sendRequest) Client : " . var_export($client, true));
 //        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(sendRequest) ThrottlerRules: " . var_export($this->ThrottlerRules, true));
         $response = $client->get($sUrl);
         $output = $response->getBody();
@@ -121,22 +122,6 @@ class DZApi {
     private function search_params($param) {
         $url = $this->_sApiUrl . '/search?q=' . $param;
         return json_decode($this->sendRequest($url), true);
-//        
-//        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(search_params) Searching params " . $param);
-//        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(search_params) Searching : " . $url);
-//        $c = curl_init();
-//        curl_setopt($c, CURLOPT_URL, $url);
-//        curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
-//        curl_setopt($c, CURLOPT_HEADER, false);
-//        $output = curl_exec($c);
-//        if ($output === false) {
-//            $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(search_params) Error curl : " . curl_error($c), E_USER_WARNING);
-//            trigger_error('Erreur curl : ' . curl_error($c), E_USER_WARNING);
-//        } else {
-//            curl_close($c);
-//            $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(search_params) Answer  : " . $output);
-//            return json_decode($output, true);
-//        }
     }
 
     public function search($artist, $album, $track, $duration) {
@@ -147,22 +132,26 @@ class DZApi {
         /* Search for full informations */
         $param = 'artist:"' . $artist . '"track:"' . $track . '"album:"' . $album . '"' . 'dur_min:' . $dur_min . 'dur_max:' . $dur_max;
         $output = $this->search_params($param);
+        $output['accuracy'] = 5;
 
         /* Search for artist, track and duration informations */
         if (strcmp($output['total'], '0') == 0) {
             $param = 'artist:"' . $artist . '"track:"' . $track . '"' . 'dur_min:' . $dur_min . 'dur_max:' . $dur_max;
             $output = $this->search_params($param);
+            $output['accuracy'] = 4;
         }
         /* Search for artist, track  informations */
         if (strcmp($output['total'], '0') == 0) {
             $param = 'artist:"' . $artist . '"track:"' . $track . '"';
             $output = $this->search_params($param);
+            $output['accuracy'] = 3;
         }
 
         /* Search globally for the track name */
         if (strcmp($output['total'], '0') == 0) {
             $param = '"' . $track . '"';
             $output = $this->search_params($param);
+            $output['accuracy'] = 2;
         }
 
         /* Still nothing found, remove (...) data and "- .." data from title */
@@ -174,15 +163,37 @@ class DZApi {
                 $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(search) Remove unecesssary chars from title : " . $track . "\n\t" . json_encode($matches));
                 $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(search) Deezer Search query " . $param);
                 $output = $this->search_params($param);
+                $output['accuracy'] = 1;
             }
         }
-
-
-
-
-//        var_dump($output);
+        /* Still nothing found, remove (...) data and "- .." data from title */
+        if (strcmp($output['total'], '0') == 0) {
+            $output['accuracy'] = 0;
+        }
         $output['params'] = $param;
         return $output;
+    }
+
+    public function SearchList($tracklist) {
+        $results = array();
+        foreach ($tracklist as $track) {
+            $trackarray = (array) $track;
+            $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(SearchList) searching for  TrackID : " . $trackarray['trackid']);
+            $RequestToBeDone = true;
+            do {
+                try {
+                    $search_result = $this->search($trackarray['artist'], $trackarray['album'], $trackarray['song'], $trackarray['duration']);
+                    $RequestToBeDone = false;
+                } catch (\Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException $e) {
+                    $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(SearchList) Too many requests. Waiting 1 second ");
+                    sleep(1);
+                }
+            } while ($RequestToBeDone);
+
+            array_push($results, ['trackid' => $trackarray['trackid'], 'accuracy' => $search_result['accuracy'] ,'info' => $search_result]);
+        }
+//        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(SearchList) End processing. Returning\n".($results));
+        return $results;
     }
 
     /**
@@ -209,7 +220,8 @@ class DZApi {
         $params = null;
         parse_str($response, $params);
         $_SESSION['deezer_token'] = $params['access_token'];
-
+        $_SESSION['deezer_token_expires'] = time() + $params['expires'];
+//        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(apiconnect) Deezer connection  : " . var_export($params, true));
         return $params['access_token'];
     }
 
@@ -229,12 +241,98 @@ class DZApi {
     public function getUserInformation() {
         return $this->api("/user/me");
     }
-    public function getUserPlaylists(){
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(getUserPlaylists)".var_export($this->getUserInformation(),true));
-        return $this->api("/user/".$this->getUserInformation()['id']."/playlists");
+
+    public function getUserPlaylists() {
+        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(getUserPlaylists)" . var_export($this->getUserInformation(), true));
+        $userid = $this->getUserInformation()['id'];
+        $playlists = $this->api("/user/" . $userid . "/playlists");
+//        return $playlists;
+        $filteredplaylists = array();
+        foreach ($playlists['data'] as $playlist) {
+            $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(getUserPlaylists) Analysing : " . var_export($playlist, true));
+            if ($playlist['creator']['id'] == $userid && $playlist['is_loved_track'] != true) {
+                array_push($filteredplaylists, $playlist);
+                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(getUserPlaylists) Playlist Added");
+            }
+        }
+        return $filteredplaylists;
     }
+
     public function getSToken() {
         return $_SESSION['deezer_token'];
+    }
+
+    public function CreatePlaylist($name, $public) {
+
+        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(CreatePlaylist) Deezer PlaylistCreation recieved: " . $name
+                . "\n\tis public : " . $public
+        );
+        $this->ThrottlerStack = new \GuzzleHttp\HandlerStack();
+        $this->ThrottlerStack->setHandler(new \GuzzleHttp\Handler\CurlHandler());
+
+        $throttle = new GuzzleAdvancedThrottle\Middleware\ThrottleMiddleware($this->ThrottlerRules);
+
+        $this->ThrottlerStack->push($throttle());
+
+        $client = new \GuzzleHttp\Client(['base_uri' => $this->_sApiUrl, 'handler' => $this->ThrottlerStack]);
+
+        $userid = $this->getUserInformation()['id'];
+        $sUrl = $this->_sApiUrl . "/user/" . $userid . "/playlists" . "?access_token=" . $this->getSToken();
+        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(createPlaylist) URL : " . $sUrl);
+        $response = $client->post($sUrl, [
+            \GuzzleHttp\RequestOptions::HEADERS => ['Content-Type' => 'application/x-www-form-urlencoded'],
+            \GuzzleHttp\RequestOptions::BODY => "title=" . $name
+        ]);
+        $response->getBody()->rewind();
+        $output = $response->getBody()->getContents();
+        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(CreatePlaylist) Deezer response recieved Full response :\n" . var_export($response, true));
+        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(CreatePlaylist) Deezer response recieved HEADERS :\n" . var_export($response->getHeaders(), true));
+        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(CreatePlaylist) Deezer response recieved BODY :\n" . var_export($response->getBody(), true));
+        if ($output === false) {
+            $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(CreatePlaylist) Error curl : " . curl_error($c), E_USER_WARNING);
+            trigger_error('Erreur curl : ' . curl_error($c), E_USER_WARNING);
+        } else {
+            curl_close($c);
+            return json_decode($output);
+        }
+    }
+
+    public function AddTracksToPlaylist($playlistid, $tracklist) {
+        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(AddTracksToPlaylist) Add to Playlist " . $playlistid . " Tracks : " . var_export($tracklist, true));
+
+        $this->ThrottlerStack = new \GuzzleHttp\HandlerStack();
+        $this->ThrottlerStack->setHandler(new \GuzzleHttp\Handler\CurlHandler());
+
+        $throttle = new GuzzleAdvancedThrottle\Middleware\ThrottleMiddleware($this->ThrottlerRules);
+
+        $this->ThrottlerStack->push($throttle());
+
+        $client = new \GuzzleHttp\Client(['base_uri' => $this->_sApiUrl, 'handler' => $this->ThrottlerStack]);
+
+
+
+        $prefix = $songsList = '';
+        foreach ($tracklist as $track) {
+            $songsList .= $prefix . $track;
+            $prefix = ',';
+        }
+        $songsList = rtrim($songsList, ',');
+
+        $sUrl = $this->_sApiUrl . "/playlist/" . $playlistid . "/tracks" . "?access_token=" . $this->getSToken() . "&songs=" . $songsList;
+        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(AddTracksToPlaylist) URL : " . $sUrl);
+
+        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(AddTracksToPlaylist) Should add : " . $songsList);
+
+        $response = $client->post($sUrl);
+        $response->getBody()->rewind();
+        $output = $response->getBody()->getContents();
+        if ($output === false) {
+            $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(createPlaylist) Error curl : " . curl_error($c), E_USER_WARNING);
+            trigger_error('Erreur curl : ' . curl_error($c), E_USER_WARNING);
+        } else {
+            curl_close($c);
+            return $output;
+        }
     }
 
 }

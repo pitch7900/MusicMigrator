@@ -175,9 +175,9 @@ class DZApi {
     }
 
     public function SearchList($tracklist) {
-        $_SESSION['deezersearchlist']=['status'=>'Searching','current'=>0,'total'=>count($tracklist)];
+        $_SESSION['deezersearchlist'] = ['status' => 'Searching', 'current' => 0, 'total' => count($tracklist)];
         $results = array();
-        $current=0;
+        $current = 0;
         foreach ($tracklist as $track) {
             $trackarray = (array) $track;
             $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(SearchList) searching for  TrackID : " . $trackarray['trackid']);
@@ -192,10 +192,10 @@ class DZApi {
                 }
             } while ($RequestToBeDone);
             $current++;
-            $_SESSION['deezersearchlist']=['status'=>'Finished','current'=>$current,'total'=>count($tracklist)];
-            array_push($results, ['trackid' => $trackarray['trackid'], 'accuracy' => $search_result['accuracy'] ,'info' => $search_result]);
+            $_SESSION['deezersearchlist'] = ['status' => 'Finished', 'current' => $current, 'total' => count($tracklist)];
+            array_push($results, ['trackid' => $trackarray['trackid'], 'accuracy' => $search_result['accuracy'], 'info' => $search_result]);
         }
-        $_SESSION['deezersearchlist']=['status'=>'Finished','current'=>count($tracklist),'total'=>count($tracklist)];
+        $_SESSION['deezersearchlist'] = ['status' => 'Finished', 'current' => count($tracklist), 'total' => count($tracklist)];
         return $results;
     }
 
@@ -301,6 +301,7 @@ class DZApi {
     }
 
     public function AddTracksToPlaylist($playlistid, $tracklist) {
+        
         $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(AddTracksToPlaylist) Add to Playlist " . $playlistid . " Tracks : " . var_export($tracklist, true));
 
         $this->ThrottlerStack = new \GuzzleHttp\HandlerStack();
@@ -312,14 +313,14 @@ class DZApi {
 
         $client = new \GuzzleHttp\Client(['base_uri' => $this->_sApiUrl, 'handler' => $this->ThrottlerStack]);
 
-       
-
+        $token = $this->getSToken();
+        
         foreach ($tracklist as $track) {
-            
+
             $RequestToBeDone = true;
             do {
                 try {
-                    $sUrl = $this->_sApiUrl . "/playlist/" . $playlistid . "/tracks" . "?access_token=" . $this->getSToken() . "&songs=".$track;
+                    $sUrl = $this->_sApiUrl . "/playlist/" . $playlistid . "/tracks" . "?access_token=" . $token . "&songs=" . $track;
                     $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(AddTracksToPlaylist) URL : " . $sUrl);
                     $response = $client->post($sUrl);
                     $RequestToBeDone = false;
@@ -329,16 +330,12 @@ class DZApi {
                 }
             } while ($RequestToBeDone);
 
-            
-            
+
+
 //            $songsList .= $prefix . $track;
 //            $prefix = ',';
         }
 //        $songsList = rtrim($songsList, ',');
-
-        
-
-
 //        $response = $client->post($sUrl);
 //        $response->getBody()->rewind();
 //        $output = $response->getBody()->getContents();

@@ -282,12 +282,12 @@ function DeezerLookupList(tracklist) {
         cache: false,
         timeout: 600000,
         beforeSend: function () {
-//            window.setInterval(function () {
-//                CheckSearchStatusList();
-//            }, 1000);
+            window.setInterval(function () {
+                CheckSearchStatusList();
+            }, 1000);
         },
         success: function (postdata) {
-//            clearInterval();
+            clearInterval();
             if (postdata.success === false) {
                 console.log("No data recieved");
             } else {

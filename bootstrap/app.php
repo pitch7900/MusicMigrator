@@ -1,16 +1,22 @@
 <?php
 
-session_cache_limiter('public');
-session_start();
 
+
+
+
+//session_cache_limiter('public');
+//session_start();
 
 
 require __DIR__ . '/../vendor/autoload.php';
+
 try {
     $dotenv = (Dotenv\Dotenv::createImmutable(__DIR__ . '/../config/'))->load();
 } catch (\Dotenv\Exception\InvalidPathException $e) {
     
 }
+
+\App\Utils\Sessions::session_get();
 
 
 
@@ -21,6 +27,7 @@ $app = new \Slim\App([
     ]
         ]);
 $app->add(new \Slim\HttpCache\Cache('public', 0));
+
 
 
 $container = $app->getContainer();

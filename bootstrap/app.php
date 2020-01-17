@@ -5,7 +5,7 @@
 
 
 //session_cache_limiter('public');
-//session_start();
+session_start();
 
 
 require __DIR__ . '/../vendor/autoload.php';
@@ -16,7 +16,7 @@ try {
     
 }
 
-\App\Utils\Sessions::session_get();
+//\App\Utils\Sessions::session_get();
 
 
 

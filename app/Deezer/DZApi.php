@@ -5,7 +5,6 @@ namespace App\Deezer;
 use \App\Utils\Logs as Logs;
 use \hamburgscleanest\GuzzleAdvancedThrottle as GuzzleAdvancedThrottle;
 
-//getenv('ELASTICSEARCH_HOST')
 /**
  * This class will help you to interact with the Deezer API
  *

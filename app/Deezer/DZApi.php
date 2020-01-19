@@ -68,8 +68,8 @@ class DZApi {
         $this->_sApiKey = getenv('DZAPIKEY');
         $this->_sSecretKey = getenv('DZAPI_SECRETKEY');
         $this->logs = new Logs();
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "New DZAPI Constructor called ");
-
+        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(__contruct) New DZAPI Constructor called");
+        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(__contruct) API key is : " . $this->_sApiKey);
         $this->ThrottlerRules = new GuzzleAdvancedThrottle\RequestLimitRuleset([
             $this->_sApiUrl => [
                 [
@@ -130,9 +130,23 @@ class DZApi {
 
         /* Search for full informations */
         $param = 'artist:"' . $artist . '"track:"' . $track . '"album:"' . $album . '"' . 'dur_min:' . $dur_min . 'dur_max:' . $dur_max;
-        $output = $this->search_params($param);
-        $output['accuracy'] = 5;
 
+        $output = $this->search_params($param);
+        $output['accuracy'] = 6;
+        
+        if (strcmp($output['total'], '0') == 0) {
+        $matches = array();
+            preg_match_all('/(.*)\(.*\)| - .*/m', urldecode($track), $matches, PREG_SET_ORDER, 0);
+            if (strlen($matches[0][1]) !== 0) {
+                $track=urlencode($matches[0][1]);
+                $param = 'artist:"' . $artist . '"track:"' . $track . '"album:"' . $album . '"' . 'dur_min:' . $dur_min . 'dur_max:' . $dur_max;
+                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(search) Remove unecesssary chars from title : " . $track . "\n\t" . json_encode($matches));
+                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(search) Deezer Search query " . $param);
+                $output = $this->search_params($param);
+                $output['accuracy'] = 5;
+            }
+        }
+        
         /* Search for artist, track and duration informations */
         if (strcmp($output['total'], '0') == 0) {
             $param = 'artist:"' . $artist . '"track:"' . $track . '"' . 'dur_min:' . $dur_min . 'dur_max:' . $dur_max;
@@ -165,7 +179,7 @@ class DZApi {
                 $output['accuracy'] = 1;
             }
         }
-        /* Still nothing found, remove (...) data and "- .." data from title */
+        
         if (strcmp($output['total'], '0') == 0) {
             $output['accuracy'] = 0;
         }
@@ -196,6 +210,26 @@ class DZApi {
         }
         $_SESSION['deezersearchlist'] = ['status' => 'Finished', 'current' => count($tracklist), 'total' => count($tracklist)];
         return $results;
+    }
+
+    public function SearchIndividual($trackid, $artist, $album, $song, $duration) {
+
+
+
+        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(SearchIndividual) searching for  TrackID : " . $trackid);
+        $RequestToBeDone = true;
+        do {
+            try {
+                $search_result = $this->search($artist, $album, $song, $duration);
+                $RequestToBeDone = false;
+            } catch (\Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException $e) {
+                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(SearchIndividual) Too many requests. Waiting 1 second ");
+                sleep(1);
+            }
+        } while ($RequestToBeDone);
+        $returns = ['trackid' => $trackid, 'accuracy' => $search_result['accuracy'], 'info' => $search_result];
+//        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(SearchIndividual) result is  : " . var_export($returns,true));
+        return  $returns;
     }
 
     /**
@@ -300,7 +334,7 @@ class DZApi {
     }
 
     public function AddTracksToPlaylist($playlistid, $tracklist) {
-        
+
         $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(AddTracksToPlaylist) Add to Playlist " . $playlistid . " Tracks : " . var_export($tracklist, true));
 
         $this->ThrottlerStack = new \GuzzleHttp\HandlerStack();
@@ -313,7 +347,7 @@ class DZApi {
         $client = new \GuzzleHttp\Client(['base_uri' => $this->_sApiUrl, 'handler' => $this->ThrottlerStack]);
 
         $token = $this->getSToken();
-        
+
         foreach ($tracklist as $track) {
 
             $RequestToBeDone = true;

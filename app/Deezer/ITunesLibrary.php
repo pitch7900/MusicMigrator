@@ -26,7 +26,12 @@ class ITunesLibrary {
     public function __construct() {
         $this->initialized = false;
     }
-
+    /**
+     * Try to read an XML Plist file
+     * Trow IOException if not possible
+     * @param type $xmldata
+     * @throws type
+     */
     public function loadXML($xmldata) {
 
         $tmp = tmpfile();
@@ -36,9 +41,13 @@ class ITunesLibrary {
         if (!is_readable($path)) {
             throw IOException::notReadable($path);
         }
-        $this->plist = new CFPropertyList($path, CFPropertyList::FORMAT_AUTO);
-        $this->library_array = $this->plist->toArray();
-        $this->initialized = true;
+        try {
+            $this->plist = new CFPropertyList($path, CFPropertyList::FORMAT_AUTO);
+            $this->library_array = $this->plist->toArray();
+            $this->initialized = true;
+        } catch (IOException $e) {
+            throw IOException::notReadable($e);
+        }
 
         fclose($tmp);
     }
@@ -73,8 +82,8 @@ class ITunesLibrary {
         //var_dump($key);
         return $key;
     }
-    
-    public function getPlaylistName($playlistID){
+
+    public function getPlaylistName($playlistID) {
         foreach ($this->library_array["Playlists"] as $Playlist) {
             if ($Playlist["Playlist ID"] == $playlistID) {
                 return $Playlist["Name"];

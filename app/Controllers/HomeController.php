@@ -22,7 +22,12 @@ class HomeController extends Controller {
      * @return HTML
      */
     public function home(Request $request, Response $response) {
-
+        if (strcmp($request->getHeader('Status'),"File not readable")){
+                $arguments['fileuploadederror']=true;
+            } else {
+                $arguments['fileuploadederror']=false;
+            }
+            
         if (!isset($_SESSION['dzapi'])) {
             $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "Creating a new Deezer API class instance");
             $_SESSION['dzapi'] = serialize(new \App\Deezer\DZApi());
@@ -34,7 +39,7 @@ class HomeController extends Controller {
 
         // Check if we have a valid session token
         if (isset($_SESSION['deezer_token'])) {
-            //Check if the token is not expired
+            //Check if the token has not expired
             if ($_SESSION['deezer_token_expires'] > time()) {
                 $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "Session token stored in Session : " . $_SESSION['deezer_token']);
                 $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "Session token stored in class : " . unserialize($_SESSION['dzapi'])->getSToken());
@@ -47,15 +52,18 @@ class HomeController extends Controller {
                 $arguments['deezerpict'] = $userinfo['picture'];
                 $arguments['deezeruserlink'] = $userinfo['link'];
                 $arguments['deezerauthenticated'] = 1;
-            } else{
-                //Token is expired 
+            } else {
+                //Token has expired 
                 unset($_SESSION['deezer_token']);
                 unset($_SESSION['deezer_token_expires']);
-                 unset($_SESSION['dzapi']);
+                unset($_SESSION['dzapi']);
                 $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "Creating a new Deezer API class instance");
                 $_SESSION['dzapi'] = serialize(new \App\Deezer\DZApi());
+                return $this->view->render($response, 'home_logintodeezer.twig',$arguments);
             }
 //            var_dump(unserialize($_SESSION['dzapi'])->getUserPlaylists()['data']);
+        } else {
+            return $this->view->render($response, 'home_logintodeezer.twig',$arguments);
         }
 
 
@@ -65,6 +73,10 @@ class HomeController extends Controller {
         if (isset($_SESSION['Library'])) {
             $arguments['fileuploaded'] = true;
             $arguments['playlists'] = unserialize($_SESSION["Library"])->getPlaylists();
+        } else {
+            //No file is uploaded
+            
+            return $this->view->render($response, 'home_loadfile.twig');
         }
 
         return $this->view->render($response, 'home.twig', $arguments);

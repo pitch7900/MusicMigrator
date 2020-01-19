@@ -33,3 +33,10 @@ li.navitem, a#ShowPlaylist.nav-link{
 a.dropdown-item,.nav-item,.tableheaderssortable,.nav-link{
     cursor:pointer;
 }
+
+
+.hugebutton{
+    width:60%;
+    height:60%;
+    margin: auto;
+}

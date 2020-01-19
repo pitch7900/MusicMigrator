@@ -1,22 +1,11 @@
 <?php
 
-
-
-
-
-//session_cache_limiter('public');
+session_cache_limiter('public');
 session_start();
 
 
 require __DIR__ . '/../vendor/autoload.php';
 
-try {
-    $dotenv = (Dotenv\Dotenv::createImmutable(__DIR__ . '/../config/'))->load();
-} catch (\Dotenv\Exception\InvalidPathException $e) {
-    
-}
-
-//\App\Utils\Sessions::session_get();
 
 
 
@@ -35,6 +24,17 @@ $container = $app->getContainer();
 
 require_once __DIR__ . '/container_view.php';
 
+$container['ErrorController'] = function($container) {
+    return new \App\Controllers\ErrorController($container);
+};
+
+try {
+    $dotenv = (Dotenv\Dotenv::createImmutable(__DIR__ . '/../config/'))->load();
+} catch (\Dotenv\Exception\InvalidPathException $e) {
+    require __DIR__ . '/../app/routes_error.php';
+    //Stop exection at this step
+    return;
+}
 
 
 $container['HomeController'] = function($container) {

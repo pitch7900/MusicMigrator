@@ -38,12 +38,13 @@
     {% import _self as macros %}
     <tr id="track" trackid="{{ trackid }}">
         <td id="image" ><i class="far fa-question-circle"></i></td>
-        <td id="artist" class="editable">{{ artist }}</td>
-        <td id="album" class="editable">{{ album }}</td>
-        <td id="song" class="editable">{{ song }}</td>
-        <td id="duration" class="editable" duration="{{ duration }}">{{ macros.secondsToMinutes( duration/1000 )}}</td>
-        <td id="track" class="editable">{{ track }}</td>
-        <td id="totaltracks" class="editable">{{ totaltracks }}</td>
+        <td id="accuracy"><i class="fas fa-question"></i></td>
+        <td id="artist" original_value="{{ artist }}"><p class="editable">{{ artist }}</p></td>
+        <td id="album" original_value="{{ album }}"><p class="editable">{{ album }}</p></td>
+        <td id="song" original_value="{{ song }}"><p class="editable">{{ song }}</p></td>
+        <td id="duration" original_value="{{ duration }}" duration="{{ duration }}">{{ macros.secondsToMinutes( duration/1000 )}}</td>
+        <td id="track" original_value="{{ track }}">{{ track }}</td>
+        <td id="totaltracks" original_value="{{ totaltracks }}">{{ totaltracks }}</td>
 
         <td id="refresh"><i class="fas fa-sync" onclick='RefreshDeezer("{{trackid}}", "{{artist}}", "{{album}}", "{{song}}",{{duration}})'></i></td>
     </tr>

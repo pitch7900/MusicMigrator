@@ -1,10 +1,12 @@
 {% extends "main.twig" %}
 {% import "macros/home.twig" as macrohome %}
+  {% block menu %} {{ include('menu.twig') }}{% endblock %}
+
 {% block interactivemenus %}
     {{include('interactivemenus/loadfile.twig')}}
 {% endblock %}
 {% block content %}
-   
+
     <div id="main_page" class="container-fluid row">
 
 

@@ -21,6 +21,7 @@
 
 <div class="progress">
     <div id="deezerrecognationsucess" class="progress-bar bg-success" style="width: 0%"  role="progressbar"  aria-valuenow="0" aria-valuemin="0" aria-valuemax="{{ playlist|length }}"></div>
+    <div id="deezerrecognationwarning" class="progress-bar bg-warning" style="width: 0%"  role="progressbar"  aria-valuenow="0" aria-valuemin="0" aria-valuemax="{{ playlist|length }}"></div>
     <div id="deezerrecognationerror" class="progress-bar bg-danger" style="width: 0%"  role="progressbar"  aria-valuenow="0" aria-valuemin="0" aria-valuemax="{{ playlist|length }}"></div>
 </div>
 
@@ -38,6 +39,7 @@
                         </label>
                     </div>
                 </th>
+                <th scope="col" class="tableheaderssortable">Detection score <i class="fas fa-sort"></i></th>
                 <th scope="col" class="tableheaderssortable">Artist <i class="fas fa-sort"></i></th>
                 <th scope="col" class="tableheaderssortable">Album <i class="fas fa-sort"></i></th>
                 <th scope="col" class="tableheaderssortable">Song <i class="fas fa-sort"></i></th>

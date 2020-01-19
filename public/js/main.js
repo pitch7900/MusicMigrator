@@ -52,38 +52,62 @@ $(document).ready(function () {
 });
 
 
-
-function UpdateTrackInformations(trackid, data, status) {
+/**
+ * Update a track with search results
+ * @param {type} trackid
+ * @param {type} data
+ * @param {type} status
+ * @param {type} accuracy
+ * @return {undefined}
+ */
+function UpdateTrackInformations(trackid, data, status, accuracy) {
+    $("tr[trackid='" + trackid + "'] td[id='accuracy']").html('<p>' + accuracy + '</p>');
     switch (status) {
         case 1:
             trackimage = data.album.cover;
             $("tr[trackid='" + trackid + "']").removeClass("deezererror");
             $("tr[trackid='" + trackid + "']").attr('deezerid', data.id);
+
             $("tr[trackid='" + trackid + "'] td[id='image']").html('<a href="' + data.link + '" ><img src="' + trackimage + '" alt=""></a>');
-            $("tr[trackid='" + trackid + "'] td[id='song']").html('<a href="' + data.link + '" >' + data.title_short + '</a>');
+
+            original_value = $("tr[trackid='" + trackid + "'] td[id='song']").attr('original_value');
+
+            $("tr[trackid='" + trackid + "'] td[id='song']").html('<p class="editable">' + original_value + '</p><a href="' + data.link + '" >' + data.title_short + '</a>');
             $("tr[trackid='" + trackid + "'] td[id='song']").addClass("editable");
             $("tr[trackid='" + trackid + "'] td[id='song']").removeClass("edited");
-            $("tr[trackid='" + trackid + "'] td[id='album']").html('<a href="' + data.album.tracklist + '" >' + data.album.title + '</a>');
+            original_value = $("tr[trackid='" + trackid + "'] td[id='album']").attr('original_value');
+            $("tr[trackid='" + trackid + "'] td[id='album']").html('<p class="editable">' + original_value + '</p><a href="' + data.album.tracklist + '" >' + data.album.title + '</a>');
             $("tr[trackid='" + trackid + "'] td[id='album']").addClass("editable");
             $("tr[trackid='" + trackid + "'] td[id='album']").removeClass("edited");
-            $("tr[trackid='" + trackid + "'] td[id='artist']").html('<a href="' + data.artist.link + '" >' + data.artist.name + '</a>');
+            original_value = $("tr[trackid='" + trackid + "'] td[id='artist']").attr('original_value');
+            $("tr[trackid='" + trackid + "'] td[id='artist']").html('<p class="editable">' + original_value + '</p><a href="' + data.artist.link + '" >' + data.artist.name + '</a>');
             $("tr[trackid='" + trackid + "'] td[id='artist']").addClass("editable");
             $("tr[trackid='" + trackid + "'] td[id='artist']").removeClass("edited");
+            original_value = $("tr[trackid='" + trackid + "'] td[id='duration']").attr('original_value');
             $("tr[trackid='" + trackid + "'] td[id='duration']").attr('duration', data.duration * 1000);
             $("tr[trackid='" + trackid + "'] td[id='duration']").html(SecondsToHms(data.duration));
             $("tr[trackid='" + trackid + "'] td[id='duration']").addClass("text-primary");
-            progressvalue = $("#deezerrecognationsucess").attr('aria-valuenow');
-            progresstotal = $("#deezerrecognationsucess").attr('aria-valuemax');
-            progressvalue++;
-            $("#deezerrecognationsucess").attr('aria-valuenow', progressvalue);
-            progressstyle = "width: " + Math.trunc(progressvalue / progresstotal * 100) + "%";
-            $("#deezerrecognationsucess").attr('style', progressstyle);
+            if (accuracy > 2) {
+                progressvalue = parseInt($("#deezerrecognationsucess").attr('aria-valuenow'),10) + 1;
+                progresstotal =  parseInt($("#deezerrecognationsucess").attr('aria-valuemax'),10);
+
+                $("#deezerrecognationsucess").attr('aria-valuenow', progressvalue);
+                progressstyle = "width: " + Math.trunc(progressvalue / progresstotal * 100) + "%";
+                $("#deezerrecognationsucess").attr('style', progressstyle);
+            } else {
+                progressvalue =  parseInt($("#deezerrecognationwarning").attr('aria-valuenow'),10) + 1;
+                progresstotal =  parseInt($("#deezerrecognationwarning").attr('aria-valuemax'),10);
+
+                $("#deezerrecognationwarning").attr('aria-valuenow', progressvalue);
+                progressstyle = "width: " + Math.trunc(progressvalue / progresstotal * 100) + "%";
+                $("#deezerrecognationwarning").attr('style', progressstyle);
+            }
             break;
         default:
             $("tr[trackid='" + trackid + "']").addClass("deezererror");
-            progressvalue = $("#deezerrecognationerror").attr('aria-valuenow');
-            progresstotal = $("#deezerrecognationerror").attr('aria-valuemax');
-            progressvalue++;
+            progressvalue =  parseInt($("#deezerrecognationerror").attr('aria-valuenow'),10) + 1;
+            progresstotal =  parseInt($("#deezerrecognationerror").attr('aria-valuemax'),10);
+
             $("#deezerrecognationerror").attr('aria-valuenow', progressvalue);
             progressstyle = "width: " + Math.trunc(progressvalue / progresstotal * 100) + "%";
             $("#deezerrecognationerror").attr('style', progressstyle);
@@ -199,10 +223,12 @@ function SecondsToHms(d) {
  */
 function DeezerLookup(trackid, artist, album, song, duration) {
     var formdata = new FormData();
+    formdata.append('trackid', trackid);
     formdata.append('artist', artist);
     formdata.append('album', album);
     formdata.append('song', song);
     formdata.append('duration', duration);
+
     $.ajax({
         type: 'post',
         enctype: 'multipart/form-data',
@@ -219,14 +245,16 @@ function DeezerLookup(trackid, artist, album, song, duration) {
 //                        console.log("NOK");
             } else {
 
-                if (!("data" in postdata)) {
-                    UpdateTrackInformations(trackid, null, 0);
+                if (!("info" in postdata)) {
+                    UpdateTrackInformations(trackid, null, 0, 0);
 
                 } else {
-                    if (postdata.data.length === 0 || postdata.total === 0) {
-                        UpdateTrackInformations(trackid, null, 0);
+                    if (postdata.info.data.length === 0 || postdata.info.total === 0) {
+                        UpdateTrackInformations(trackid, null, 0, 0);
                     } else {
-                        UpdateTrackInformations(trackid, postdata.data[0], 1);
+//                        console.log(postdata);
+                        //UpdateTrackInformations(DeezersearchResults[i].trackid, DeezersearchResults[i].info.data[0], 1);
+                        UpdateTrackInformations(trackid, postdata.info.data[0], 1, postdata.accuracy);
                     }
 
                 }
@@ -247,16 +275,16 @@ function DeezerLookup(trackid, artist, album, song, duration) {
 function UpdateTrackListView(DeezersearchResults) {
     for (var i = 0; i < DeezersearchResults.length; i++) {
         if (DeezersearchResults[i].info.total === 0) {
-            UpdateTrackInformations(DeezersearchResults[i].trackid, null, 0);
+            UpdateTrackInformations(DeezersearchResults[i].trackid, null, 0, 0);
         } else {
-            UpdateTrackInformations(DeezersearchResults[i].trackid, DeezersearchResults[i].info.data[0], 1);
+            UpdateTrackInformations(DeezersearchResults[i].trackid, DeezersearchResults[i].info.data[0], 1, DeezersearchResults[i].accuracy);
         }
     }
     $("#SearchOnDeezerButtonWheel").addClass("invisible");
 }
 
 function CheckSearchStatusList() {
-    $.get('/deezer/searchlist.json',function(data){
+    $.get('/deezer/searchlist.json', function (data) {
         console.log(data);
     });
 }
@@ -316,7 +344,7 @@ function SearchOnDeezer() {
     list = {};
     $("table > tbody  > tr").each(function () {
         trackid = $(this).attr('trackid');
-
+        $("tr[trackid='" + trackid + "'] td[id='accuracy']").html('<span id="SearchOnDeezerButtonWheel" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
         song = $("tr[trackid='" + trackid + "'] td[id='song']").text();
         album = $("tr[trackid='" + trackid + "'] td[id='album']").text();
         artist = $("tr[trackid='" + trackid + "'] td[id='artist']").text();
@@ -325,13 +353,13 @@ function SearchOnDeezer() {
         // For some browsers, `attr` is undefined; for others,
         // `attr` is false.  Check for both.
         if ((typeof deezerid === "undefined" || deezerid === false)) {
-            // DeezerLookup(trackid, artist, album, song, duration);
-            track = {"trackid": trackid, "song": song, "album": album, "artist": artist, "duration": duration}
-            list[trackid] = track;
+            DeezerLookup(trackid, artist, album, song, duration);
+//            track = {"trackid": trackid, "song": song, "album": album, "artist": artist, "duration": duration}
+//            list[trackid] = track;
         }
     });
 
-    DeezerLookupList(list);
+//    DeezerLookupList(list);
 }
 
 

@@ -14,7 +14,6 @@ class DotenvExtended extends \Dotenv\Dotenv {
     public function __construct($dir) {
         parent::__construct($dir);
         $this->dir = $dir;
-        echo "$dir\n";
     }
 
     /**

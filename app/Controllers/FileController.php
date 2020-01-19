@@ -23,8 +23,20 @@ class FileController extends Controller {
         $files = $request->getUploadedFiles();
         $newfile = $files['file'];
         if ($newfile != null) {
-            $lib->loadXML($newfile->getStream());
-            $_SESSION['Library'] = serialize($lib);
+            try {
+                $lib->loadXML($newfile->getStream());
+                $_SESSION['Library'] = serialize($lib);
+            } catch (\Exception $e) {
+                return $this->response
+                                ->withStatus(303)
+                                ->withHeader('Location', $this->router->pathFor('home'))
+                                ->withHeader('Status', 'File not readable');
+            }
+        } else {
+            return $this->response
+                            ->withStatus(303)
+                            ->withHeader('Location', $this->router->pathFor('home'))
+                            ->withHeader('Status', 'File not readable');
         }
 
         if (!$lib->isInitialized()) {

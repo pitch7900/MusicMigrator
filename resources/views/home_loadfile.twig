@@ -1,0 +1,21 @@
+{% extends "main.twig" %}
+
+{% block interactivemenus %}
+    {{include('interactivemenus/loadfile.twig')}}
+{% endblock %}
+{% block content %}
+    <h4>Please upload an iTunes Library</h4>
+    {% if fileuploadederror %}
+        <div class="alert alert-danger" role="alert">
+            File upload error. This file is not a clean ITunes Library file
+        </div>
+    {% endif %}
+    <button type="button" class="btn btn-light  btn-xl hugebutton">
+        <a id="ShowLoadFileModal" class="nav-link" data-toggle="modal" data-target="#loadfile_modal">
+            <img src="/img/ITunes_logo.svg" alt="Deezer" width="120px"/><br>
+            Load File
+        </a>
+
+    </button
+
+{% endblock %}

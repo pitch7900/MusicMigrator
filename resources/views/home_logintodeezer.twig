@@ -1,0 +1,14 @@
+{% extends "main.twig" %}
+
+{% block interactivemenus %}
+
+{% endblock %}
+{% block content %}
+    <h4>Please Login to Deezer</h4>
+    <button type="button" class="btn btn-light  btn-xl hugebutton">
+        <a class="nav-link"  href="{{ deezerauthurl }}">
+            <img src="/img/favicon.png" alt="Deezer" width="120px"/><br>
+            Connect to Deezer
+        </a>
+    </button>
+{% endblock %}

@@ -34,20 +34,41 @@
 
 {% endmacro %}
 
+
+{% macro playlistsong2(trackid,artist,album,song,duration,track,totaltracks) %}
+    {% import _self as macros %}
+    <tr role="row" id="track" trackid="{{ trackid }}" deezerid="null" >
+        <td class="pt-3-half" contenteditable="false" id="image" ><i class="far fa-question-circle"></i></td>
+        <td id="accuracy"><i class="fas fa-question"></i></td>
+        <td class="pt-3-half" contenteditable="true" id="artist" original_value="{{ artist }}"><span  class="editable">{{ artist }}</span></td>
+        <td class="pt-3-half" contenteditable="true" id="album" original_value="{{ album }}"><span  class="editable">{{ album }}</span></td>
+        <td class="pt-3-half" contenteditable="true" id="song" original_value="{{ song }}"><span class="editable">{{ song }}</span></td>
+        <td class="pt-3-half" contenteditable="false" id="duration" original_value="{{ duration }}" duration="{{ duration }}">{{ macros.secondsToMinutes( duration/1000 )}}</td>
+        <td class="pt-3-half" contenteditable="false" id="track" original_value="{{ track }}">{{ track }}</td>
+        <td class="pt-3-half" contenteditable="false" id="totaltracks" original_value="{{ totaltracks }}">{{ totaltracks }}</td>
+        <td class="pt-3-half" contenteditable="false" id="refresh"><i class="fas fa-sync" onclick='RefreshDeezer("{{trackid}}")'></i></td>
+    </tr>
+{% endmacro %}
+
 {% macro playlistsong(trackid,artist,album,song,duration,track,totaltracks) %}
     {% import _self as macros %}
-    <tr id="track" trackid="{{ trackid }}">
+    <tr id="track" trackid="{{ trackid }}" deezerid="null">
         <td id="image" ><i class="far fa-question-circle"></i></td>
         <td id="accuracy"><i class="fas fa-question"></i></td>
-        <td id="artist" original_value="{{ artist }}"><p class="editable">{{ artist }}</p></td>
+        <td id="artist" original_value="{{ artist }}">
+            {#            <p class="editable">#}
+            <div class="editable md-form mb-4 pink-textarea active-pink-textarea">
+                <textarea id="form18" class="md-textarea form-control" rows="1">{{ artist }}</textarea>
+
+            </div>
+            {#                </p>#}
+        </td>
         <td id="album" original_value="{{ album }}"><p class="editable">{{ album }}</p></td>
         <td id="song" original_value="{{ song }}"><p class="editable">{{ song }}</p></td>
         <td id="duration" original_value="{{ duration }}" duration="{{ duration }}">{{ macros.secondsToMinutes( duration/1000 )}}</td>
         <td id="track" original_value="{{ track }}">{{ track }}</td>
         <td id="totaltracks" original_value="{{ totaltracks }}">{{ totaltracks }}</td>
 
-        <td id="refresh"><i class="fas fa-sync" onclick='RefreshDeezer("{{trackid}}", "{{artist}}", "{{album}}", "{{song}}",{{duration}})'></i></td>
+        <td id="refresh"><i class="fas fa-sync" onclick='RefreshDeezer("{{trackid}}", "{{artist}}", "{{album}}", "{{song}}",{{duration}} )'></i></td>
     </tr>
-
-
 {% endmacro %}

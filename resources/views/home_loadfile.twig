@@ -4,10 +4,10 @@
     {{include('interactivemenus/loadfile.twig')}}
 {% endblock %}
 {% block content %}
-    <h4>Please upload an iTunes Library</h4>
+    <h4>Please upload an iTunes Library<a  class="badge badge-light" href="https://support.apple.com/guide/itunes/save-a-copy-of-your-playlists-itns2998/windows" target="_blank"><i class="far fa-question-circle"></i></a></h4>
     {% if fileuploadederror %}
         <div class="alert alert-danger" role="alert">
-            File upload error. This file is not a clean ITunes Library file
+            File upload error. This file is not a clean iTunes Library file
         </div>
     {% endif %}
     <button type="button" class="btn btn-light  btn-xl hugebutton">
@@ -15,7 +15,8 @@
             <img src="/img/ITunes_logo.svg" alt="Deezer" width="120px"/><br>
             Load File
         </a>
-
-    </button
+       
+    </button>
+    
 
 {% endblock %}

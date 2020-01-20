@@ -22,6 +22,7 @@ class FileController extends Controller {
         $lib = new iTunesLibrary();
         $files = $request->getUploadedFiles();
         $newfile = $files['file'];
+        unset($_SESSION['Library']);
         if ($newfile != null) {
             try {
                 $lib->loadXML($newfile->getStream());
@@ -29,22 +30,31 @@ class FileController extends Controller {
             } catch (\Exception $e) {
                 return $this->response
                                 ->withStatus(303)
-                                ->withHeader('Location', $this->router->pathFor('home'))
+                                ->withHeader('Location', $this->router->pathFor('home') . "?Status=FileError")
                                 ->withHeader('Status', 'File not readable');
             }
         } else {
             return $this->response
                             ->withStatus(303)
-                            ->withHeader('Location', $this->router->pathFor('home'))
+                            ->withHeader('Location', $this->router->pathFor('home') . "?Status=FileError")
                             ->withHeader('Status', 'File not readable');
         }
 
         if (!$lib->isInitialized()) {
+            unset($_SESSION['Library']);
             return $this->response
                             ->withStatus(303)
-                            ->withHeader('Location', $this->router->pathFor('home'))
+                            ->withHeader('Location', $this->router->pathFor('home') . "?Status=FileError")
                             ->withHeader('Status', 'NOK');
         }
+        if ($lib->countTracks() == 0 || $lib->countPlaylists() == 0) {
+            unset($_SESSION['Library']);
+            return $this->response
+                            ->withStatus(303)
+                            ->withHeader('Location', $this->router->pathFor('home') . "?Status=FileError")
+                            ->withHeader('Status', 'NOK');
+        }
+
         return $this->response
                         ->withStatus(303)
                         ->withHeader('Location', $this->router->pathFor('home'))

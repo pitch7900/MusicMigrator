@@ -23,16 +23,25 @@ class DeezerController extends Controller {
     }
 
     public function postSearch(Request $request, Response $response) {
+        session_write_close();
         $trackid = urlencode($request->getParsedBody()['trackid']);
         $artist = urlencode($request->getParsedBody()['artist']);
         $album = urlencode($request->getParsedBody()['album']);
         $song = urlencode($request->getParsedBody()['song']);
         $duration = urlencode($request->getParsedBody()['duration']);
-        
+
         $dz = new DZApi();
 //        echo "Should Search : " .$artist." ".$album." ".$song;
         $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DeezerController.php(postSearch) Searching for : \n\t - " . $artist . "\n\t - " . $album . "\n\t - " . $song . "\n\t - " . $duration);
-        return $response->withJson($dz->SearchIndividual($trackid,$artist, $album, $song, $duration));
+        $search = $dz->SearchIndividual($trackid, $artist, $album, $song, $duration);
+        if (isset($search['info']['error'])) {
+            return $this->response
+                            ->withStatus(404)
+                            ->withHeader('Error', 'Too many session')
+                            ->withJson($search);
+        }
+        
+        return $response->withJson($search);
     }
 
     public function getAboutme(Request $request, Response $response) {

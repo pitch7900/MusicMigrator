@@ -1,10 +1,5 @@
 <?php
 
-
-
-
-
-
 $app->get('/', 'HomeController:home')
         ->setName('home');
 
@@ -46,3 +41,4 @@ $app->group('/deezer', function () {
             ->setName('deezer.playlist.addsongs');
     
 });
+

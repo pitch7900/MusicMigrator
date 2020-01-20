@@ -22,12 +22,11 @@ class HomeController extends Controller {
      * @return HTML
      */
     public function home(Request $request, Response $response) {
-        if (strcmp($request->getHeader('Status'),"File not readable")){
-                $arguments['fileuploadederror']=true;
-            } else {
-                $arguments['fileuploadederror']=false;
-            }
-            
+
+
+
+
+
         if (!isset($_SESSION['dzapi'])) {
             $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "Creating a new Deezer API class instance");
             $_SESSION['dzapi'] = serialize(new \App\Deezer\DZApi());
@@ -59,11 +58,11 @@ class HomeController extends Controller {
                 unset($_SESSION['dzapi']);
                 $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "Creating a new Deezer API class instance");
                 $_SESSION['dzapi'] = serialize(new \App\Deezer\DZApi());
-                return $this->view->render($response, 'home_logintodeezer.twig',$arguments);
+                return $this->view->render($response, 'home_logintodeezer.twig', $arguments);
             }
 //            var_dump(unserialize($_SESSION['dzapi'])->getUserPlaylists()['data']);
         } else {
-            return $this->view->render($response, 'home_logintodeezer.twig',$arguments);
+            return $this->view->render($response, 'home_logintodeezer.twig', $arguments);
         }
 
 
@@ -75,8 +74,13 @@ class HomeController extends Controller {
             $arguments['playlists'] = unserialize($_SESSION["Library"])->getPlaylists();
         } else {
             //No file is uploaded
-            
-            return $this->view->render($response, 'home_loadfile.twig');
+            if (strcmp($request->getParam('Status'), "'FileError'")) {
+                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "File error");
+                $arguments['fileuploadederror'] = true;
+            } else {
+                $arguments['fileuploadederror'] = false;
+            }
+            return $this->view->render($response, 'home_loadfile.twig', $arguments);
         }
 
         return $this->view->render($response, 'home.twig', $arguments);

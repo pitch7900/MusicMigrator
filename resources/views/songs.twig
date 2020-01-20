@@ -5,7 +5,7 @@
 {% import "macros/home.twig" as macrohome %}
 
 {#{{ dump(deezerplaylists) }}#}
-<h1>{{ playlistname }}</h1>
+{#<h1>{{ playlistname }}</h1>#}
 <div class="btn-group" role="group" aria-label="LibActionGroup">
     <button type="button" class="btn btn-secondary btn-no" onclick="SearchOnDeezer()">
         <span id="SearchOnDeezerButtonWheel" class="invisible spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -28,7 +28,36 @@
 <div class="container-fluid row ">
 
 
-    <table id="playlisttable" class="table table-striped table-hover">
+    <h3 class="text-center font-weight-bold text-uppercase py-4">{{ playlistname }}</h3>
+
+    
+
+        <table id="playlisttable" class="table table-striped table-bordered table-sm">
+            <thead>
+                <tr role="row">
+                    <th class="th-sm"></th>
+                    <th class="th-sm sorting">Detection score</th>
+                    <th class="th-sm sorting">Artist</th>
+                    <th class="th-sm sorting">Album</th>
+                    <th class="th-sm sorting">Song</th>
+                    <th class="th-sm sorting">Duration</th>
+                    <th class="th-sm sorting">Track</th>
+                    <th class="th-sm sorting">Total Tracks </th>
+                    <th class="text-center"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% set trackid = 0 %}
+                {% for song in playlist%}
+                    {% set trackid = trackid + 1 %}
+                    {{ macrohome.playlistsong2(trackid,song.Artist,song.Album,song.Song,song.Time,song.Track,song.TotalTracks) }}
+                {% endfor %}
+            </tbody>
+        </table>
+
+
+
+    {#<table id="playlisttable" class="table table-striped table-hover">
         <thead>
             <tr class="">
                 <th scope="col" class="no-sort">
@@ -56,10 +85,15 @@
                 {{ macrohome.playlistsong(trackid,song.Artist,song.Album,song.Song,song.Time,song.Track,song.TotalTracks) }}
             {% endfor %}
         </tbody>
-    </table>
+    </table>#}
 </div>
 
 <script type="text/javascript">
-    $('#playlisttable').tablesort();
+{#    $('#playlisttable').tablesort();#}
+
+$('#playlisttable').DataTable({
+    "paging": false // false to disable pagination (or any other option)
+});
+$('.dataTables_length').addClass('bs-select');
 </script>
 

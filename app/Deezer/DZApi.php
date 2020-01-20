@@ -89,7 +89,7 @@ class DZApi {
      * @return void
      */
     public function sendRequest($sUrl) {
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(sendRequest) Deezer request recieved : " . $sUrl);
+        
         $this->ThrottlerStack = new \GuzzleHttp\HandlerStack();
         $this->ThrottlerStack->setHandler(new \GuzzleHttp\Handler\CurlHandler());
 
@@ -105,8 +105,20 @@ class DZApi {
 
 //        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(sendRequest) Client : " . var_export($client, true));
 //        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(sendRequest) ThrottlerRules: " . var_export($this->ThrottlerRules, true));
-        $response = $client->get($sUrl);
-        $output = $response->getBody();
+        $RequestToBeDone = true;
+        do {
+            try {
+                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(sendRequest) Deezer request recieved : " . $sUrl);
+                $response = $client->get($sUrl);
+                $output = $response->getBody();
+                $RequestToBeDone = false;
+            } catch (\Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException $e) {
+                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(sendRequest) Too many requests. Waiting 1 second");
+                sleep(1);
+            }
+        } while ($RequestToBeDone);
+
+        
 //        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(sendRequest) Deezer response recieved HEADERS : " . var_export($response, true) . "\n" . var_export($response->getHeaders(), true));
 //        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(sendRequest) Deezer response recieved BODY : " . var_export($response, true) . "\n" . var_export($response->getBody(), true));
         if ($output === false) {
@@ -133,20 +145,23 @@ class DZApi {
 
         $output = $this->search_params($param);
         $output['accuracy'] = 6;
-        
+
         if (strcmp($output['total'], '0') == 0) {
-        $matches = array();
+            $matches = array();
             preg_match_all('/(.*)\(.*\)| - .*/m', urldecode($track), $matches, PREG_SET_ORDER, 0);
             if (strlen($matches[0][1]) !== 0) {
-                $track=urlencode($matches[0][1]);
-                $param = 'artist:"' . $artist . '"track:"' . $track . '"album:"' . $album . '"' . 'dur_min:' . $dur_min . 'dur_max:' . $dur_max;
+
                 $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(search) Remove unecesssary chars from title : " . $track . "\n\t" . json_encode($matches));
+
+                $track = urlencode($matches[0][1]);
+
+                $param = 'artist:"' . $artist . '"track:"' . $track . '"album:"' . $album . '"' . 'dur_min:' . $dur_min . 'dur_max:' . $dur_max;
                 $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(search) Deezer Search query " . $param);
                 $output = $this->search_params($param);
                 $output['accuracy'] = 5;
             }
         }
-        
+
         /* Search for artist, track and duration informations */
         if (strcmp($output['total'], '0') == 0) {
             $param = 'artist:"' . $artist . '"track:"' . $track . '"' . 'dur_min:' . $dur_min . 'dur_max:' . $dur_max;
@@ -179,11 +194,15 @@ class DZApi {
                 $output['accuracy'] = 1;
             }
         }
-        
+
         if (strcmp($output['total'], '0') == 0) {
             $output['accuracy'] = 0;
         }
+        $output['app_id'] = getenv('DZAPIKEY');
         $output['params'] = $param;
+        if (isset($output['error']) && $output['error']['code'] == 4) {
+            throw new \Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException($output['error']['message']);
+        }
         return $output;
     }
 
@@ -221,15 +240,17 @@ class DZApi {
         do {
             try {
                 $search_result = $this->search($artist, $album, $song, $duration);
+//                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(SearchIndividual) : ".var_export($search_result,true));
                 $RequestToBeDone = false;
             } catch (\Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException $e) {
-                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(SearchIndividual) Too many requests. Waiting 1 second ");
+                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(SearchIndividual) Too many requests. Waiting 1 second");
+//                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", var_export($e,true));
                 sleep(1);
             }
         } while ($RequestToBeDone);
-        $returns = ['trackid' => $trackid, 'accuracy' => $search_result['accuracy'], 'info' => $search_result];
+        $returns = ['trackid' => $trackid, 'accuracy' => $search_result['accuracy'], 'app_id' => $search_result['app_id'], 'info' => $search_result];
 //        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(SearchIndividual) result is  : " . var_export($returns,true));
-        return  $returns;
+        return $returns;
     }
 
     /**
@@ -321,9 +342,9 @@ class DZApi {
         ]);
         $response->getBody()->rewind();
         $output = $response->getBody()->getContents();
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(CreatePlaylist) Deezer response recieved Full response :\n" . var_export($response, true));
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(CreatePlaylist) Deezer response recieved HEADERS :\n" . var_export($response->getHeaders(), true));
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(CreatePlaylist) Deezer response recieved BODY :\n" . var_export($response->getBody(), true));
+//        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(CreatePlaylist) Deezer response recieved Full response :\n" . var_export($response, true));
+//        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(CreatePlaylist) Deezer response recieved HEADERS :\n" . var_export($response->getHeaders(), true));
+//        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(CreatePlaylist) Deezer response recieved BODY :\n" . var_export($response->getBody(), true));
         if ($output === false) {
             $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(CreatePlaylist) Error curl : " . curl_error($c), E_USER_WARNING);
             trigger_error('Erreur curl : ' . curl_error($c), E_USER_WARNING);

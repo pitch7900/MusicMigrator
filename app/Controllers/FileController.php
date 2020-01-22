@@ -30,7 +30,7 @@ class FileController extends Controller {
             } catch (\Exception $e) {
                 return $this->response
                                 ->withStatus(303)
-                                ->withHeader('Location', $this->router->pathFor('home') . "?Status=FileError")
+                                ->withHeader('Location', $this->router->pathFor('home') . "?Status=NoFile")
                                 ->withHeader('Status', 'File not readable');
             }
         } else {

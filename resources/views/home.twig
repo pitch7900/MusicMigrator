@@ -11,18 +11,18 @@
 
 
         {% if fileuploaded %}
-            <div class="col-sm-2">
+            <div class="col-sm-4">
                 <div class="sidebar-sticky">
                     <ul class="nav flex-column">
                         {% for playlist in playlists%}
-                            {{ macrohome.navplaylistitem(playlist.id,playlist.name) }}
+                            {{ macrohome.navplaylistitem(playlist.id,playlist.name,playlist.count) }}
                         {% endfor %}
                     </ul>
                 </div>
 
 
             </div>
-            <div class="col-sm-10">
+            <div class="col-sm-8">
                 <div id="songlist" >
                     {# Filled by javascript #}
                 </div>

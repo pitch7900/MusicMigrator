@@ -22,11 +22,6 @@ class HomeController extends Controller {
      * @return HTML
      */
     public function home(Request $request, Response $response) {
-
-
-
-
-
         if (!isset($_SESSION['dzapi'])) {
             $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "Creating a new Deezer API class instance");
             $_SESSION['dzapi'] = serialize(new \App\Deezer\DZApi());
@@ -73,12 +68,18 @@ class HomeController extends Controller {
             $arguments['fileuploaded'] = true;
             $arguments['playlists'] = unserialize($_SESSION["Library"])->getPlaylists();
         } else {
+            $arguments['fileuploadederror'] = false;
+            $Status=$request->getParam('Status');
             //No file is uploaded
-            if (strcmp($request->getParam('Status'), "'FileError'")) {
-                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "File error");
+            if (strcmp($Status, "FileError")==0) {
+                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "File error - ".$Status);
                 $arguments['fileuploadederror'] = true;
-            } else {
-                $arguments['fileuploadederror'] = false;
+                $arguments['fileuploadederrormessage']="File upload error. This file is not a clean iTunes Library file";
+            }
+            if (strcmp($Status, "NoFile")==0) {
+                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "No File - ".$Status);
+                $arguments['fileuploadederror'] = true;
+                $arguments['fileuploadederrormessage']="Please upload a file";
             }
             return $this->view->render($response, 'home_loadfile.twig', $arguments);
         }

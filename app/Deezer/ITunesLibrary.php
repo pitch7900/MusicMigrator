@@ -2,6 +2,7 @@
 
 namespace App\Deezer;
 
+
 session_start();
 
 /**
@@ -22,9 +23,10 @@ class ITunesLibrary {
     public $initialized;
     private $plist;
     public $library_array;
-
+    
     public function __construct() {
         $this->initialized = false;
+        
     }
     /**
      * Try to read an XML Plist file
@@ -72,7 +74,9 @@ class ITunesLibrary {
     public function countTracks() {
         return count($this->library_array["Tracks"]);
     }
-
+    public function countPlaylistTracks($playlistID){
+        return count($this->getPlaylist($playlistID)['Playlist Items']);
+    }
     public function countPlaylists() {
         return count($this->library_array["Playlists"]);
     }
@@ -137,7 +141,7 @@ class ITunesLibrary {
 //
 //                array_push($list, ["ID" => $Item["Track ID"], "Artist" => $key["Artist"], "Album" => $key["Album"], "Song" => $key["Name"]]);
 //            }
-            array_push($results, ["name" => $Playlist["Name"], "id" => $Playlist["Playlist ID"]]);
+            array_push($results, ["name" => $Playlist["Name"], "id" => $Playlist["Playlist ID"],"count"=>$this->countPlaylistTracks($Playlist["Playlist ID"])]);
         }
 
         return $results;

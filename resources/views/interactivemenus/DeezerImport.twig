@@ -10,7 +10,7 @@
                 </button>
             </div>
             <div class="modal-body mx-auto">
-
+                <p>Importing <span id="DeezerImportTracksNumber">0</span> tracks to Deezer<p>
                 <div class="dropdown">
                     <button class="btn btn-secondary dropdown-toggle" playlistid="0" type="button" id="dropdownMenuPlaylist" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Choose playlist
@@ -32,7 +32,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="ImportToDeezer();">Import</button>
+                <button id="ButtonImportToDeezer" class="invisible btn btn-primary" type="button" onclick="ImportToDeezer();">Import</button>
                 {#                {{ dump(deezerplaylists) }}#}
             </div>
         </div>

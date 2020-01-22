@@ -4,15 +4,6 @@
         {{ include('header.twig') }}
     </head>
     <body>
-        {#Small tweack to detect the screen resolution from bootstrap#}
-        <div id="users-device-size">
-            <div id="xs" class="d-xs-block d-sm-none d-md-none d-lg-none d-xl-none"></div>
-            <div id="sm" class="d-xs-none d-sm-block d-md-none d-lg-none d-xl-none"></div>
-            <div id="md" class="d-xs-none d-sm-none d-md-block d-lg-none d-xl-none"></div>
-            <div id="lg" class="d-xs-none d-sm-none d-md-none d-lg-block d-xl-none"></div>
-            <div id="xl" class="d-xs-none d-sm-none d-md-none d-lg-none d-xl-block"></div>
-        </div>
-      
 
         {% block menu %}{% endblock %}
         <main class="container-fluid center" role="main">
@@ -20,8 +11,7 @@
             {% block interactivemenus %}{% endblock %}
             {% block content %}{% endblock %}
         </main>
-        {% block fullscreen %}{% endblock %}
-        {% block footer %}{%endblock%}
+     
     </body>
     {{ include('javascripts.twig') }}
 </html>

@@ -63,10 +63,16 @@ $(document).ready(function () {
  */
 function UpdateTrackInformations(trackid, data, status, accuracy, app_id) {
 //    $("tr[trackid='" + trackid + "'] td[id='accuracy']").html(accuracy);
-     $('#playlisttable').DataTable().cell("tr[trackid='" + trackid + "'] td[id='accuracy']").data(accuracy);
-    deezerlog = '<img src="/img/favicon.png" width="16" height="16" alt="">';
+    $('#playlisttable').DataTable().cell("tr[trackid='" + trackid + "'] td[id='accuracy']").data(accuracy);
+    
+    $("tr[trackid='" + trackid + "'] td[id='accuracy']").addClass("signal"+accuracy+"on6");
+    $("tr[trackid='" + trackid + "'] td[id='accuracy']").addClass("signal");
+    
+    deezerlogo = '<img src="/img/favicon.png" width="16" height="16" alt="">';
     switch (status) {
         case 1:
+            $("#DeezerImportTracksNumber").text(parseInt($("#DeezerImportTracksNumber").text(), 10) + 1);
+            $("#ButtonImportToDeezer").removeClass("invisible");
             trackimage = data.album.cover;
             $("tr[trackid='" + trackid + "']").removeClass("deezererror");
             $("tr[trackid='" + trackid + "']").removeClass("deezerwarning");
@@ -75,28 +81,29 @@ function UpdateTrackInformations(trackid, data, status, accuracy, app_id) {
             album = $("tr[trackid='" + trackid + "'] td[id='album'] .editable").text();
             artist = $("tr[trackid='" + trackid + "'] td[id='artist'] .editable").text();
             //deezerplayerlink='<iframe scrolling="no" frameborder="0" allowTransparency="true" src="https://www.deezer.com/plugins/player?format=square&autoplay=false&playlist=false&width=200&height=200&color=ff0000&layout=dark&size=medium&type=tracks&id=' + data.id + '&app_id=' + app_id + '" width="200" height="200"></iframe>'
-            $('#playlisttable').DataTable().cell("tr[trackid='" + trackid + "'] td[id='image']").data('<a href="' + data.link + '" target="_blank" contenteditable="false"><img class="deezertrackimage" src="' + trackimage + '" alt=""></a>');
+            $('#playlisttable').DataTable().cell("tr[trackid='" + trackid + "'] td[id='image']").data('<button type="button" class="btn btn-link"><a href="' + data.link + '" target="_blank" contenteditable="false"><img class="deezertrackimage" src="' + trackimage + '" alt=""></a></button>');
 //            $("tr[trackid='" + trackid + "'] td[id='image']").html('<a href="' + data.link + '" target="_blank"><img class="deezertrackimage" src="' + trackimage + '" alt=""></a>');
-            
+
             original_value = $("tr[trackid='" + trackid + "'] td[id='song']").attr('original_value');
-            $('#playlisttable').DataTable().cell("tr[trackid='" + trackid + "'] td[id='song']").data('<span class="editable">' + song + '</span><br><a href="' + data.link + '" target="_blank" contenteditable="false">' + deezerlog + data.title_short + '</a>');
+            $('#playlisttable').DataTable().cell("tr[trackid='" + trackid + "'] td[id='song']").data('<span class="editable">' + song + '</span><br><button type="button" class="btn btn-link"><a href="' + data.link + '" target="_blank" contenteditable="false">' + deezerlogo + " " + data.title_short + '</a></button>');
 //            $("tr[trackid='" + trackid + "'] td[id='song']").html('<span class="editable">' + song + '</span><br><a href="' + data.link + '" target="_blank">' + deezerlog + data.title_short + '</a>');
             $("tr[trackid='" + trackid + "'] td[id='song']").addClass("editable");
             $("tr[trackid='" + trackid + "'] td[id='song']").removeClass("edited");
-            
+
             original_value = $("tr[trackid='" + trackid + "'] td[id='album']").attr('original_value');
-            albumurl = data.album.tracklist.replace("api.deezer.com","www.deezer.com").replace(/\/tracks$/, "");;
-            $('#playlisttable').DataTable().cell("tr[trackid='" + trackid + "'] td[id='album']").data('<span class="editable">' + album + '</span><br><a href="' + albumurl + '" target="_blank" contenteditable="false">' + deezerlog + data.album.title + '</a>');
+            albumurl = data.album.tracklist.replace("api.deezer.com", "www.deezer.com").replace(/\/tracks$/, "");
+            ;
+            $('#playlisttable').DataTable().cell("tr[trackid='" + trackid + "'] td[id='album']").data('<span class="editable">' + album + '</span><br><button type="button" class="btn btn-link"><a href="' + albumurl + '" target="_blank" contenteditable="false">' + deezerlogo + " " + data.album.title + '</a></button>');
 //            $("tr[trackid='" + trackid + "'] td[id='album']").html('<span class="editable">' + album + '</span><br><a href="' + data.album.tracklist + '" target="_blank">' + deezerlog + data.album.title + '</a>');
             $("tr[trackid='" + trackid + "'] td[id='album']").addClass("editable");
             $("tr[trackid='" + trackid + "'] td[id='album']").removeClass("edited");
-            
+
             original_value = $("tr[trackid='" + trackid + "'] td[id='artist']").attr('original_value');
-            $('#playlisttable').DataTable().cell("tr[trackid='" + trackid + "'] td[id='artist']").data('<span class="editable">' + artist + '</span><br><a href="' + data.artist.link + '" target="_blank" contenteditable="false">' + deezerlog + data.artist.name + '</a>');
+            $('#playlisttable').DataTable().cell("tr[trackid='" + trackid + "'] td[id='artist']").data('<span class="editable">' + artist + '</span><br><button type="button" class="btn btn-link"><a href="' + data.artist.link + '" target="_blank" contenteditable="false">' + deezerlogo + " " + data.artist.name + '</a></button>');
 //            $("tr[trackid='" + trackid + "'] td[id='artist']").html('<span class="editable">' + artist + '</span><br><a href="' + data.artist.link + '" target="_blank">' + deezerlog + data.artist.name + '</a>');
             $("tr[trackid='" + trackid + "'] td[id='artist']").addClass("editable");
             $("tr[trackid='" + trackid + "'] td[id='artist']").removeClass("edited");
-            
+
             original_value = $("tr[trackid='" + trackid + "'] td[id='duration']").attr('original_value');
             $('#playlisttable').DataTable().cell("tr[trackid='" + trackid + "'] td[id='duration']").data(SecondsToHms(data.duration))
             //            $("tr[trackid='" + trackid + "'] td[id='duration']").html(SecondsToHms(data.duration));
@@ -107,7 +114,7 @@ function UpdateTrackInformations(trackid, data, status, accuracy, app_id) {
                 progresstotal = parseInt($("#deezerrecognationsucess").attr('aria-valuemax'), 10);
 
                 $("#deezerrecognationsucess").attr('aria-valuenow', progressvalue);
-                progressstyle = "width: " + Math.trunc(progressvalue / progresstotal * 100) + "%";
+                progressstyle = "width: " + Math.round(progressvalue / progresstotal * 10000)/100 + "%";
                 $("#deezerrecognationsucess").attr('style', progressstyle);
             } else {
                 $("tr[trackid='" + trackid + "']").addClass("deezerwarning");
@@ -115,7 +122,7 @@ function UpdateTrackInformations(trackid, data, status, accuracy, app_id) {
                 progresstotal = parseInt($("#deezerrecognationwarning").attr('aria-valuemax'), 10);
 
                 $("#deezerrecognationwarning").attr('aria-valuenow', progressvalue);
-                progressstyle = "width: " + Math.trunc(progressvalue / progresstotal * 100) + "%";
+                progressstyle = "width: " + Math.round(progressvalue / progresstotal * 10000)/100 + "%";
                 $("#deezerrecognationwarning").attr('style', progressstyle);
             }
 
@@ -126,12 +133,12 @@ function UpdateTrackInformations(trackid, data, status, accuracy, app_id) {
             progresstotal = parseInt($("#deezerrecognationerror").attr('aria-valuemax'), 10);
 
             $("#deezerrecognationerror").attr('aria-valuenow', progressvalue);
-            progressstyle = "width: " + Math.trunc(progressvalue / progresstotal * 100) + "%";
+            progressstyle = "width: " + Math.round(progressvalue / progresstotal * 10000)/100 + "%";
             $("#deezerrecognationerror").attr('style', progressstyle);
             break;
 
     }
-    
+
 
 }
 

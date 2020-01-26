@@ -14,6 +14,17 @@ class HomeController extends Controller {
         parent::__construct($container);
         $this->logs = new Logs();
     }
+    /**
+     * Check if user is authenticated in Deezer with a valid Deezer Token
+     * If yes, return arguments for the Home view
+     * Else, return the login view
+     * @param Request $request
+     * @param Response $response
+     * @return array arguments
+     */
+    private function CheckDeezerSession(Request $request, Response $response){
+        
+    }
 
     /**
      * Return the "Home" view 
@@ -23,20 +34,18 @@ class HomeController extends Controller {
      */
     public function home(Request $request, Response $response) {
         if (!isset($_SESSION['dzapi'])) {
-            $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "Creating a new Deezer API class instance");
+            $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "HomeController.php(home) Creating a new Deezer API class instance");
             $_SESSION['dzapi'] = serialize(new \App\Deezer\DZApi());
         }
-
-        $arguments['deezerauthurl'] = unserialize($_SESSION['dzapi'])->getAuthUrl(getenv("SITEURL") . "/deezer/auth");
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "Deezer Auth URL is : " . $arguments['deezerauthurl']);
+       $arguments['deezerauthurl'] = unserialize($_SESSION['dzapi'])->getAuthUrl(getenv("SITEURL") . "/deezer/auth");
+        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "HomeController.php(CheckDeezerSession) Deezer Auth URL is : " . $arguments['deezerauthurl']);
         $arguments['deezerauthenticated'] = 0;
-
         // Check if we have a valid session token
         if (isset($_SESSION['deezer_token'])) {
             //Check if the token has not expired
             if ($_SESSION['deezer_token_expires'] > time()) {
-                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "Session token stored in Session : " . $_SESSION['deezer_token']);
-                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "Session token stored in class : " . unserialize($_SESSION['dzapi'])->getSToken());
+                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "HomeController.php(CheckDeezerSession)Session token stored in Session : " . $_SESSION['deezer_token']);
+                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "HomeController.php(CheckDeezerSession)Session token stored in class : " . unserialize($_SESSION['dzapi'])->getSToken());
                 $userinfo = unserialize($_SESSION['dzapi'])->getUserInformation();
                 $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", json_encode($userinfo));
                 $arguments['deezertoken'] = $_SESSION['deezer_token'];
@@ -46,20 +55,20 @@ class HomeController extends Controller {
                 $arguments['deezerpict'] = $userinfo['picture'];
                 $arguments['deezeruserlink'] = $userinfo['link'];
                 $arguments['deezerauthenticated'] = 1;
+               
             } else {
                 //Token has expired 
                 unset($_SESSION['deezer_token']);
                 unset($_SESSION['deezer_token_expires']);
                 unset($_SESSION['dzapi']);
-                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "Creating a new Deezer API class instance");
+                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "HomeController.php(CheckDeezerSession)Creating a new Deezer API class instance");
                 $_SESSION['dzapi'] = serialize(new \App\Deezer\DZApi());
                 return $this->view->render($response, 'home_logintodeezer.twig', $arguments);
             }
-//            var_dump(unserialize($_SESSION['dzapi'])->getUserPlaylists()['data']);
-        } else {
+         } else {
             return $this->view->render($response, 'home_logintodeezer.twig', $arguments);
         }
-
+        
 
         $arguments['fileuploaded'] = false;
 
@@ -72,12 +81,12 @@ class HomeController extends Controller {
             $Status=$request->getParam('Status');
             //No file is uploaded
             if (strcmp($Status, "FileError")==0) {
-                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "File error - ".$Status);
+                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "HomeController.php(home) File error - ".$Status);
                 $arguments['fileuploadederror'] = true;
                 $arguments['fileuploadederrormessage']="File upload error. This file is not a clean iTunes Library file";
             }
             if (strcmp($Status, "NoFile")==0) {
-                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "No File - ".$Status);
+                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "HomeController.php(home) No File - ".$Status);
                 $arguments['fileuploadederror'] = true;
                 $arguments['fileuploadederrormessage']="Please upload a file";
             }

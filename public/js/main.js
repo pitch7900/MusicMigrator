@@ -6,7 +6,10 @@ var Catalog = function () {
     var handler_click_ShowPlaylist = function () {
         $('body').on('click', '#ShowPlaylist', function () {
             $('#songlist').empty();
-            playlistid = $(this).attr('playlistid'); 
+//            $(this).parents("ul").each().removeClass("selected");
+            $(this).parents("li").parent().children().removeClass('selected');
+            $(this).parent("li").addClass("selected");
+            playlistid = $(this).attr('playlistid');
             $.get('/playlist/' + playlistid + '.html', function (data) {
                 $('#songlist').html(data);
             });
@@ -39,11 +42,20 @@ var Catalog = function () {
             $('#itunesfilename').text(filename);
         });
     };
+
+    var handler_click_delte_row_on_table = function () {
+        $('body').on('click', '.table-remove', function () {
+            console.log("Should remove this line");
+            console.log($(this).parents("#track").attr("trackid"));
+            $(this).parents("#track").remove();
+        });
+    };
     return {
         init: function () {
             handler_click_ShowPlaylist();
             handler_click_ImportToDeezerDropDownSelection();
             handler_select_iTunes_File();
+            handler_click_delte_row_on_table();
         }
     };
 }();
@@ -59,12 +71,12 @@ $(document).ready(function () {
  * @param {type} accuracy
  * @return {undefined}
  */
-function UpdateTrackInformations(trackid, data, status, accuracy, app_id) {
+function UpdateTrackInformations(trackid, data, status, accuracy) {
     $('#playlisttable').DataTable().cell("tr[trackid='" + trackid + "'] td[id='accuracy']").data(accuracy);
-    
-    $("tr[trackid='" + trackid + "'] td[id='accuracy']").addClass("signal"+accuracy+"on6");
+
+    $("tr[trackid='" + trackid + "'] td[id='accuracy']").addClass("signal" + accuracy + "on6");
     $("tr[trackid='" + trackid + "'] td[id='accuracy']").addClass("signal");
-    
+
     deezerlogo = '<img src="/img/favicon.png" width="16" height="16" alt="">';
     switch (status) {
         case 1:
@@ -77,15 +89,20 @@ function UpdateTrackInformations(trackid, data, status, accuracy, app_id) {
             song = $("tr[trackid='" + trackid + "'] td[id='song'] .editable").text();
             album = $("tr[trackid='" + trackid + "'] td[id='album'] .editable").text();
             artist = $("tr[trackid='" + trackid + "'] td[id='artist'] .editable").text();
-            $('#playlisttable').DataTable().cell("tr[trackid='" + trackid + "'] td[id='image']").data('<button type="button" class="btn btn-link"><a href="' + data.link + '" target="_blank" contenteditable="false"><img class="deezertrackimage" src="' + trackimage + '" alt=""></a></button>');
-            
+            $('#playlisttable').DataTable().cell("tr[trackid='" + trackid + "'] td[id='image']").data('<button type="button" class="btn btn-link">' +
+                    '<a href="' + data.link + '" target="_blank" contenteditable="false">' +
+                    '<img class="deezertrackimage" src="' + trackimage + '" alt="">' +
+                    '</a>' +
+                    '</button>' +
+                    '<span class="table-remove"><button type="button" class="btn btn-danger btn-rounded btn-sm my-0">Remove</button></span>');
+
             original_value = $("tr[trackid='" + trackid + "'] td[id='song']").attr('original_value');
             $('#playlisttable').DataTable().cell("tr[trackid='" + trackid + "'] td[id='song']").data('<span class="editable">' + song + '</span><br><button type="button" class="btn btn-link"><a href="' + data.link + '" target="_blank" contenteditable="false">' + deezerlogo + " " + data.title_short + '</a></button>');
             $("tr[trackid='" + trackid + "'] td[id='song']").addClass("editable");
             $("tr[trackid='" + trackid + "'] td[id='song']").removeClass("edited");
 
             original_value = $("tr[trackid='" + trackid + "'] td[id='album']").attr('original_value');
-            albumurl = data.album.tracklist.replace("api.deezer.com", "www.deezer.com").replace(/\/tracks$/, "");            
+            albumurl = data.album.tracklist.replace("api.deezer.com", "www.deezer.com").replace(/\/tracks$/, "");
             $('#playlisttable').DataTable().cell("tr[trackid='" + trackid + "'] td[id='album']").data('<span class="editable">' + album + '</span><br><button type="button" class="btn btn-link"><a href="' + albumurl + '" target="_blank" contenteditable="false">' + deezerlogo + " " + data.album.title + '</a></button>');
             $("tr[trackid='" + trackid + "'] td[id='album']").addClass("editable");
             $("tr[trackid='" + trackid + "'] td[id='album']").removeClass("edited");
@@ -104,7 +121,7 @@ function UpdateTrackInformations(trackid, data, status, accuracy, app_id) {
                 progresstotal = parseInt($("#deezerrecognationsucess").attr('aria-valuemax'), 10);
 
                 $("#deezerrecognationsucess").attr('aria-valuenow', progressvalue);
-                progressstyle = "width: " + Math.round(progressvalue / progresstotal * 10000)/100 + "%";
+                progressstyle = "width: " + Math.round(progressvalue / progresstotal * 10000) / 100 + "%";
                 $("#deezerrecognationsucess").attr('style', progressstyle);
             } else {
                 $("tr[trackid='" + trackid + "']").addClass("deezerwarning");
@@ -112,7 +129,7 @@ function UpdateTrackInformations(trackid, data, status, accuracy, app_id) {
                 progresstotal = parseInt($("#deezerrecognationwarning").attr('aria-valuemax'), 10);
 
                 $("#deezerrecognationwarning").attr('aria-valuenow', progressvalue);
-                progressstyle = "width: " + Math.round(progressvalue / progresstotal * 10000)/100 + "%";
+                progressstyle = "width: " + Math.round(progressvalue / progresstotal * 10000) / 100 + "%";
                 $("#deezerrecognationwarning").attr('style', progressstyle);
             }
 
@@ -123,7 +140,7 @@ function UpdateTrackInformations(trackid, data, status, accuracy, app_id) {
             progresstotal = parseInt($("#deezerrecognationerror").attr('aria-valuemax'), 10);
 
             $("#deezerrecognationerror").attr('aria-valuenow', progressvalue);
-            progressstyle = "width: " + Math.round(progressvalue / progresstotal * 10000)/100 + "%";
+            progressstyle = "width: " + Math.round(progressvalue / progresstotal * 10000) / 100 + "%";
             $("#deezerrecognationerror").attr('style', progressstyle);
             break;
 
@@ -262,19 +279,18 @@ function DeezerLookup(trackid, artist, album, song, duration, app_id) {
         },
         success: function (postdata) {
             if (postdata.success === false) {
-                UpdateTrackInformations(trackid, null, 0, 0, null);
+                UpdateTrackInformations(trackid, null, 0, 0);
             } else {
 
                 if (!("info" in postdata)) {
-                    UpdateTrackInformations(trackid, null, 0, 0, postdata.app_id);
+                    UpdateTrackInformations(trackid, null, 0, 0);
 
                 } else {
                     if (postdata.info.data.length === 0 || postdata.info.total === 0) {
-                        UpdateTrackInformations(trackid, null, 0, 0, postdata.app_id);
+                        UpdateTrackInformations(trackid, null, 0, 0);
                     } else {
-//                        console.log(postdata);
-                        //UpdateTrackInformations(DeezersearchResults[i].trackid, DeezersearchResults[i].info.data[0], 1);
-                        UpdateTrackInformations(trackid, postdata.info.data[0], 1, postdata.accuracy, postdata.app_id);
+
+                        UpdateTrackInformations(trackid, postdata.info.data[0], 1, postdata.accuracy);
                     }
 
                 }
@@ -282,7 +298,7 @@ function DeezerLookup(trackid, artist, album, song, duration, app_id) {
         },
         error: function (e) {
             console.log("Timefor track : " + trackid + " " + artist + " " + album + " " + song + " " + duration);
-            UpdateTrackInformations(trackid, null, 0, 0, null);
+            UpdateTrackInformations(trackid, null, 0, 0);
         }
     });
 }

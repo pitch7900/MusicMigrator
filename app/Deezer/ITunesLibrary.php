@@ -2,7 +2,6 @@
 
 namespace App\Deezer;
 
-
 session_start();
 
 /**
@@ -23,11 +22,11 @@ class ITunesLibrary {
     public $initialized;
     private $plist;
     public $library_array;
-    
+
     public function __construct() {
         $this->initialized = false;
-        
     }
+
     /**
      * Try to read an XML Plist file
      * Trow IOException if not possible
@@ -54,14 +53,14 @@ class ITunesLibrary {
         fclose($tmp);
     }
 
-    public function loadXMLFile($filename) {
-        if (!is_readable($filename)) {
-            throw IOException::notReadable($filename);
-        }
-        $this->plist = new CFPropertyList($filename, CFPropertyList::FORMAT_AUTO);
-        $this->library_array = $this->plist->toArray();
-        $this->initialized = true;
-    }
+//    public function loadXMLFile($filename) {
+//        if (!is_readable($filename)) {
+//            throw IOException::notReadable($filename);
+//        }
+//        $this->plist = new CFPropertyList($filename, CFPropertyList::FORMAT_AUTO);
+//        $this->library_array = $this->plist->toArray();
+//        $this->initialized = true;
+//    }
 
     public function isInitialized() {
         return $this->initialized;
@@ -74,9 +73,11 @@ class ITunesLibrary {
     public function countTracks() {
         return count($this->library_array["Tracks"]);
     }
-    public function countPlaylistTracks($playlistID){
+
+    public function countPlaylistTracks($playlistID) {
         return count($this->getPlaylist($playlistID)['Playlist Items']);
     }
+
     public function countPlaylists() {
         return count($this->library_array["Playlists"]);
     }
@@ -129,19 +130,65 @@ class ITunesLibrary {
         }
     }
 
+    private function AddToParent($ParentPersistentID, $lists, $arraytoadd) {
+//        echo "Should add to $ParentPersistentID Following Playlist :";
+//        var_dump($arraytoadd);
+//        echo "\n-----------Before--------------\n";
+//        var_dump($lists);
+        $counter=0;
+        foreach ($lists as $list) {
+            if ($list["PersistentID"] == $ParentPersistentID) {
+                array_push($lists[$counter]["subfolder"], $arraytoadd);
+//                var_dump($lists[$counter]);
+//                echo "\n-----------AFter--------------\n";
+//                var_dump($lists);
+//                echo "\n";
+                return $lists;
+            }
+            $counter++;
+        }
+        return null;
+    }
+
     public function getPlaylists() {
         $results = array();
 
         foreach ($this->library_array["Playlists"] as $Playlist) {
-//            $list = array();
-//            foreach ($Playlist["Playlist Items"] as $Item) {
-//
-//                $trackid = $Item["Track ID"];
-//                $key = $this->getTrack($trackid);
-//
-//                array_push($list, ["ID" => $Item["Track ID"], "Artist" => $key["Artist"], "Album" => $key["Album"], "Song" => $key["Name"]]);
-//            }
-            array_push($results, ["name" => $Playlist["Name"], "id" => $Playlist["Playlist ID"],"count"=>$this->countPlaylistTracks($Playlist["Playlist ID"])]);
+
+            if (array_key_exists("Folder", $Playlist)) {
+                $folder = true;
+            } else {
+                $folder = false;
+            }
+            if (array_key_exists("Parent Persistent ID", $Playlist)) {
+                $parentid = $Playlist["Parent Persistent ID"];
+                $arraytoadd = ["name" => $Playlist["Name"],
+                    "id" => $Playlist["Playlist ID"],
+                    "count" => $this->countPlaylistTracks($Playlist["Playlist ID"]),
+                    "PersistentID" => $Playlist["Playlist Persistent ID"],
+                    "ParentPersistentID" => $parentid,
+                    "folder" => $folder,
+                    "subfolder" => array()];
+//                var_dump($results);
+                $results = $this->AddToParent($parentid, $results, $arraytoadd);
+            } else {
+                $parentid = null;
+                array_push($results, ["name" => $Playlist["Name"],
+                    "id" => $Playlist["Playlist ID"],
+                    "count" => $this->countPlaylistTracks($Playlist["Playlist ID"]),
+                    "PersistentID" => $Playlist["Playlist Persistent ID"],
+                    "ParentPersistentID" => $parentid,
+                    "folder" => $folder,
+                    "subfolder" => array()]);
+            }
+
+
+//            array_push($results, ["name" => $Playlist["Name"],
+//                "id" => $Playlist["Playlist ID"],
+//                "count" => $this->countPlaylistTracks($Playlist["Playlist ID"]),
+//                "PersistentID" => $Playlist["Playlist Persistent ID"],
+//                "ParentPersistentID" => $parentid,
+//                "folder" => $folder]);
         }
 
         return $results;

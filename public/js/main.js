@@ -78,8 +78,10 @@ var Catalog = function () {
                 statusCode: {
                     401: function (response) {
                         //User is logged of
-                        //force a refresh of the page
-                        window.location.reload();
+                        //force a refresh of the page, if we're not already on an error page
+                        if ($("#ErrorPage").length!==0 ) {
+                            window.location.reload();
+                        }   
                     },
                     300: function (response) {
                         //User is logged of

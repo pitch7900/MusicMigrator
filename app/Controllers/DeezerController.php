@@ -45,7 +45,7 @@ class DeezerController extends Controller {
     }
 
     public function getAboutme(Request $request, Response $response) {
-        if (!isset($_SESSION['dzapi'])) {
+        if (!isset($_SESSION['dzapi']) || isset(unserialize($_SESSION['dzapi'])->getUserInformation()['error'])) {
             return $this->response
                             ->withStatus(401)
                             ->withHeader('Error', 'Not logged in to Deezer');

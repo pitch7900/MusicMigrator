@@ -17,7 +17,7 @@ If "/conf" directory and .env files are missing, then a configuration interface 
 A menu will pop up to help you fill the basic informations need to allow the app to run
 
 ## 3. Installation
-Download the project and setup your webserver configuration to point to the /public folder
+Download the project and setup your webserver configuration to point to the /public folder.
 For example, the project is downloaded to /var/www/iTunes2Deezer and the virtual host points to /var/www/iTunes2Deezer/public
 ```ApacheConf
 <VirtualHost *:80>

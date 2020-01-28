@@ -3,6 +3,9 @@
 $app->get('/', 'HomeController:home')
         ->setName('home');
 
+$app->get('/spinner.html', 'HomeController:getWaitingIcons')
+        ->setName('getWaitingIcons');
+
 $app->group('/file', function () {
 
     $this->post('/upload', 'FileController:upload')

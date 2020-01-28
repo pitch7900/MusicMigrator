@@ -50,7 +50,9 @@ class DeezerController extends Controller {
                             ->withStatus(401)
                             ->withHeader('Error', 'Not logged in to Deezer');
         } else {
-            return $response->withJson(unserialize($_SESSION['dzapi'])->getUserInformation());
+            $returninformation = unserialize($_SESSION['dzapi'])->getUserInformation();
+            $returninformation["expiration_time"]=$_SESSION['deezer_token_expires'];
+            return $response->withJson($returninformation);
         }
     }
 

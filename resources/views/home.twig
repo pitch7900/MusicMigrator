@@ -11,7 +11,7 @@
 
 
         {% if fileuploaded %}
-            <div class="col-sm-4">
+            <div class="col-sm-3">
 
                 <div class="treeview w-20 ">
 
@@ -23,7 +23,7 @@
                     </ul>
                 </div>
             </div>
-            <div class="col-sm-8">
+            <div class="col-sm-9">
                 <div id="songlist" >
                     {# Filled by javascript main.js#}
                 </div>
@@ -39,9 +39,14 @@
     </div>
     <script type="text/javascript">
         // Treeview Initialization
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('.treeview').mdbTreeview();
         });
+
+
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
     </script>
 {% endblock %}
 

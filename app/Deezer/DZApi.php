@@ -96,16 +96,9 @@ class DZApi {
         $throttle = new GuzzleAdvancedThrottle\Middleware\ThrottleMiddleware($this->ThrottlerRules);
 
         $this->ThrottlerStack->push($throttle());
-//        $c = curl_init();
-//        curl_setopt($c, CURLOPT_URL, $sUrl);
-//        curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
-//        curl_setopt($c, CURLOPT_HEADER, false);
-//        $output = curl_exec($c);
-        $client = new \GuzzleHttp\Client(['base_uri' => $this->_sApiUrl, 'handler' => $this->ThrottlerStack]);
 
-//        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(sendRequest) Client : " . var_export($client, true));
-//        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(sendRequest) ThrottlerRules: " . var_export($this->ThrottlerRules, true));
-        $RequestToBeDone = true;
+        $client = new \GuzzleHttp\Client(['base_uri' => $this->_sApiUrl, 'handler' => $this->ThrottlerStack]);
+      $RequestToBeDone = true;
         do {
             try {
                 $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(sendRequest) Deezer request recieved : " . $sUrl);
@@ -118,9 +111,7 @@ class DZApi {
             }
         } while ($RequestToBeDone);
 
-        
-//        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(sendRequest) Deezer response recieved HEADERS : " . var_export($response, true) . "\n" . var_export($response->getHeaders(), true));
-//        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(sendRequest) Deezer response recieved BODY : " . var_export($response, true) . "\n" . var_export($response->getBody(), true));
+    
         if ($output === false) {
             $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(sendRequest) Error curl : " . curl_error($c), E_USER_WARNING);
             trigger_error('Erreur curl : ' . curl_error($c), E_USER_WARNING);
@@ -230,26 +221,28 @@ class DZApi {
         $_SESSION['deezersearchlist'] = ['status' => 'Finished', 'current' => count($tracklist), 'total' => count($tracklist)];
         return $results;
     }
-
+    /**
+     * Search for an individual song
+     * @param type $trackid
+     * @param type $artist
+     * @param type $album
+     * @param type $song
+     * @param type $duration
+     * @return array with search results
+     */
     public function SearchIndividual($trackid, $artist, $album, $song, $duration) {
-
-
-
         $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(SearchIndividual) searching for  TrackID : " . $trackid);
         $RequestToBeDone = true;
         do {
             try {
                 $search_result = $this->search($artist, $album, $song, $duration);
-//                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(SearchIndividual) : ".var_export($search_result,true));
                 $RequestToBeDone = false;
             } catch (\Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException $e) {
                 $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(SearchIndividual) Too many requests. Waiting 1 second");
-//                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", var_export($e,true));
                 sleep(1);
             }
         } while ($RequestToBeDone);
         $returns = ['trackid' => $trackid, 'accuracy' => $search_result['accuracy'], 'app_id' => $search_result['app_id'], 'info' => $search_result];
-//        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(SearchIndividual) result is  : " . var_export($returns,true));
         return $returns;
     }
 
@@ -278,7 +271,6 @@ class DZApi {
         parse_str($response, $params);
         $_SESSION['deezer_token'] = $params['access_token'];
         $_SESSION['deezer_token_expires'] = time() + $params['expires'];
-//        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(apiconnect) Deezer connection  : " . var_export($params, true));
         return $params['access_token'];
     }
 

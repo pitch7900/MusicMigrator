@@ -106,3 +106,11 @@ table.dataTable thead .sorting_desc_disabled:before {
 .selected{
     font-weight: bold;
 }
+
+.notselected{
+    font-weight:normal;
+}
+
+.badge-right{
+    float:right;
+}

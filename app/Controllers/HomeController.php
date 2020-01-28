@@ -95,5 +95,10 @@ class HomeController extends Controller {
 
         return $this->view->render($response, 'home.twig', $arguments);
     }
+    
+    
+    public function getWaitingIcons(Request $request, Response $response) {
+        return $this->view->render($response, 'waiting.twig');
+    }
 
 }

@@ -1,20 +1,20 @@
 {% macro menu_links(playlists) %}
     {% for playlist in playlists %}
         {%  if playlist.count>0 or playlist.folder %}
-            <li>        
+            <li class="notselected">        
                 {% if playlist.folder %}
 
                     <i class="fas fa-angle-right rotate"></i>
-                    <a  id="ShowPlaylist" playlistid="{{ playlist.id }}">
-                        <span><i class="far fa-folder-open ic-w mx-1"></i>{{playlist.name}}  <span class="badge badge-light">{{ playlist.count }}</span></span>
+                    <a  id="ShowPlaylist" playlistid="{{ playlist.id }}" data-toggle="tooltip" title="{{ playlist.count }} tracks">
+                        <span><i class="far fa-folder-open ic-w mx-1"></i>{{playlist.name}}</span> {# <span class="badge badge-light badge-right">{{ playlist.count }}</span>#}
                     </a>
                     <ul class="nested">
                         {{ _self.menu_links(playlist.subfolder) }}
                     </ul>
 
                 {% else %}
-                    <a  id="ShowPlaylist" playlistid="{{ playlist.id }}">
-                        <span><i class="far fa-folder-open ic-w mr-1"></i>{{playlist.name}}  <span class="badge badge-light">{{ playlist.count }}</span></span>
+                    <a  id="ShowPlaylist" playlistid="{{ playlist.id }}" data-toggle="tooltip" title="{{ playlist.count }} tracks">
+                        <span><i class="far fa-folder-open ic-w mr-1"></i>{{playlist.name}}</span>  {#<span class="badge badge-light badge-right">{{ playlist.count }}</span>#}
                     </a>
                 {% endif %}
 
@@ -57,13 +57,13 @@
 {% macro playlistsong(trackid,artist,album,song,duration,track,totaltracks) %}
     {% import _self as macros %}
     <tr role="row" id="track" trackid="{{ trackid }}" deezerid="null" >
-        <td class="pt-3-half text-center" contenteditable="false" id="image" ><i class="far fa-question-circle"></i></td>
+        <td class="pt-3-half" contenteditable="false" id="image" ><i class="far fa-question-circle"></i></td>
         <td id="accuracy"><i class="fas fa-question"></i></td>
-        <td class="pt-3-half text-center" contenteditable="true" id="artist" original_value="{{ artist }}"><span  class="editable">{{ artist }}</span></td>
-        <td class="pt-3-half text-center" contenteditable="true" id="album" original_value="{{ album }}"><span  class="editable">{{ album }}</span></td>
-        <td class="pt-3-half text-center" contenteditable="true" id="song" original_value="{{ song }}"><span class="editable">{{ song }}</span></td>
-        <td class="pt-3-half text-center" contenteditable="false" id="duration" original_value="{{ duration }}" duration="{{ duration }}">{{ macros.secondsToMinutes( duration/1000 )}}</td>
-        <td class="pt-3-half text-center" contenteditable="false" id="track" original_value="{{ track }}">{{ track }}</td>
-        <td class="pt-3-half text-center" contenteditable="false" id="refresh"><button type="button" class="btn btn-link"><i class="fas fa-sync" onclick='RefreshDeezer("{{trackid}}")'></i></button></td>
+        <td class="pt-3-half" contenteditable="true" id="artist" original_value="{{ artist }}"><span  class="editable">{{ artist }}</span></td>
+        <td class="pt-3-half" contenteditable="true" id="album" original_value="{{ album }}"><span  class="editable">{{ album }}</span></td>
+        <td class="pt-3-half" contenteditable="true" id="song" original_value="{{ song }}"><span class="editable">{{ song }}</span></td>
+        <td class="pt-3-half" contenteditable="false" id="duration" original_value="{{ duration }}" duration="{{ duration }}">{{ macros.secondsToMinutes( duration/1000 )}}</td>
+        <td class="pt-3-half" contenteditable="false" id="track" original_value="{{ track }}">{{ track }}</td>
+        <td class="pt-3-half" contenteditable="false" id="refresh"><button type="button" class="btn btn-link"><i class="fas fa-sync" onclick='RefreshDeezer("{{trackid}}")'></i></button></td>
     </tr>
 {% endmacro %}

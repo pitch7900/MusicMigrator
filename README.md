@@ -19,7 +19,7 @@ A menu will pop up to help you fill the basic informations need to allow the app
 ## 3. Installation
 Download the project and setup your webserver configuration to point to the /public folder
 For example, the project is downloaded to /var/www/iTunes2Deezer and the virtual host points to /var/www/iTunes2Deezer/public
-```conf
+```ApacheConf
 <VirtualHost *:80>
         RewriteEngine On
         ServerName  <WEBSERVERNAME>

@@ -80,6 +80,11 @@ var Catalog = function () {
                         //User is logged of
                         //force a refresh of the page
                         window.location.reload();
+                    },
+                    300: function (response) {
+                        //User is logged of
+                        //force a refresh of the page
+                        window.location.reload();
                     }
                 }, success: function () {
 
@@ -298,9 +303,10 @@ function SecondsToHms(d) {
     var h = Math.floor(d / 3600);
     var m = Math.floor(d % 3600 / 60);
     var s = Math.floor(d % 3600 % 60);
-    var hDisplay = h > 0 ? h + (h === 1 ? ":" : ":") : "";
-    var mDisplay = m > 0 ? m + (m === 1 ? ":" : ":") : "";
-    var sDisplay = s > 0 ? s + (s === 1 ? "" : "") : "";
+    
+    var hDisplay = h > 0 ? ("0" + h + ":").slice(-2) : "";
+    var mDisplay = m > 0 ? ("0" + m + ":" ).slice(-2) : "";
+    var sDisplay =  ("0" + s ).slice(-2) ;
     return hDisplay + mDisplay + sDisplay;
 }
 

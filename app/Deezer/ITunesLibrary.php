@@ -52,34 +52,58 @@ class ITunesLibrary {
 
         fclose($tmp);
     }
-
-
+    /**
+     * Return a true if this class is correctly initialized with a clean plist.
+     * @return boolean
+     */
     public function isInitialized() {
         return $this->initialized;
     }
-
+    /**
+     * Return the Library as standard array
+     * @return array
+     */
     public function getLibrary() {
         return $this->library_array;
     }
-
+    /**
+     * count the number of track for a given Plist file
+     * @return Integer
+     */
     public function countTracks() {
         return count($this->library_array["Tracks"]);
     }
-
+    /**
+     * Count the number of tracks for a given PlaylistID
+     * @param type $playlistID
+     * @return Integer
+     */
     public function countPlaylistTracks($playlistID) {
         return count($this->getPlaylist($playlistID)['Playlist Items']);
     }
-
+    
+    /**
+     * Count the number of playlists
+     * @return Integer
+     */
     public function countPlaylists() {
         return count($this->library_array["Playlists"]);
     }
-
+    
+    /**
+     * Return an array for a given trackId
+     * @param type $trackid
+     * @return array
+     */
     public function getTrack($trackid) {
         $key = $this->library_array["Tracks"][$trackid];
-        //var_dump($key);
         return $key;
     }
-
+    /**
+     * Return the name of a playlist for a given PlaylistID
+     * @param type $playlistID
+     * @return string
+     */
     public function getPlaylistName($playlistID) {
         foreach ($this->library_array["Playlists"] as $Playlist) {
             if ($Playlist["Playlist ID"] == $playlistID) {
@@ -88,7 +112,11 @@ class ITunesLibrary {
         }
         return null;
     }
-
+    /**
+     * Return the playlist array for a given PlaylistID
+     * @param type $playlistID
+     * @return array()
+     */
     public function getPlaylist($playlistID) {
         foreach ($this->library_array["Playlists"] as $Playlist) {
             if ($Playlist["Playlist ID"] == $playlistID) {
@@ -97,11 +125,14 @@ class ITunesLibrary {
         }
         return null;
     }
-
+    /**
+     * Return all tracks for a given PlaylistID
+     * @param type $playlistID
+     * @return array
+     */
     public function getPlaylistItems($playlistID) {
         $list = array();
         $Playlist = $this->getPlaylist($playlistID);
-        //var_dump($Playlist);
         if ($Playlist == null) {
             return null;
         } else {
@@ -121,7 +152,13 @@ class ITunesLibrary {
             return $list;
         }
     }
-
+    /**
+     * Add a playlist to it's Parent ID
+     * @param integer $ParentPersistentID
+     * @param array $lists - Array with the playlist
+     * @param array $arraytoadd - Array to add to a specific parentId
+     * @return array
+     */
     private function AddToParent($ParentPersistentID, $lists, $arraytoadd) {
         $counter=0;
         foreach ($lists as $list) {
@@ -133,7 +170,10 @@ class ITunesLibrary {
         }
         return null;
     }
-
+    /**
+     * Return an array with all playlists informations (structured with folders of first level)
+     * @return array
+     */
     public function getPlaylists() {
         $results = array();
 

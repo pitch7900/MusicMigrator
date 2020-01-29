@@ -21,7 +21,12 @@ class DeezerController extends Controller {
         parent::__construct($container);
         $this->logs = new Logs();
     }
-
+    /**
+     * get the post query for searching for a track on deezer
+     * @param Request $request
+     * @param Response $response
+     * @return type
+     */
     public function postSearch(Request $request, Response $response) {
         session_write_close();
         $trackid = urlencode($request->getParsedBody()['trackid']);
@@ -31,7 +36,6 @@ class DeezerController extends Controller {
         $duration = urlencode($request->getParsedBody()['duration']);
 
         $dz = new DZApi();
-//        echo "Should Search : " .$artist." ".$album." ".$song;
         $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DeezerController.php(postSearch) Searching for : \n\t - " . $artist . "\n\t - " . $album . "\n\t - " . $song . "\n\t - " . $duration);
         $search = $dz->SearchIndividual($trackid, $artist, $album, $song, $duration);
         if (isset($search['info']['error'])) {
@@ -43,7 +47,12 @@ class DeezerController extends Controller {
         
         return $response->withJson($search);
     }
-
+    /**
+     * Get user's informations in Deezer
+     * @param Request $request
+     * @param Response $response
+     * @return type
+     */
     public function getAboutme(Request $request, Response $response) {
         if (!isset($_SESSION['dzapi']) || isset(unserialize($_SESSION['dzapi'])->getUserInformation()['error'])) {
             return $this->response
@@ -55,7 +64,12 @@ class DeezerController extends Controller {
             return $response->withJson($returninformation);
         }
     }
-
+    /**
+     * Return a json array with all user's playlist in Deezer
+     * @param Request $request
+     * @param Response $response
+     * @return type
+     */
     public function getMyPlaylists(Request $request, Response $response) {
         if (!isset($_SESSION['dzapi'])) {
             return $this->response
@@ -65,7 +79,12 @@ class DeezerController extends Controller {
             return $response->withJson(unserialize($_SESSION['dzapi'])->getUserPlaylists());
         }
     }
-
+    /**
+     * Authenticate on Deezer
+     * @param Request $request
+     * @param Response $response
+     * @return type
+     */
     public function getAuth(Request $request, Response $response) {
         if (!isset($_SESSION['dzapi'])) {
             $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DeezerController.php(getAuth) Creating a new Deezer API class instance");
@@ -85,7 +104,13 @@ class DeezerController extends Controller {
                         ->withHeader('Location', $this->router->pathFor('home'))
                         ->withHeader('Status', 'Authenticated on deezer');
     }
-
+    /**
+     * Search for a full list of track in Deezer.
+     * Return a Json with track informations found
+     * @param Request $request
+     * @param Response $response
+     * @return type
+     */
     public function postSearchList(Request $request, Response $response) {
 
         $tracklist = json_decode($request->getParsedBody()['tracklist']);
@@ -96,7 +121,13 @@ class DeezerController extends Controller {
 
         return $response->withJson(unserialize($_SESSION['dzapi'])->SearchList($tracklist));
     }
-
+    /**
+     * Return the List of track to find on Deezer
+     * This list is created by the function postSearchList
+     * @param Request $request
+     * @param Response $response
+     * @return type
+     */
     public function getSearchList(Request $request, Response $response) {
         if (!isset($_SESSION['dzapi'])) {
             return $this->response
@@ -106,7 +137,13 @@ class DeezerController extends Controller {
             return $response->withJson(unserialize($_SESSION['deezersearchlist']));
         }
     }
-
+    /**
+     * Create a playlist in Deezer
+     * Return a Json with the Playlist information once created
+     * @param Request $request
+     * @param Response $response
+     * @return type
+     */
     public function postCreatePlaylist(Request $request, Response $response) {
         $playlistname = urlencode($request->getParsedBody()['name']);
         $playlistpublic = urlencode($request->getParsedBody()['public']);
@@ -119,7 +156,13 @@ class DeezerController extends Controller {
             return $response->withJson(unserialize($_SESSION['dzapi'])->CreatePlaylist($playlistname, $playlistpublic));
         }
     }
-
+    /**
+     * Add tracks to a given Deezer PlaylistID
+     * @param Request $request
+     * @param Response $response
+     * @param type $args
+     * @return type
+     */
     public function postPlaylistAddSongs(Request $request, Response $response, $args) {
 
         $playlistid = $args['playlistid'];

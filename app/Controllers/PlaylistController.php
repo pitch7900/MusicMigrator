@@ -16,12 +16,25 @@ class PlaylistController extends Controller {
 
         parent::__construct($container);
     }
-
+    
+    /**
+     * Return a json structure of all tracks for a given PlaylistID
+     * @param Request $request
+     * @param Response $response
+     * @param type $args
+     * @return type
+     */
     public function getJsonPlaylistItems(Request $request, Response $response, $args) {
         $playlistid = $args['playlistid'];
         return $response->withJson(unserialize($_SESSION["Library"])->getPlaylistItems($playlistid));
     }
-
+    /**
+     * Redirect to the songs.twig page. Display all songs for a given PlaylistID
+     * @param Request $request
+     * @param Response $response
+     * @param type $args
+     * @return type
+     */
     public function getPlaylistItems(Request $request, Response $response, $args) {
         $playlistid = $args['playlistid'];
         $arguments['playlist'] = unserialize($_SESSION["Library"])->getPlaylistItems($playlistid);
@@ -34,7 +47,14 @@ class PlaylistController extends Controller {
         }
         return $this->view->render($response, 'songs.twig', $arguments);
     }
-
+    /**
+     * Redirect to the elements/song.twig page for a given songid.
+     * Should display the song informations
+     * @param Request $request
+     * @param Response $response
+     * @param type $args
+     * @return type
+     */
     public function getItemDetails(Request $request, Response $response, $args) {
         $trackid = $args['songid'];
         $arguments['songid'] = $trackid;

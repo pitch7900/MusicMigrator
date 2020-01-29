@@ -14,18 +14,7 @@ class HomeController extends Controller {
         parent::__construct($container);
         $this->logs = new Logs();
     }
-    /**
-     * Check if user is authenticated in Deezer with a valid Deezer Token
-     * If yes, return arguments for the Home view
-     * Else, return the login view
-     * @param Request $request
-     * @param Response $response
-     * @return array arguments
-     */
-    private function CheckDeezerSession(Request $request, Response $response){
-        
-    }
-
+    
     /**
      * Return the "Home" view 
      * @param Request $request
@@ -38,14 +27,14 @@ class HomeController extends Controller {
             $_SESSION['dzapi'] = serialize(new \App\Deezer\DZApi());
         }
        $arguments['deezerauthurl'] = unserialize($_SESSION['dzapi'])->getAuthUrl(getenv("SITEURL") . "/deezer/auth");
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "HomeController.php(CheckDeezerSession) Deezer Auth URL is : " . $arguments['deezerauthurl']);
+        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "HomeController.php(home) Deezer Auth URL is : " . $arguments['deezerauthurl']);
         $arguments['deezerauthenticated'] = 0;
         // Check if we have a valid session token
         if (isset($_SESSION['deezer_token'])) {
             //Check if the token has not expired
             if ($_SESSION['deezer_token_expires'] > time()) {
-                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "HomeController.php(CheckDeezerSession)Session token stored in Session : " . $_SESSION['deezer_token']);
-                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "HomeController.php(CheckDeezerSession)Session token stored in class : " . unserialize($_SESSION['dzapi'])->getSToken());
+                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "HomeController.php(home)Session token stored in Session : " . $_SESSION['deezer_token']);
+                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "HomeController.php(home)Session token stored in class : " . unserialize($_SESSION['dzapi'])->getSToken());
                 $userinfo = unserialize($_SESSION['dzapi'])->getUserInformation();
                 $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", json_encode($userinfo));
                 $arguments['deezertoken'] = $_SESSION['deezer_token'];
@@ -61,7 +50,7 @@ class HomeController extends Controller {
                 unset($_SESSION['deezer_token']);
                 unset($_SESSION['deezer_token_expires']);
                 unset($_SESSION['dzapi']);
-                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "HomeController.php(CheckDeezerSession)Creating a new Deezer API class instance");
+                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "HomeController.php(home)Creating a new Deezer API class instance");
                 $_SESSION['dzapi'] = serialize(new \App\Deezer\DZApi());
                 return $this->view->render($response, 'home_logintodeezer.twig', $arguments);
             }
@@ -96,7 +85,12 @@ class HomeController extends Controller {
         return $this->view->render($response, 'home.twig', $arguments);
     }
     
-    
+    /**
+     * Return the spinning waiting icon defined in "waiting.twig"
+     * @param Request $request
+     * @param Response $response
+     * @return type
+     */
     public function getWaitingIcons(Request $request, Response $response) {
         return $this->view->render($response, 'waiting.twig');
     }

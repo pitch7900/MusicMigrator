@@ -14,6 +14,8 @@ class FileController extends Controller {
     }
 
     /**
+     * Get a file for uploading and initialize the $_SESSION["Library"] class
+     * Return in any case a 303 redirect with a Status argument if needed.
      * @param Request $request
      * @param Response $response
      * @return HTML

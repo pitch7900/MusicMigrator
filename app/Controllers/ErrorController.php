@@ -25,7 +25,11 @@ class ErrorController extends Controller {
     public function getConfigError(Request $request, Response $response) {
         return $this->view->render($response, 'configerror.twig');
     }
-
+    /**
+     * Write a config file .env with informations passed in the body
+     * @param Request $request
+     * @param Response $response
+     */
     public function postWriteConfig(Request $request, Response $response) {
         $dzapi = utf8_encode($request->getParam('dzapi'));
         $dzsecret = utf8_encode($request->getParam('dzsecret'));

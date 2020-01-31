@@ -79,9 +79,9 @@ var Catalog = function () {
                     401: function (response) {
                         //User is logged of
                         //force a refresh of the page, if we're not already on an error page
-                        if ($("#ErrorPage").length!==0 ) {
+                        if ($("#ErrorPage").length !== 0) {
                             window.location.reload();
-                        }   
+                        }
                     },
                     300: function (response) {
                         //User is logged of
@@ -142,12 +142,9 @@ function UpdateTrackInformations(trackid, data, status, accuracy) {
             album = $("tr[trackid='" + trackid + "'] td[id='album'] .editable").text();
             artist = $("tr[trackid='" + trackid + "'] td[id='artist'] .editable").text();
             //Update the image cell
-            $('#playlisttable').DataTable().cell("tr[trackid='" + trackid + "'] td[id='image']").data('<button type="button" class="btn btn-link">' +
-                    '<a href="' + data.link + '" target="_blank" contenteditable="false">' +
-                    '<img class="deezertrackimage" src="' + trackimage + '" alt="">' +
-                    '</a>' +
-                    '</button>' +
-                    '<span class="table-remove"><button type="button" class="btn btn-danger btn-rounded btn-sm my-0">Remove</button></span>');
+
+            $("[imagetrackid='" + trackid + "']").html('<img class="deezertrackimage" src="' + trackimage + '" alt="">');
+            $("[linktrackid='" + trackid + "']").attr('href', data.link);
 
             //Update the song name cell
             original_value = $("tr[trackid='" + trackid + "'] td[id='song']").attr('original_value');
@@ -194,9 +191,7 @@ function UpdateTrackInformations(trackid, data, status, accuracy) {
             $("tr[trackid='" + trackid + "']").addClass("deezererror");
             progressvalue = parseInt($("#deezerrecognationerror").attr('aria-valuenow'), 10) + 1;
             progresstotal = parseInt($("#deezerrecognationerror").attr('aria-valuemax'), 10);
-            $('#playlisttable').DataTable().cell("tr[trackid='" + trackid + "'] td[id='image']").data('<i class="far fa-question-circle"></i>' +
-                    '</button>' +
-                    '<span class="table-remove"><button type="button" class="btn btn-danger btn-rounded btn-sm my-0">Remove</button></span>');
+
             $("#deezerrecognationerror").attr('aria-valuenow', progressvalue);
             progressstyle = "width: " + Math.round(progressvalue / progresstotal * 10000) / 100 + "%";
             $("#deezerrecognationerror").attr('style', progressstyle);
@@ -305,10 +300,10 @@ function SecondsToHms(d) {
     var h = Math.floor(d / 3600);
     var m = Math.floor(d % 3600 / 60);
     var s = Math.floor(d % 3600 % 60);
-    
+
     var hDisplay = h > 0 ? ("0" + h + ":").slice(-2) : "";
-    var mDisplay = m > 0 ? ("0" + m + ":" ).slice(-2) : "";
-    var sDisplay =  ("0" + s ).slice(-2) ;
+    var mDisplay = m > 0 ? ("0" + m + ":").slice(-2) : "";
+    var sDisplay = ("0" + s).slice(-2);
     return hDisplay + mDisplay + sDisplay;
 }
 

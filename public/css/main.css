@@ -43,10 +43,19 @@ a.dropdown-item,.nav-item,.tableheaderssortable,.nav-link{
 .deezertrackimage{
     width:50px;
     height:50px;
+    background-color: gray;
+    color:white;
+    display: table;
+
+}
+
+.unknowimage{
+    display: table-cell;
+    vertical-align: middle;
 }
 .hugebutton{
-/*    width:60%;
-    height:60%;*/
+    /*    width:60%;
+        height:60%;*/
     margin: auto;
 }
 
@@ -68,26 +77,26 @@ a.dropdown-item,.nav-item,.tableheaderssortable,.nav-link{
 
 .signal2on6{
     background-image: url("data:image/svg+xml,%3Csvg aria-hidden='true' focusable='false' data-prefix='fas' data-icon='signal' role='img' xmlns='http://www.w3.org/2000/svg' viewBox='-64 -30 730 640'%3E%3Cpath style='fill:currentColor' d='m 0,480 -48,0 c -8.84,0 -16,7.16 -16,16 l 0,96 c 0,8.84 7.16,16 16,16 l 48,0 c 8.84,0 16,-7.16 16,-16 l 0,-96 c 0,-8.84 -7.16,-16 -16,-16 z' %3E%3C/path%3E%3Cpath style='fill:currentColor' d='m 128,384 -48,0 c -8.84,0 -16,7.16 -16,16 l 0,192 c 0,8.84 7.16,16 16,16 l 48,0 c 8.84,0 16,-7.16 16,-16 l 0,-192 c 0,-8.84 -7.16,-16 -16,-16 z' %3E%3C/path%3E%3Cpath style='opacity:0.4;fill:currentColor' d='m 256,288 -48,0 c -8.84,0 -16,7.16 -16,16 l 0,288 c 0,8.84 7.16,16 16,16 l 48,0 c 8.84,0 16,-7.16 16,-16 l 0,-288 c 0,-8.84 -7.16,-16 -16,-16 z' %3E%3C/path%3E%3Cpath style='opacity:0.4;fill:currentColor' d='m 384,192 -48,0 c -8.84,0 -16,7.16 -16,16 l 0,384 c 0,8.84 7.16,16 16,16 l 48,0 c 8.84,0 16,-7.16 16,-16 l 0,-384 c 0,-8.84 -7.16,-16 -16,-16 z' %3E%3C/path%3E%3Cpath style='opacity:0.4;fill:currentColor' d='m 512,96 -48,0 c -8.84,0 -16,7.16 -16,16 l 0,480 c 0,8.84 7.16,16 16,16 l 48,0 c 8.84,0 16,-7.16 16,-16 l 0,-480 c 0,-8.84 -7.16,-16 -16,-16 z' %3E%3C/path%3E%3Cpath style='opacity:0.4;fill:currentColor' d='m 640,0 -48,0 c -8.84,0 -16,7.16 -16,16 l 0,576 c 0,8.84 7.16,16 16,16 l 48,0 c 8.84,0 16,-7.16 16,-16 l 0,-576 c 0,-8.84 -7.16,-16 -16,-16 z' %3E%3C/path%3E%3C/svg%3E%0A");
-    
+
 }
 
 .signal3on6{
     background-image: url("data:image/svg+xml,%3Csvg aria-hidden='true' focusable='false' data-prefix='fas' data-icon='signal' role='img' xmlns='http://www.w3.org/2000/svg' viewBox='-64 -30 730 640'%3E%3Cpath style='fill:currentColor' d='m 0,480 -48,0 c -8.84,0 -16,7.16 -16,16 l 0,96 c 0,8.84 7.16,16 16,16 l 48,0 c 8.84,0 16,-7.16 16,-16 l 0,-96 c 0,-8.84 -7.16,-16 -16,-16 z' %3E%3C/path%3E%3Cpath style='fill:currentColor' d='m 128,384 -48,0 c -8.84,0 -16,7.16 -16,16 l 0,192 c 0,8.84 7.16,16 16,16 l 48,0 c 8.84,0 16,-7.16 16,-16 l 0,-192 c 0,-8.84 -7.16,-16 -16,-16 z' %3E%3C/path%3E%3Cpath style='fill:currentColor' d='m 256,288 -48,0 c -8.84,0 -16,7.16 -16,16 l 0,288 c 0,8.84 7.16,16 16,16 l 48,0 c 8.84,0 16,-7.16 16,-16 l 0,-288 c 0,-8.84 -7.16,-16 -16,-16 z' %3E%3C/path%3E%3Cpath style='opacity:0.4;fill:currentColor' d='m 384,192 -48,0 c -8.84,0 -16,7.16 -16,16 l 0,384 c 0,8.84 7.16,16 16,16 l 48,0 c 8.84,0 16,-7.16 16,-16 l 0,-384 c 0,-8.84 -7.16,-16 -16,-16 z' %3E%3C/path%3E%3Cpath style='opacity:0.4;fill:currentColor' d='m 512,96 -48,0 c -8.84,0 -16,7.16 -16,16 l 0,480 c 0,8.84 7.16,16 16,16 l 48,0 c 8.84,0 16,-7.16 16,-16 l 0,-480 c 0,-8.84 -7.16,-16 -16,-16 z' %3E%3C/path%3E%3Cpath style='opacity:0.4;fill:currentColor' d='m 640,0 -48,0 c -8.84,0 -16,7.16 -16,16 l 0,576 c 0,8.84 7.16,16 16,16 l 48,0 c 8.84,0 16,-7.16 16,-16 l 0,-576 c 0,-8.84 -7.16,-16 -16,-16 z' %3E%3C/path%3E%3C/svg%3E%0A");
-  
+
 }
 .signal4on6{
     background-image: url("data:image/svg+xml,%3Csvg aria-hidden='true' focusable='false' data-prefix='fas' data-icon='signal' role='img' xmlns='http://www.w3.org/2000/svg' viewBox='-64 -30 730 640'%3E%3Cpath style='fill:currentColor' d='m 0,480 -48,0 c -8.84,0 -16,7.16 -16,16 l 0,96 c 0,8.84 7.16,16 16,16 l 48,0 c 8.84,0 16,-7.16 16,-16 l 0,-96 c 0,-8.84 -7.16,-16 -16,-16 z' %3E%3C/path%3E%3Cpath style='fill:currentColor' d='m 128,384 -48,0 c -8.84,0 -16,7.16 -16,16 l 0,192 c 0,8.84 7.16,16 16,16 l 48,0 c 8.84,0 16,-7.16 16,-16 l 0,-192 c 0,-8.84 -7.16,-16 -16,-16 z' %3E%3C/path%3E%3Cpath style='fill:currentColor' d='m 256,288 -48,0 c -8.84,0 -16,7.16 -16,16 l 0,288 c 0,8.84 7.16,16 16,16 l 48,0 c 8.84,0 16,-7.16 16,-16 l 0,-288 c 0,-8.84 -7.16,-16 -16,-16 z' %3E%3C/path%3E%3Cpath style='fill:currentColor' d='m 384,192 -48,0 c -8.84,0 -16,7.16 -16,16 l 0,384 c 0,8.84 7.16,16 16,16 l 48,0 c 8.84,0 16,-7.16 16,-16 l 0,-384 c 0,-8.84 -7.16,-16 -16,-16 z' %3E%3C/path%3E%3Cpath style='opacity:0.4;fill:currentColor' d='m 512,96 -48,0 c -8.84,0 -16,7.16 -16,16 l 0,480 c 0,8.84 7.16,16 16,16 l 48,0 c 8.84,0 16,-7.16 16,-16 l 0,-480 c 0,-8.84 -7.16,-16 -16,-16 z' %3E%3C/path%3E%3Cpath style='opacity:0.4;fill:currentColor' d='m 640,0 -48,0 c -8.84,0 -16,7.16 -16,16 l 0,576 c 0,8.84 7.16,16 16,16 l 48,0 c 8.84,0 16,-7.16 16,-16 l 0,-576 c 0,-8.84 -7.16,-16 -16,-16 z' %3E%3C/path%3E%3C/svg%3E%0A");
-    
+
 }
 
 .signal5on6{
     background-image: url("data:image/svg+xml,%3Csvg aria-hidden='true' focusable='false' data-prefix='fas' data-icon='signal' role='img' xmlns='http://www.w3.org/2000/svg' viewBox='-64 -30 730 640'%3E%3Cpath style='fill:currentColor' d='m 0,480 -48,0 c -8.84,0 -16,7.16 -16,16 l 0,96 c 0,8.84 7.16,16 16,16 l 48,0 c 8.84,0 16,-7.16 16,-16 l 0,-96 c 0,-8.84 -7.16,-16 -16,-16 z' %3E%3C/path%3E%3Cpath style='fill:currentColor' d='m 128,384 -48,0 c -8.84,0 -16,7.16 -16,16 l 0,192 c 0,8.84 7.16,16 16,16 l 48,0 c 8.84,0 16,-7.16 16,-16 l 0,-192 c 0,-8.84 -7.16,-16 -16,-16 z' %3E%3C/path%3E%3Cpath style='fill:currentColor' d='m 256,288 -48,0 c -8.84,0 -16,7.16 -16,16 l 0,288 c 0,8.84 7.16,16 16,16 l 48,0 c 8.84,0 16,-7.16 16,-16 l 0,-288 c 0,-8.84 -7.16,-16 -16,-16 z' %3E%3C/path%3E%3Cpath style='fill:currentColor' d='m 384,192 -48,0 c -8.84,0 -16,7.16 -16,16 l 0,384 c 0,8.84 7.16,16 16,16 l 48,0 c 8.84,0 16,-7.16 16,-16 l 0,-384 c 0,-8.84 -7.16,-16 -16,-16 z' %3E%3C/path%3E%3Cpath style='fill:currentColor' d='m 512,96 -48,0 c -8.84,0 -16,7.16 -16,16 l 0,480 c 0,8.84 7.16,16 16,16 l 48,0 c 8.84,0 16,-7.16 16,-16 l 0,-480 c 0,-8.84 -7.16,-16 -16,-16 z' %3E%3C/path%3E%3Cpath style='opacity:0.4;fill:currentColor' d='m 640,0 -48,0 c -8.84,0 -16,7.16 -16,16 l 0,576 c 0,8.84 7.16,16 16,16 l 48,0 c 8.84,0 16,-7.16 16,-16 l 0,-576 c 0,-8.84 -7.16,-16 -16,-16 z' %3E%3C/path%3E%3C/svg%3E%0A");
-   
+
 }
 
 .signal6on6{
     background-image: url("data:image/svg+xml,%3Csvg aria-hidden='true' focusable='false' data-prefix='fas' data-icon='signal' role='img' xmlns='http://www.w3.org/2000/svg' viewBox='-64 -30 730 640'%3E%3Cpath style='fill:currentColor' d='m 0,480 -48,0 c -8.84,0 -16,7.16 -16,16 l 0,96 c 0,8.84 7.16,16 16,16 l 48,0 c 8.84,0 16,-7.16 16,-16 l 0,-96 c 0,-8.84 -7.16,-16 -16,-16 z' %3E%3C/path%3E%3Cpath style='fill:currentColor' d='m 128,384 -48,0 c -8.84,0 -16,7.16 -16,16 l 0,192 c 0,8.84 7.16,16 16,16 l 48,0 c 8.84,0 16,-7.16 16,-16 l 0,-192 c 0,-8.84 -7.16,-16 -16,-16 z' %3E%3C/path%3E%3Cpath style='fill:currentColor' d='m 256,288 -48,0 c -8.84,0 -16,7.16 -16,16 l 0,288 c 0,8.84 7.16,16 16,16 l 48,0 c 8.84,0 16,-7.16 16,-16 l 0,-288 c 0,-8.84 -7.16,-16 -16,-16 z' %3E%3C/path%3E%3Cpath style='fill:currentColor' d='m 384,192 -48,0 c -8.84,0 -16,7.16 -16,16 l 0,384 c 0,8.84 7.16,16 16,16 l 48,0 c 8.84,0 16,-7.16 16,-16 l 0,-384 c 0,-8.84 -7.16,-16 -16,-16 z' %3E%3C/path%3E%3Cpath style='fill:currentColor' d='m 512,96 -48,0 c -8.84,0 -16,7.16 -16,16 l 0,480 c 0,8.84 7.16,16 16,16 l 48,0 c 8.84,0 16,-7.16 16,-16 l 0,-480 c 0,-8.84 -7.16,-16 -16,-16 z' %3E%3C/path%3E%3Cpath style='fill:currentColor' d='m 640,0 -48,0 c -8.84,0 -16,7.16 -16,16 l 0,576 c 0,8.84 7.16,16 16,16 l 48,0 c 8.84,0 16,-7.16 16,-16 l 0,-576 c 0,-8.84 -7.16,-16 -16,-16 z' %3E%3C/path%3E%3C/svg%3E%0A");
-    
+
 }
 
 table.dataTable thead .sorting:after,

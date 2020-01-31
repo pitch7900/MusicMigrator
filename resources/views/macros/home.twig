@@ -57,13 +57,32 @@
 {% macro playlistsong(trackid,artist,album,song,duration,track,totaltracks) %}
     {% import _self as macros %}
     <tr role="row" id="track" trackid="{{ trackid }}" deezerid="null" >
-        <td class="pt-3-half" contenteditable="false" id="image" ><i class="far fa-question-circle"></i></td>
+        <td class="pt-3-half" contenteditable="false" id="image" >
+
+            <button type="button" class="btn btn-link">
+
+                <a  linktrackid="{{ trackid }}"  target="_blank" contenteditable="false">
+
+                    <div  imagetrackid="{{ trackid }}" class="deezertrackimage">
+                        <div class="unknowimage" onclick='RefreshDeezer("{{trackid}}")'>
+                            <i class="far fa-question-circle fa-3x "></i>
+                        </div>
+                    </div>
+
+                </a>
+            </button>
+            <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
+
+                <button type="button" class="table-remove btn btn-danger btn-sm"><i class="far fa-trash-alt"></i> Remove</button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick='RefreshDeezer("{{trackid}}")'><i class="fas fa-sync"></i> Refresh</button>
+            </div>
+        </td>
         <td id="accuracy"><i class="fas fa-question"></i></td>
         <td class="pt-3-half" contenteditable="true" id="artist" original_value="{{ artist }}"><span  class="editable">{{ artist }}</span></td>
         <td class="pt-3-half" contenteditable="true" id="album" original_value="{{ album }}"><span  class="editable">{{ album }}</span></td>
         <td class="pt-3-half" contenteditable="true" id="song" original_value="{{ song }}"><span class="editable">{{ song }}</span></td>
         <td class="pt-3-half" contenteditable="false" id="duration" original_value="{{ duration }}" duration="{{ duration }}">{{ macros.secondsToMinutes( duration/1000 )}}</td>
         <td class="pt-3-half" contenteditable="false" id="track" original_value="{{ track }}">{{ track }}</td>
-        <td class="pt-3-half" contenteditable="false" id="refresh"><button type="button" class="btn btn-link"><i class="fas fa-sync" onclick='RefreshDeezer("{{trackid}}")'></i></button></td>
+       
     </tr>
 {% endmacro %}

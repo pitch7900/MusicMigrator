@@ -1,0 +1,54 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Feb 1, 2020, 11:48:02 AM
+    Author     : pierre
+*/
+.sidenavbar{
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -ms-flex-align: start;
+    align-items: flex-start;
+    -ms-flex-pack: center;
+    justify-content: center;
+    position: relative;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    vertical-align: middle;
+
+}
+.sidenavbar ul{
+    list-style: none;
+    padding: 0;
+    list-style-type: none;
+}
+
+.sidenavbar {
+    list-style: none;
+    padding: 0;
+    list-style-type: none;
+}
+
+.sidenavbarlist{
+}
+
+.sidenavbar a{
+    padding: 0;
+    width:100%;
+}
+
+.parentfolder>a::before{
+    font-family: "Font Awesome 5 Free"; 
+    font-weight: 900; 
+    content: "\f152";    
+}
+
+.gobacktoparent::before{
+    font-family: "Font Awesome 5 Free"; 
+    font-weight: 900; 
+    content: "\f191";
+    
+}

@@ -10,43 +10,36 @@
     <div id="main_page" class="container-fluid row">
 
 
-        {% if fileuploaded %}
-            <div class="col-sm-3">
 
-                <div class="treeview w-20 ">
+        <div class="col-sm-3">
 
-                    <ul class="mb-1 pl-3 pb-2">
+            <div class="sidenavbar" linkstyle="btn btn-primary">
 
-                        {{ macrohome.menu_links(playlists) }}
+                <ul class="sidenavbarlist">
 
-                    </ul>
-                    </ul>
-                </div>
+                    {{ macrohome.menu_links(playlists) }}
+
+                </ul>
+             
             </div>
-            <div class="col-sm-9">
-                <div id="songlist" >
-                    {# Filled by javascript main.js#}
-                </div>
+        </div>
+        <div class="col-sm-9">
+            <div id="songlist" >
+                {# Filled by javascript main.js#}
             </div>
-        {% else %}
-            <h1>Please upload an iTunes Libraray file first</h1>
-            <h4>Format should be xml plist</h4>
-        {% endif %}
-
+        </div>
 
 
 
     </div>
     <script type="text/javascript">
-        // Treeview Initialization
+
+
         $(document).ready(function () {
-            $('.treeview').mdbTreeview();
+            SideNavBar.init();
         });
 
 
-        $(document).ready(function () {
-            $('[data-toggle="tooltip"]').tooltip()
-        })
     </script>
 {% endblock %}
 

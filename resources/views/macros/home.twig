@@ -1,12 +1,13 @@
 {% macro menu_links(playlists) %}
     {% for playlist in playlists %}
         {%  if playlist.count>0 or playlist.folder %}
-            <li class="notselected">        
+            <li class="notselected"> 
+                
                 {% if playlist.folder %}
 
-                    <i class="fas fa-angle-right rotate"></i>
+                   
                     <a  id="ShowPlaylist" playlistid="{{ playlist.id }}" data-toggle="tooltip" title="{{ playlist.count }} tracks">
-                        <span><i class="far fa-folder-open ic-w mx-1"></i>{{playlist.name}}</span> {# <span class="badge badge-light badge-right">{{ playlist.count }}</span>#}
+                        <span>{{playlist.name}}</span>
                     </a>
                     <ul class="nested">
                         {{ _self.menu_links(playlist.subfolder) }}
@@ -14,16 +15,15 @@
 
                 {% else %}
                     <a  id="ShowPlaylist" playlistid="{{ playlist.id }}" data-toggle="tooltip" title="{{ playlist.count }} tracks">
-                        <span><i class="far fa-folder-open ic-w mr-1"></i>{{playlist.name}}</span>  {#<span class="badge badge-light badge-right">{{ playlist.count }}</span>#}
+                        <span>{{playlist.name}}</span>  
                     </a>
                 {% endif %}
-
+            
             </li>
 
         {% endif %}
     {% endfor %}
 {% endmacro %}
-
 
 {#From : https://caffeinecreations.ca/blog/twig-macro-convert-seconds-to-hhmmss/#}
 {% macro secondsToMinutes(seconds) %}

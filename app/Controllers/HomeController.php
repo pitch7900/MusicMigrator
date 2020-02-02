@@ -85,6 +85,7 @@ class HomeController extends Controller {
         return $this->view->render($response, 'home.twig', $arguments);
     }
     
+       
     /**
      * Return the spinning waiting icon defined in "waiting.twig"
      * @param Request $request

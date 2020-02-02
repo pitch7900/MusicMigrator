@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Deezer;
+namespace App\MusicSources;
 
 use \App\Utils\Logs as Logs;
 use \hamburgscleanest\GuzzleAdvancedThrottle as GuzzleAdvancedThrottle;
@@ -62,14 +62,20 @@ class DZApi {
     private $ThrottlerRules;
     private $ThrottlerStack;
 
-//    private $throttle;
     public function __construct() {
 
-        $this->_sApiKey = getenv('DZAPIKEY');
-        $this->_sSecretKey = getenv('DZAPI_SECRETKEY');
+        $this->_sApiKey = getenv('DEEZER_APIKEY');
+        $this->_sSecretKey = getenv('DEEZER_APISECRETKEY');
         $this->logs = new Logs();
         $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(__contruct) New DZAPI Constructor called");
         $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(__contruct) API key is : " . $this->_sApiKey);
+        $this->initiateThrotller();
+    }
+
+    /**
+     * Initialize Throttler with values set in the class
+     */
+    private function initiateThrotller() {
         $this->ThrottlerRules = new GuzzleAdvancedThrottle\RequestLimitRuleset([
             $this->_sApiUrl => [
                 [
@@ -89,7 +95,7 @@ class DZApi {
      * @return void
      */
     public function sendRequest($sUrl) {
-        
+
         $this->ThrottlerStack = new \GuzzleHttp\HandlerStack();
         $this->ThrottlerStack->setHandler(new \GuzzleHttp\Handler\CurlHandler());
 
@@ -98,7 +104,7 @@ class DZApi {
         $this->ThrottlerStack->push($throttle());
 
         $client = new \GuzzleHttp\Client(['base_uri' => $this->_sApiUrl, 'handler' => $this->ThrottlerStack]);
-      $RequestToBeDone = true;
+        $RequestToBeDone = true;
         do {
             try {
                 $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(sendRequest) Deezer request recieved : " . $sUrl);
@@ -111,7 +117,7 @@ class DZApi {
             }
         } while ($RequestToBeDone);
 
-    
+
         if ($output === false) {
             $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(sendRequest) Error curl : " . curl_error($c), E_USER_WARNING);
             trigger_error('Erreur curl : ' . curl_error($c), E_USER_WARNING);
@@ -189,7 +195,7 @@ class DZApi {
         if (strcmp($output['total'], '0') == 0) {
             $output['accuracy'] = 0;
         }
-        $output['app_id'] = getenv('DZAPIKEY');
+        $output['app_id'] = getenv('DEEZER_APIKEY');
         $output['params'] = $param;
         if (isset($output['error']) && $output['error']['code'] == 4) {
             throw new \Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException($output['error']['message']);
@@ -221,6 +227,7 @@ class DZApi {
         $_SESSION['deezersearchlist'] = ['status' => 'Finished', 'current' => count($tracklist), 'total' => count($tracklist)];
         return $results;
     }
+
     /**
      * Search for an individual song
      * @param type $trackid
@@ -295,7 +302,6 @@ class DZApi {
         $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(getUserPlaylists)" . var_export($this->getUserInformation(), true));
         $userid = $this->getUserInformation()['id'];
         $playlists = $this->api("/user/" . $userid . "/playlists");
-//        return $playlists;
         $filteredplaylists = array();
         foreach ($playlists['data'] as $playlist) {
             $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(getUserPlaylists) Analysing : " . var_export($playlist, true));
@@ -334,9 +340,6 @@ class DZApi {
         ]);
         $response->getBody()->rewind();
         $output = $response->getBody()->getContents();
-//        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(CreatePlaylist) Deezer response recieved Full response :\n" . var_export($response, true));
-//        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(CreatePlaylist) Deezer response recieved HEADERS :\n" . var_export($response->getHeaders(), true));
-//        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(CreatePlaylist) Deezer response recieved BODY :\n" . var_export($response->getBody(), true));
         if ($output === false) {
             $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(CreatePlaylist) Error curl : " . curl_error($c), E_USER_WARNING);
             trigger_error('Erreur curl : ' . curl_error($c), E_USER_WARNING);
@@ -375,23 +378,7 @@ class DZApi {
                     sleep(1);
                 }
             } while ($RequestToBeDone);
-
-
-
-//            $songsList .= $prefix . $track;
-//            $prefix = ',';
         }
-//        $songsList = rtrim($songsList, ',');
-//        $response = $client->post($sUrl);
-//        $response->getBody()->rewind();
-//        $output = $response->getBody()->getContents();
-//        if ($output === false) {
-//            $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DZApi.php(createPlaylist) Error curl : " . curl_error($c), E_USER_WARNING);
-//            trigger_error('Erreur curl : ' . curl_error($c), E_USER_WARNING);
-//        } else {
-//            curl_close($c);
-//            return $output;
-//        }
     }
 
 }

@@ -24,7 +24,7 @@ class HomeController extends Controller {
     public function home(Request $request, Response $response) {
         if (!isset($_SESSION['dzapi'])) {
             $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "HomeController.php(home) Creating a new Deezer API class instance");
-            $_SESSION['dzapi'] = serialize(new \App\Deezer\DZApi());
+            $_SESSION['dzapi'] = serialize(new \App\MusicSources\DZApi());
         }
        $arguments['deezerauthurl'] = unserialize($_SESSION['dzapi'])->getAuthUrl(getenv("SITEURL") . "/deezer/auth");
         $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "HomeController.php(home) Deezer Auth URL is : " . $arguments['deezerauthurl']);
@@ -51,7 +51,7 @@ class HomeController extends Controller {
                 unset($_SESSION['deezer_token_expires']);
                 unset($_SESSION['dzapi']);
                 $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "HomeController.php(home)Creating a new Deezer API class instance");
-                $_SESSION['dzapi'] = serialize(new \App\Deezer\DZApi());
+                $_SESSION['dzapi'] = serialize(new \App\MusicSources\DZApi());
                 return $this->view->render($response, 'home_logintodeezer.twig', $arguments);
             }
          } else {

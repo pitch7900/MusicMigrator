@@ -7,9 +7,11 @@ https://developers.deezer.com/myapps
 ## 1. Configuration File needed
 You'll need to create a /config/.env file with following parameters:
 ```ini
-SITEURL="https://<yoursiteurl>"
-DZAPIKEY="<Deezer Application ID>"
-DZAPI_SECRETKEY="<Deezer Secret Key>"
+SITEURL="https://<Your site url>"
+DEEZER_APIKEY="Deezer api key"
+DEEZER_APISECRETKEY="Deezer secret key"
+SPOTIFY_APIKEY="Spotify api key"
+SPOTIFY_APISECRETKEY="Spotify secret key"
 ```
 If "/conf" directory and .env files are missing, then a configuration interface will appear (See chapter 2)
 

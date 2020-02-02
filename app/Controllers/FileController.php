@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
-use App\Deezer\ITunesLibrary as iTunesLibrary;
+use App\MusicSources\ITunesLibrary as iTunesLibrary;
 
 class FileController extends Controller {
 

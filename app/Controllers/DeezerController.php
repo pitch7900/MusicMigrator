@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
-use App\Deezer\DZApi as DZApi;
+use App\MusicSources\DZApi as DZApi;
 use \App\Utils\Logs as Logs;
 
 /**
@@ -88,7 +88,7 @@ class DeezerController extends Controller {
     public function getAuth(Request $request, Response $response) {
         if (!isset($_SESSION['dzapi'])) {
             $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DeezerController.php(getAuth) Creating a new Deezer API class instance");
-            $_SESSION['dzapi'] = serialize(new \App\Deezer\DZApi());
+            $_SESSION['dzapi'] = serialize(new \App\MusicSources\DZApi());
         }
 
 
@@ -116,7 +116,7 @@ class DeezerController extends Controller {
         $tracklist = json_decode($request->getParsedBody()['tracklist']);
         if (!isset($_SESSION['dzapi'])) {
             $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DeezerController.php(postSearchList) Creating a new Deezer API class instance");
-            $_SESSION['dzapi'] = serialize(new \App\Deezer\DZApi());
+            $_SESSION['dzapi'] = serialize(new \App\MusicSources\DZApi());
         }
 
         return $response->withJson(unserialize($_SESSION['dzapi'])->SearchList($tracklist));

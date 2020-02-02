@@ -42,8 +42,8 @@ class ErrorController extends Controller {
             }
         }
         $current = 'SITEURL="'.$sitename.'"' . "\n" .
-                'DZAPIKEY="'.$dzapi.'"' . "\n" .
-                'DZAPI_SECRETKEY="'.$dzsecret.'"';
+                'DEEZER_APIKEY="'.$dzapi.'"' . "\n" .
+                'DEEZER_APISECRETKEY="'.$dzsecret.'"';
 
         if (!file_put_contents(__DIR__ . '/../../config/.env', $current)) {
             die("Can't write configuration file");

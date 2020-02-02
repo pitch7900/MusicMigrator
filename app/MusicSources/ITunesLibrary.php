@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Deezer;
+namespace App\MusicSources;
 
 session_start();
 

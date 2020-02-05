@@ -40,3 +40,10 @@ For example, the project is downloaded to /var/www/iTunes2Deezer and the virtual
         </Directory>
 </VirtualHost>
 ```
+## 4. Credits
+Spotify Wrapper :
+https://github.com/jwilsson/spotify-web-api-php
+Throttler :
+https://github.com/hamburgscleanest/guzzle-advanced-throttle
+Deezer Wrapper :
+https://github.com/mbuonomo/Deezer-API-PHP-class/

@@ -7,14 +7,15 @@ session_start();
 /**
  * Require CFPropertyList
  */
-//require_once(__DIR__.'../../vendor/rodneyrehm/plist/classes/CFPropertyList/CFPropertyList.php');
+
 
 use \CFPropertyList\CFPropertyList as CFPropertyList;
 use CFPropertyList\IOException as IOException;
 
 /**
  * Description of ITunesLibrary
- *
+ * Parse an xml / plist iTunes Library
+ * This Class can only be used as a source, not as a destination.
  * @author pierre
  */
 class ITunesLibrary {
@@ -30,8 +31,8 @@ class ITunesLibrary {
     /**
      * Try to read an XML Plist file
      * Trow IOException if not possible
-     * @param type $xmldata
-     * @throws type
+     * @param string $xmldata
+     * @throws IOException::notReadable
      */
     public function loadXML($xmldata) {
 
@@ -52,6 +53,7 @@ class ITunesLibrary {
 
         fclose($tmp);
     }
+
     /**
      * Return a true if this class is correctly initialized with a clean plist.
      * @return boolean
@@ -59,37 +61,32 @@ class ITunesLibrary {
     public function isInitialized() {
         return $this->initialized;
     }
-    /**
-     * Return the Library as standard array
-     * @return array
-     */
-    public function getLibrary() {
-        return $this->library_array;
-    }
+
     /**
      * count the number of track for a given Plist file
-     * @return Integer
+     * @return int
      */
     public function countTracks() {
         return count($this->library_array["Tracks"]);
     }
+
     /**
      * Count the number of tracks for a given PlaylistID
-     * @param type $playlistID
-     * @return Integer
+     * @param int $playlistID
+     * @return int
      */
-    public function countPlaylistTracks($playlistID) {
+    private function countPlaylistTracks($playlistID) {
         return count($this->getPlaylist($playlistID)['Playlist Items']);
     }
-    
+
     /**
      * Count the number of playlists
-     * @return Integer
+     * @return int
      */
     public function countPlaylists() {
         return count($this->library_array["Playlists"]);
     }
-    
+
     /**
      * Return an array for a given trackId
      * @param type $trackid
@@ -99,9 +96,10 @@ class ITunesLibrary {
         $key = $this->library_array["Tracks"][$trackid];
         return $key;
     }
+
     /**
      * Return the name of a playlist for a given PlaylistID
-     * @param type $playlistID
+     * @param int $playlistID
      * @return string
      */
     public function getPlaylistName($playlistID) {
@@ -112,10 +110,11 @@ class ITunesLibrary {
         }
         return null;
     }
+
     /**
      * Return the playlist array for a given PlaylistID
-     * @param type $playlistID
-     * @return array()
+     * @param int $playlistID
+     * @return array
      */
     public function getPlaylist($playlistID) {
         foreach ($this->library_array["Playlists"] as $Playlist) {
@@ -125,6 +124,7 @@ class ITunesLibrary {
         }
         return null;
     }
+
     /**
      * Return all tracks for a given PlaylistID
      * @param type $playlistID
@@ -152,6 +152,7 @@ class ITunesLibrary {
             return $list;
         }
     }
+
     /**
      * Add a playlist to it's Parent ID
      * @param integer $ParentPersistentID
@@ -160,7 +161,7 @@ class ITunesLibrary {
      * @return array
      */
     private function AddToParent($ParentPersistentID, $lists, $arraytoadd) {
-        $counter=0;
+        $counter = 0;
         foreach ($lists as $list) {
             if ($list["PersistentID"] == $ParentPersistentID) {
                 array_push($lists[$counter]["subfolder"], $arraytoadd);
@@ -170,6 +171,7 @@ class ITunesLibrary {
         }
         return null;
     }
+
     /**
      * Return an array with all playlists informations (structured with folders of first level)
      * @return array
@@ -204,7 +206,6 @@ class ITunesLibrary {
                     "folder" => $folder,
                     "subfolder" => array()]);
             }
-
         }
 
         return $results;

@@ -46,3 +46,7 @@ $app->group('/deezer', function () {
     
 });
 
+$app->group('/spotify', function () {
+    $this->get('/auth', 'SpotifyController:getAuth')
+            ->setName('spotify.auth');
+});

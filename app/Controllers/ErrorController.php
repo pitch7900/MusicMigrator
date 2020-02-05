@@ -31,24 +31,27 @@ class ErrorController extends Controller {
      * @param Response $response
      */
     public function postWriteConfig(Request $request, Response $response) {
-        $dzapi = utf8_encode($request->getParam('dzapi'));
+        $deezerapi = utf8_encode($request->getParam('dzapi'));
         $dzsecret = utf8_encode($request->getParam('dzsecret'));
         $sitename = utf8_encode($request->getParam('sitename'));
-
-        echo "Config should be : $dzapi $dzsecret $sitename";
+        $spotifyapi = utf8_encode($request->getParam('spotifyapi'));
+        $spotifysecret = utf8_encode($request->getParam('spotifysecret'));
+        
+        echo "Config should be : $deezerapi $dzsecret $sitename $spotifyapi $spotifysecret";
         if (!is_dir(__DIR__ . '/../../config')) {
             if (!mkdir(__DIR__ . '/../../config', 0777, true)) {
                 die("Can't write folder");
             }
         }
         $current = 'SITEURL="'.$sitename.'"' . "\n" .
-                'DEEZER_APIKEY="'.$dzapi.'"' . "\n" .
-                'DEEZER_APISECRETKEY="'.$dzsecret.'"';
+                'DEEZER_APIKEY="'.$deezerapi.'"' . "\n" .
+                'DEEZER_APISECRETKEY="'.$dzsecret.'"'. "\n" .
+                'SPOTIFY_APIKEY="'.$spotifyapi.'"'. "\n" .
+                'SPOTIFY_APISECRETKEY="'.$spotifysecret.'"';
 
         if (!file_put_contents(__DIR__ . '/../../config/.env', $current)) {
             die("Can't write configuration file");
         }
-        //return $this->response->withStatus(303)->withHeader('Location', '/');
     }
 
 }

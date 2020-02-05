@@ -41,7 +41,7 @@ class PlaylistController extends Controller {
         $arguments['playlistname'] = unserialize($_SESSION["Library"])->getPlaylistName($playlistid);
         if (isset($_SESSION['deezer_token'])) {
             $arguments['deezerauthenticated'] = true;
-            $arguments['deezerplaylists'] = unserialize($_SESSION['dzapi'])->getUserPlaylists();
+            $arguments['deezerplaylists'] = unserialize($_SESSION['deezerapi'])->getUserPlaylists();
         } else {
             $arguments['deezerauthenticated'] = false;
         }

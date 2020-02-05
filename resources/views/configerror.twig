@@ -1,34 +1,103 @@
 {% extends "main.twig" %}
 
 {% block interactivemenus %}
+    
+{#    Deezer Help Modal#}
+    <div class="modal fade" id="helpdeezermodal" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Help on Deezer API</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"></span>
+                    </button>
+                </div>
+                <div class="modal-body mx-auto">
+                    <h2>Help on Deezer API</h2>
+
+                    <p>You can retrieve these informations on : <a href="https://developers.deezer.com/myapps">https://developers.deezer.com/myapps</a></p>
+                    <img src="/img/DeezerAPIHelp.png" alt="DeezerApiHelp" style="width:100%"/>
+                </div>
+                <div class="modal-footer">
+
+                    <button type="button" class="btn btn-secondary btn-no" data-dismiss="modal" >Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{#    Spotify Help Modal#}
+    <div class="modal fade" id="helpSpotifymodal" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Help on Spotify API</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"></span>
+                    </button>
+                </div>
+                <div class="modal-body mx-auto">
+                    <h2>Help on Spotify API</h2>
+
+                    <p>You can retrieve these informations on : <a href="https://developer.spotify.com/dashboard/applications">https://developer.spotify.com/dashboard/applications</a></p>
+                    <p>or</p>
+                    <a href="https://developer.spotify.com/web-api/">https://developer.spotify.com/web-api</a>
+                    <img src="/img/SpotifyApiHelp.png" alt="SpotifyApiHelp" style="width:100%"/>
+                </div>
+                <div class="modal-footer">
+
+                    <button type="button" class="btn btn-secondary btn-no" data-dismiss="modal" >Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 {% endblock %}
 {% block content %}
-    <h1>Configuration error. Configuraiton file is missing</h1>
+    <h1>Configuration error. Configuration file is missing</h1>
 
     <h4>Please fill the following configuration</h4>
-   
 
-        <div class="input-group mb-3">
-            <span class="input-group-text">Site Name</span>
-            <input type="text" class="form-control" id="sitename" aria-label="sitename" aria-describedby="inputGroup-sizing-default" />
 
-        </div>
-        <div class="input-group mb-3">
-            <span class="input-group-text">Deezer Application ID</span>
-            <input type="text" class="form-control" id="DeezerApplicationID" aria-label="Deezer Application ID"  aria-describedby="inputGroup-sizing-default" />
+    <div class="input-group mb-3">
+        <span class="input-group-text">Site Name</span>
+        <input type="text" class="form-control" id="sitename" aria-label="sitename" aria-describedby="inputGroup-sizing-default" />
 
-        </div>
-        <div class="input-group mb-3">
-            <span class="input-group-text">Deezer Secret Key</span>
-            <input type="text" class="form-control" id="DeezerSecretKey" aria-label="DeezerSecretKey" aria-describedby="inputGroup-sizing-default" />
+    </div>
 
-        </div>
-{#        <input type="submit" class="btn btn-primary" value="Upload">#}
-        <button type="button" class="btn btn-danger btn-yes" onclick="post_writeconfig();">Write Config</button>
-        
-        <p>You can retrieve these informations on : <a href="https://developers.deezer.com/myapps">https://developers.deezer.com/myapps</a></p>
-        <img src="/img/DeezerAPIHelp.png" alt=""/>
-<script src="/js/error.js" type="text/javascript"></script>
+    <div class="input-group mb-3">
+        <span class="input-group-text">Deezer Application ID</span>
+        <input type="text" class="form-control" id="DeezerApplicationID" aria-label="Deezer Application ID"  aria-describedby="inputGroup-sizing-default" />
+
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text">Deezer Application Secret Key</span>
+        <input type="text" class="form-control" id="DeezerSecretKey" aria-label="DeezerSecretKey" aria-describedby="inputGroup-sizing-default" />
+
+    </div>
+    <a id="ShowHelpDeezerModal" class="nav-link" data-toggle="modal" data-target="#helpdeezermodal">
+        <button type="button" class="btn btn-secondary">
+            Help on Deezer API
+        </button>
+    </a>
+    <div class="input-group mb-3">
+        <span class="input-group-text">Spotifiy Application ID</span>
+        <input type="text" class="form-control" id="SpotifyApplicationID" aria-label="Deezer Application ID"  aria-describedby="inputGroup-sizing-default" />
+
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text">Spotifiy Application Secret Key</span>
+        <input type="text" class="form-control" id="SpotifySecretKey" aria-label="DeezerSecretKey" aria-describedby="inputGroup-sizing-default" />
+
+    </div>
+    <a id="ShowHelpSpotifyModal" class="nav-link" data-toggle="modal" data-target="#helpSpotifymodal">
+        <button type="button" class="btn btn-secondary">
+            Help on Spotify API
+        </button>
+    </a>
+    <button type="button" class="btn btn-danger btn-yes" onclick="post_writeconfig();">Write Config</button>
+
+
+    <script src="/js/error.js" type="text/javascript"></script>
 
 {% endblock %}

@@ -53,4 +53,8 @@ $container['DeezerController'] = function($container) {
     return new \App\Controllers\DeezerController($container);
 };
 
+$container['SpotifyController'] = function($container) {
+    return new \App\Controllers\SpotifyController($container);
+};
+
 require __DIR__ . '/../app/routes.php';

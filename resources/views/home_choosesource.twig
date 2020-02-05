@@ -1,0 +1,45 @@
+{% extends "main.twig" %}
+{% import "macros/Home_SourcesAndDestination.twig" as macro %}
+{% block interactivemenus %}
+    {{include('interactivemenus/loadfile.twig')}}
+{% endblock %}
+{% block content %}
+    <div id="ErrorPage" class="text-center">
+        <h4>Please choose your source</h4>
+
+        {% if fileuploadederror %}
+            <div class="alert alert-danger" role="alert">
+                {{ fileuploadederrormessage }}
+            </div>
+        {% endif %}
+        {#<button type="button" class="btn btn-light  btn-xl hugebutton">
+            <a id="ShowLoadFileModal" class="nav-link" data-toggle="modal" data-target="#loadfile_modal">
+                <img src="/img/ITunes_logo.svg" alt="Deezer" width="120px"/><br>
+                Load an iTunes XML Library File
+            </a>
+            <button type="button" class="btn btn-secondary btn-sm">
+                <a href="https://support.apple.com/guide/itunes/save-a-copy-of-your-playlists-itns2998/windows" target="_blank">Get help</a>
+            </button>
+        </button>    
+        
+        <button type="button" class="btn btn-light  btn-xl hugebutton">
+                <a class="nav-link"  href="{{ deezerauthurl }}">
+                    <img src="/img/favicon.png" alt="Deezer" width="120px"/><br>
+                    Connect to Deezer
+                </a>
+            </button>
+    
+            <button type="button" class="btn btn-light  btn-xl hugebutton">
+                <a class="nav-link"  href="{{ deezerauthurl }}">
+                    <img src="/img/Spotify.svg" alt="Deezer" width="120px"/><br>
+                    Connect to Spotify
+                </a>
+            </button>#}
+<div class="card-deck">
+        {{macro.iTunes()}}
+        {{macro.Deezer(deezerauthurl)}}
+        {{macro.Spotify(spotifyauthurl)}}
+</div>
+    </div>
+
+{% endblock %}

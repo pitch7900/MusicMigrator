@@ -1,4 +1,5 @@
 Header set Access-Control-Allow-Origin "api.deezer.com"
+Header set Access-Control-Allow-Origin "accounts.spotify.com"
 #Redirect Data to proper php script
 <IfModule mod_rewrite.c>
     RewriteEngine On

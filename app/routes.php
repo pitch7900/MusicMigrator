@@ -14,26 +14,24 @@ $app->group('/file', function () {
     
 });
 
-$app->group('/playlist', function () {
+$app->group('/itunes', function () {
 
-    $this->get('/{playlistid}.json', 'PlaylistController:getJsonPlaylistItems')
-            ->setName('playlist.getjsonitems');
-    $this->get('/{playlistid}.html', 'PlaylistController:getPlaylistItems')
-            ->setName('playlist.getitems');
-    $this->get('/song/{songid}.html', 'PlaylistController:getItemDetails')
-            ->setName('playlist.getitemdetails');
+    $this->get('/playlist/{playlistid}.json', 'iTunesController:getJsonPlaylistItems')
+            ->setName('itunes.getplaylistjsonitems');
+    $this->get('/playlist/{playlistid}.html', 'iTunesController:getPlaylistItems')
+            ->setName('itunes.getplaylistitems');
+    $this->get('/song/{songid}.html', 'iTunesController:getItemDetails')
+            ->setName('itunes.getitemdetails');
 });
 
 $app->group('/deezer', function () {
-
-    
     $this->post('/search.json', 'DeezerController:postSearch')
             ->setName('deezer.search');
     $this->post('/searchlist.json', 'DeezerController:postSearchList')
             ->setName('deezer.searchlist');
     $this->get('/searchlist.json', 'DeezerController:getSearchList')
             ->setName('deezer.searchlist');
-    $this->get('/auth', 'DeezerController:getAuth')
+    $this->get('/auth/{sourceordestination}', 'DeezerController:getAuth')
             ->setName('deezer.auth');
     $this->get('/me/about.json', 'DeezerController:getAboutme')
             ->setName('deezer.me.about');
@@ -43,10 +41,37 @@ $app->group('/deezer', function () {
             ->setName('deezer.me.createplaylist');
     $this->post('/playlist/{playlistid}/addsongs','DeezerController:postPlaylistAddSongs')
             ->setName('deezer.playlist.addsongs');
-    
+    $this->get('/playlist/{playlistid}.html', 'DeezerController:getPlaylistItems')
+            ->setName('deezer.getplaylistitems');
 });
 
 $app->group('/spotify', function () {
-    $this->get('/auth', 'SpotifyController:getAuth')
-            ->setName('spotify.auth');
+    $this->post('/search.json', 'SpotifyController:postSearch')
+            ->setName('spotify.search');
+    $this->get('/auth/{sourceordestination}', 'SpotifyController:getAuth')
+            ->setName('spotify.sourcesordestintation.auth');
+    $this->get('/me/about.json', 'SpotifyController:getAboutme')
+            ->setName('spotify.me.about');
+    $this->post('/me/createplaylist','SpotifyController:postCreatePlaylist')
+            ->setName('spotify.me.createplaylist');
+    $this->get('/playlist/{playlistid}.html', 'SpotifyController:getPlaylistItems')
+            ->setName('spotify.getplaylistitems');
+    $this->post('/playlist/{playlistid}/addsongs','SpotifyController:postPlaylistAddSongs')
+            ->setName('spotify.playlist.addsongs');
+});
+
+
+$app->group('/sources', function () {
+    $this->get('/choose', 'SourcesController:getChooseSources')
+            ->setName('sources.choose');
+    $this->get('/change', 'SourcesController:getChangeSources')
+            ->setName('sources.change');
+});
+
+
+$app->group('/destinations', function () {
+    $this->get('/choose', 'DestinationsController:getChooseDestinations')
+            ->setName('destinations.choose');
+    $this->get('/change', 'DestinationsController:getChangeDestinations')
+            ->setName('destinations.change');
 });

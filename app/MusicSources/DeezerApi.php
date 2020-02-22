@@ -62,7 +62,7 @@ class DeezerApi {
     private $ThrottlerRules;
     private $ThrottlerStack;
     public $initialized;
-    
+
     public function __construct() {
 
         $this->_sApiKey = getenv('DEEZER_APIKEY');
@@ -71,10 +71,9 @@ class DeezerApi {
         $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DeezerApi.php(__contruct) New DeeZerApi Constructor called");
         $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DeezerApi.php(__contruct) API key is : " . $this->_sApiKey);
         $this->initiateThrotller();
-        $this->initialized=true;
-        
+        $this->initialized = true;
     }
-    
+
     /**
      * Return a true if this class is correctly initialized
      * @return boolean
@@ -82,7 +81,7 @@ class DeezerApi {
     public function isInitialized() {
         return $this->initialized;
     }
-    
+
     /**
      * Initialize Throttler with values set in the class
      */
@@ -139,6 +138,28 @@ class DeezerApi {
         $url = $this->_sApiUrl . '/search?q=' . $param;
         return json_decode($this->sendRequest($url), true);
     }
+
+    private function FormatSearchRestults($rawdata){
+        $output=array();
+        $output['debug']="Reformat done";
+        $output['accuracy']=$rawdata['accuracy'];
+        $output['trackid']=$rawdata['trackid'];
+        $output['total']=$rawdata['total'];
+        $output['track']['id']=$rawdata['data'][0]['id'];
+        $output['track']['name']=$rawdata['data'][0]['title'];
+        $output['track']['link']=$rawdata['data'][0]['link'];
+        $output['track']['duration']=$rawdata['data'][0]['duration'];
+        $output['album']['name']=$rawdata['data'][0]['album']['title'];
+        $output['album']['id']=$rawdata['data'][0]['album']['id'];
+        $output['album']['link']= str_replace("api.deezer.com","www.deezer.com",$rawdata['data'][0]['album']['tracklist']);
+        $output['album']['picture']=$rawdata['data'][0]['album']['cover'];
+        $output['artist']['name']=$rawdata['data'][0]['artist']['name'];
+        $output['artist']['id']=$rawdata['data'][0]['artist']['id'];
+        $output['artist']['link']=$rawdata['data'][0]['artist']['link'];
+        $output['artist']['picture']=$rawdata['data'][0]['artist']['picture'];
+        return $output;
+    }
+    
     /**
      * Search for an individual song
      * Search is getting less accurate if the number of search results is zero
@@ -150,7 +171,7 @@ class DeezerApi {
      * @throws \Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException
      */
     private function search($artist, $album, $track, $duration) {
-        /* Set duration of the track to be more or less 10% of the duration passed by itunes */
+        /* Set duration of the track to be more or less 10% of the duration passed */
         $dur_min = (int) ($duration / 1000 * 0.9);
         $dur_max = (int) ($duration / 1000 * 1.1);
 
@@ -212,14 +233,14 @@ class DeezerApi {
         if (strcmp($output['total'], '0') == 0) {
             $output['accuracy'] = 0;
         }
-        $output['app_id'] = getenv('DEEZER_APIKEY');
+       
         $output['params'] = $param;
         if (isset($output['error']) && $output['error']['code'] == 4) {
             throw new \Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException($output['error']['message']);
         }
-        return $output;
+        return $this->FormatSearchRestults($output);
     }
-    
+
     /**
      * Search for a list of songs
      * @param array $tracklist
@@ -315,6 +336,7 @@ class DeezerApi {
         $sGet = $this->_sApiUrl . $sUrl . "?access_token=" . $this->getSToken();
         return json_decode($this->sendRequest($sGet), true);
     }
+
     /**
      * Return an array with currently logged in user information
      * @return array
@@ -322,6 +344,7 @@ class DeezerApi {
     public function getUserInformation() {
         return $this->api("/user/me");
     }
+
     /**
      * Return an array with all playlist (name, id) for the current session
      * Do not send in this list, playlist the user is not the creator and automated playlist (loved tracks for example)
@@ -335,12 +358,16 @@ class DeezerApi {
         foreach ($playlists['data'] as $playlist) {
             $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DeezerApi.php(getUserPlaylists) Analysing : " . var_export($playlist, true));
             if ($playlist['creator']['id'] == $userid && $playlist['is_loved_track'] != true) {
+                $playlist['folder'] = false;
+                $playlist['count'] = $playlist['nb_tracks'];
+                $playlist['name'] = $playlist['title'];
                 array_push($filteredplaylists, $playlist);
                 $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DeezerApi.php(getUserPlaylists) Playlist Added");
             }
         }
         return $filteredplaylists;
     }
+
     /**
      * Return the session Token ID
      * @return type
@@ -348,6 +375,7 @@ class DeezerApi {
     public function getSToken() {
         return $_SESSION['deezer_token'];
     }
+
     /**
      * Create a new Playlist
      * @param string $name
@@ -385,6 +413,7 @@ class DeezerApi {
             return json_decode($output);
         }
     }
+
     /**
      * Add TracksID to a playlist
      * @param int $playlistid
@@ -421,13 +450,13 @@ class DeezerApi {
             } while ($RequestToBeDone);
         }
     }
-    
+
     /**
      * count the number of track
      * @return int
      */
     public function countTracks() {
-       
+        
     }
 
     /**
@@ -435,7 +464,7 @@ class DeezerApi {
      * @return int
      */
     public function countPlaylists() {
-       
+        
     }
 
     /**
@@ -444,7 +473,7 @@ class DeezerApi {
      * @return array
      */
     public function getTrack($trackid) {
-       
+        
     }
 
     /**
@@ -453,7 +482,16 @@ class DeezerApi {
      * @return string
      */
     public function getPlaylistName($playlistID) {
-       
+        $userid = $this->getUserInformation()['id'];
+        $playlists = $this->api("/user/" . $userid . "/playlists");
+//        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DeezerApi.php(getPlaylistName)" . var_export($playlists, true));
+        foreach ($playlists['data'] as $playlist) {
+
+            if ($playlistID == $playlist['id']) {
+                return $playlist['title'];
+            }
+        }
+        return "Not Found";
     }
 
     /**
@@ -462,7 +500,7 @@ class DeezerApi {
      * @return array
      */
     public function getPlaylist($playlistID) {
-       
+        
     }
 
     /**
@@ -471,18 +509,31 @@ class DeezerApi {
      * @return array
      */
     public function getPlaylistItems($playlistID) {
-       
+
+        $playlist = $this->api("/playlist/" . $playlistID);
+//        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DeezerApi.php(getPlaylistItems)" . var_export($playlist, true));
+        $list = array();
+        foreach ($playlist['tracks']['data'] as $track) {
+            $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DeezerApi.php(getPlaylistItems)" . var_export($track, true));
+            
+            array_push($list, ["ID" => $track["id"],
+                "Artist" => $track["artist"]["name"],
+                "Album" => $track["album"]["title"],
+                "Song" => $track["title"],
+                "Time" => intval($track["duration"])*1000,
+                "Track" => null,
+                "TotalTracks" => null
+            ]);
+        }
+        return $list;
     }
-
-
 
     /**
      * Return an array with all playlists information (structured with folders of first level)
      * @return array
      */
     public function getPlaylists() {
-       
+        return $this->getUserPlaylists();
     }
-    
-    
+
 }

@@ -14,7 +14,7 @@ class FileController extends Controller {
     }
 
     /**
-     * Get a file for uploading and initialize the $_SESSION["Library"] class
+     * Get a file for uploading and initialize the $_SESSION["itunesapi"] class
      * Return in any case a 303 redirect with a Status argument if needed.
      * @param Request $request
      * @param Response $response
@@ -24,11 +24,11 @@ class FileController extends Controller {
         $lib = new iTunesLibrary();
         $files = $request->getUploadedFiles();
         $newfile = $files['file'];
-        unset($_SESSION['Library']);
+        unset($_SESSION['itunesapi']);
         if ($newfile != null) {
             try {
                 $lib->loadXML($newfile->getStream());
-                $_SESSION['Library'] = serialize($lib);
+                $_SESSION["itunesapi"] = serialize($lib);
             } catch (\Exception $e) {
                 return $this->response
                                 ->withStatus(303)
@@ -43,20 +43,20 @@ class FileController extends Controller {
         }
 
         if (!$lib->isInitialized()) {
-            unset($_SESSION['Library']);
+            unset($_SESSION["itunesapi"]);
             return $this->response
                             ->withStatus(303)
                             ->withHeader('Location', $this->router->pathFor('home') . "?Status=FileError")
                             ->withHeader('Status', 'NOK');
         }
         if ($lib->countTracks() == 0 || $lib->countPlaylists() == 0) {
-            unset($_SESSION['Library']);
+            unset($_SESSION["itunesapi"]);
             return $this->response
                             ->withStatus(303)
                             ->withHeader('Location', $this->router->pathFor('home') . "?Status=FileError")
                             ->withHeader('Status', 'NOK');
         }
-
+        $_SESSION['sources']="itunes";
         return $this->response
                         ->withStatus(303)
                         ->withHeader('Location', $this->router->pathFor('home'))

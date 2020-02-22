@@ -1,0 +1,20 @@
+{% extends "/main.twig" %}
+{% import "macros/Home_SourcesAndDestination.twig" as macro %}
+{% block interactivemenus %}
+
+{% endblock %}
+{% block content %}
+    <div id="ErrorPage" class="text-center">
+        <h4>Please Choose your destination</h4>
+
+        <div class="card-deck">
+            
+            {% if sourcechoosed|lower != "deezer" %}
+                {{macro.Deezer(deezerauthurl)}}
+            {% endif %}
+            {% if sourcechoosed|lower != "spotify" %}
+                {{macro.Spotify(spotifyauthurl)}}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

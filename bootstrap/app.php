@@ -45,8 +45,8 @@ $container['FileController'] = function($container) {
     return new \App\Controllers\FileController($container);
 };
 
-$container['PlaylistController'] = function($container) {
-    return new \App\Controllers\PlaylistController($container);
+$container['iTunesController'] = function($container) {
+    return new \App\Controllers\iTunesController($container);
 };
 
 $container['DeezerController'] = function($container) {
@@ -55,6 +55,13 @@ $container['DeezerController'] = function($container) {
 
 $container['SpotifyController'] = function($container) {
     return new \App\Controllers\SpotifyController($container);
+};
+
+$container['DestinationsController'] = function($container) {
+    return new \App\Controllers\DestinationsController($container);
+};
+$container['SourcesController'] = function($container) {
+    return new \App\Controllers\SourcesController($container);
 };
 
 require __DIR__ . '/../app/routes.php';

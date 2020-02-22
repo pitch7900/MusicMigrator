@@ -1,0 +1,27 @@
+{% extends "main.twig" %}
+{% import "macros/Home_SourcesAndDestination.twig" as macro %}
+{% block interactivemenus %}
+    {{include('interactivemenus/loadfile.twig')}}
+{% endblock %}
+{% block content %}
+    <div id="ErrorPage" class="text-center">
+        <h4>Please choose your source</h4>
+
+        {% if fileuploadederror %}
+            <div class="alert alert-danger" role="alert">
+                {{ fileuploadederrormessage }}
+            </div>
+        {% endif %}
+
+        <div class="card-deck">
+            {{macro.iTunes()}}
+            {% if destinationchoosed|lower != "deezer" %}
+                {{macro.Deezer(deezerauthurl)}}
+            {% endif %}
+            {% if destinationchoosed|lower != "spotify" %}
+                {{macro.Spotify(spotifyauthurl)}}
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}

@@ -48,7 +48,7 @@ class DeezerController extends Controller {
         return $response->withJson($search);
     }
     /**
-     * Get user's informations in Deezer
+     * Get user's information in Deezer
      * @param Request $request
      * @param Response $response
      * @return type
@@ -85,7 +85,13 @@ class DeezerController extends Controller {
      * @param Response $response
      * @return type
      */
-    public function getAuth(Request $request, Response $response) {
+    public function getAuth(Request $request, Response $response,$args) {
+        $sourceordestination = $args['sourceordestination'];
+        if ($sourceordestination=="destinations") {
+            $_SESSION['destinations']="deezer"; 
+        } else {
+            $_SESSION['sources']="deezer"; 
+        }
         if (!isset($_SESSION['deezerapi'])) {
             $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DeezerController.php(getAuth) Creating a new Deezer API class instance");
             $_SESSION['deezerapi'] = serialize(new \App\MusicSources\DeezerApi());
@@ -171,5 +177,34 @@ class DeezerController extends Controller {
         $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DeezerController.php(postPlaylistAddSongs)recieved query to add to a playlist :" . $playlistid . "\n\t" . var_export($tracklist, true));
         return $response->withJson(unserialize($_SESSION['deezerapi'])->AddTracksToPlaylist($playlistid, $tracklist));
     }
+    /**
+     * Redirect to the songs.twig page. Display all songs for a given PlaylistID
+     * @param Request $request
+     * @param Response $response
+     * @param type $args
+     * @return type
+     */
+    public function getPlaylistItems(Request $request, Response $response, $args) {
+        $playlistid = $args['playlistid'];
+        $arguments['playlist'] = unserialize($_SESSION["deezerapi"])->getPlaylistItems($playlistid);
+        $arguments['playlistname'] = unserialize($_SESSION["deezerapi"])->getPlaylistName($playlistid);
+        $arguments['destination'] = $_SESSION['destinations'];
 
+        switch ($_SESSION['destinations']) {
+            case "deezer":
+                $arguments['destinationauthenticated'] = true;
+                $arguments['destinationplaylists'] = unserialize($_SESSION['deezerapi'])->getUserPlaylists();
+                break;
+            case "spotify":
+                $arguments['destinationauthenticated'] = true;
+                $arguments['destinationplaylists'] = unserialize($_SESSION['spotifyapi'])->getUserPlaylists();
+                break;
+            default:
+                $arguments['destinationauthenticated'] = false;
+                break;
+        }
+
+        return $this->view->render($response, 'songs.twig', $arguments);
+        
+    }
 }

@@ -141,7 +141,7 @@ class DeezerApi {
 
     private function FormatSearchRestults($rawdata){
         $output=array();
-        $output['debug']="Reformat done";
+       
         $output['accuracy']=$rawdata['accuracy'];
         $output['trackid']=$rawdata['trackid'];
         $output['total']=$rawdata['total'];

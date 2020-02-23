@@ -99,10 +99,9 @@ class SpotifyApi {
                 ]);
 
 //                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(sendRequest) Full response : " . var_export($response, true));
-                if( $response->getStatusCode()==429) {
-                    $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(sendRequest) Too Many request throwing exception ".$response->getStatusCode());
+                if ($response->getStatusCode() == 429) {
+                    $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(sendRequest) Too Many request throwing exception " . $response->getStatusCode());
                     throw new \Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException("Too many request to Spotify");
-                    
                 }
                 $output = $response->getBody()->getContents();
                 $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(sendRequest) Body : " . var_export($output, true));
@@ -268,7 +267,6 @@ class SpotifyApi {
     private function FormatSearchRestults($rawdata) {
         $output = array();
 //        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(FormatSearchRestults) : " . json_encode($rawdata, true));
-        $output['debug'] = "Reformat done";
         $output['accuracy'] = $rawdata['accuracy'];
 
         $output['total'] = $rawdata['tracks']['total'];
@@ -477,11 +475,12 @@ class SpotifyApi {
         $counter = 0;
         $jsonuri = array();
         foreach ($tracklist as $track) {
-            if (strlen($track)!=0) {
+            //Don't add if a spotify track ID is not found
+            if (strlen($track) != 0) {
                 array_push($jsonuri, "spotify:track:" . $track);
             }
             $RequestToBeDone = true;
-            if ($counter == count($tracklist) - 1 || $counter % 99 == 0)  {
+            if ($counter == count($tracklist) - 1 || $counter % 99 == 0) {
                 do {
                     try {
                         $sUrl = $this->_sApiUrl . "/v1/playlists/" . $playlistid . "/tracks";
@@ -496,6 +495,7 @@ class SpotifyApi {
                         $output = $response->getBody()->getContents();
 //                        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(AddTracksToPlaylist) Response is  : " . $output);
                     } catch (\Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException $e) {
+                        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(AddTracksToPlaylist) Response is  : " . $output);
                         $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(AddTracksToPlaylist) Too many requests. Waiting 1 second ");
                         sleep(1);
                     }
@@ -552,33 +552,34 @@ class SpotifyApi {
      * @return array
      */
     public function getPlaylist($playlistID) {
-        
+        return $this->getPlaylistItems($playlistID);
     }
 
     /**
      * Return all tracks for a given PlaylistID
+     * 
      * @param type $playlistID
-     * @return array
+     * @return array of array ["ID","Artist","Album","Song","Time" in ms,"Track","TotalTracks"]
      */
     public function getPlaylistItems($playlistID) {
-        
-//        $this->logs->write("debug", Logs::$MODE_FILE, "debugspotify.log", "SpotifyApi.php(getPlaylistItems) REQUEST RECIEVED FOR PLAYLIST ID " . $playlistID);
-        $playlist = $this->sendRequest("/v1/playlists/".$playlistID."/tracks");
-//        $this->logs->write("debug", Logs::$MODE_FILE, "debugspotify.log", "SpotifyApi.php(getPlaylistItems)" . var_export($playlist, true));
+        $numberoftracks = $this->sendRequest("/v1/playlists/" . $playlistID . "/tracks?fields=total%2Climit" )['total'];
         $list = array();
-        foreach ($playlist['items'] as $item) {
-//            $this->logs->write("debug", Logs::$MODE_FILE, "debugspotify.log", "SpotifyApi.php(getPlaylistItems)" . var_export($item, true));
+        //Loop because of Spotify Api limitation https://developer.spotify.com/documentation/web-api/reference/playlists/get-playlists-tracks/
+        for ($i = 0; $i < ($numberoftracks / 100); $i++) {
+            $playlist = $this->sendRequest("/v1/playlists/" . $playlistID . "/tracks?limit=100&offset=" . $i*100);
             
-            array_push($list, ["ID" => $item["track"]["id"],
-                "Artist" => $item["track"]["artists"][0]["name"],
-                "Album" => $item["track"]["album"]["name"],
-                "Song" => $item["track"]["name"],
-                "Time" => intval($item["track"]["duration_ms"]),
-                "Track" => $item["track"]["track_number"],
-                "TotalTracks" => $item["track"]["album"]["total_tracks"]
-            ]);
+            $this->logs->write("debug", Logs::$MODE_FILE, "debugspotify.log", "SpotifyApi.php(getPlaylistItems) query sent: /v1/playlists/" . $playlistID . "/tracks?limit=100&offset=" . $i*100);
+            foreach ($playlist['items'] as $item) {
+                array_push($list, ["ID" => $item["track"]["id"],
+                    "Artist" => $item["track"]["artists"][0]["name"],
+                    "Album" => $item["track"]["album"]["name"],
+                    "Song" => $item["track"]["name"],
+                    "Time" => intval($item["track"]["duration_ms"]),
+                    "Track" => $item["track"]["track_number"],
+                    "TotalTracks" => $item["track"]["album"]["total_tracks"]
+                ]);
+            }
         }
-//         $this->logs->write("debug", Logs::$MODE_FILE, "debugspotify.log", "SpotifyApi.php(getPlaylistItems)" . var_export($list, true));
         return $list;
     }
 
@@ -587,7 +588,7 @@ class SpotifyApi {
      * @return array
      */
     public function getPlaylists() {
-        
+        return $this->getUserPlaylists();
     }
 
 }

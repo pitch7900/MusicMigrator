@@ -230,10 +230,10 @@ function UpdateTrackInformations(trackid, data, status, accuracy, destination) {
  * @param {string} Deezer playlist ID
  * @return {undefined}
  */
-function ImportPlaylist(tracklist, playlistid,destination) {
+function ImportPlaylist(tracklist, playlistid, destination) {
     var formdata = new FormData();
     formdata.append('tracklist', JSON.stringify(tracklist));
-    sUrl="/"+destination+"/playlist/" + playlistid + "/addsongs";
+    sUrl = "/" + destination + "/playlist/" + playlistid + "/addsongs";
     $.ajax({
         type: 'post',
         enctype: 'multipart/form-data',
@@ -282,9 +282,9 @@ function ImportTo(destination) {
 
     playlistid = $('#dropdownMenuPlaylist').attr('playlistid');
     if (playlistid === '0') {
-        CreatePlaylistAndImport(tracklist,destination);
+        CreatePlaylistAndImport(tracklist, destination);
     } else {
-        ImportPlaylist(tracklist, playlistid,destination);
+        ImportPlaylist(tracklist, playlistid, destination);
     }
 }
 
@@ -335,6 +335,7 @@ function SecondsToHms(d) {
  * @return {undefined}
  */
 function DestinationLookup(trackid, artist, album, song, duration, destination) {
+    console.log("(DestinationLookup) Searching for " + trackid + " " + artist + " " + album + " " + song + " " + duration + " " + destination);
     var formdata = new FormData();
     formdata.append('trackid', trackid);
     formdata.append('artist', artist);
@@ -362,7 +363,7 @@ function DestinationLookup(trackid, artist, album, song, duration, destination) 
                     UpdateTrackInformations(trackid, null, 0, 0, destination);
 
                 } else {
-                    if (postdata.length === 0 || postdata.total === 0) {
+                    if (postdata.length === 0 || postdata.info.total === 0) {
                         UpdateTrackInformations(trackid, null, 0, 0, destination);
                     } else {
 
@@ -447,7 +448,7 @@ function DeezerLookupList(tracklist) {
  */
 function SearchOnDestination(destination) {
     list = {};
-    console.log("Batch searching on "+destination);
+    console.log("Batch searching on " + destination);
     //Add a spinner and do the search
     $.get('/spinner.html', function (spinnerdata) {
         $('#spinnerplace').html(spinnerdata);
@@ -490,7 +491,7 @@ function RefreshDestination(trackid, destination) {
  * and import the travlist passed in parameter
  * @return the created playlist id
  */
-function CreatePlaylistAndImport(tracklist,destination) {
+function CreatePlaylistAndImport(tracklist, destination) {
 
     playlistid = $('#dropdownMenuPlaylist').attr('playlistid');
     if (playlistid === '0') {
@@ -503,7 +504,7 @@ function CreatePlaylistAndImport(tracklist,destination) {
     formdata.append('name', name);
     formdata.append('public', 'public');
     formdata.append('tracklist', tracklist)
-    sUrl="/"+destination+"/me/createplaylist";
+    sUrl = "/" + destination + "/me/createplaylist";
     $.ajax({
         type: 'post',
         enctype: 'multipart/form-data',
@@ -525,7 +526,7 @@ function CreatePlaylistAndImport(tracklist,destination) {
                 } else {
                     playlistid = postdata.id;
                     console.log("Should be OK. Playlist created under ID " + playlistid);
-                    ImportPlaylist(tracklist, playlistid,destination);
+                    ImportPlaylist(tracklist, playlistid, destination);
                     console.log(tracklist + " data should be imported to " + playlistid);
 //                    return postdata.id;
                 }

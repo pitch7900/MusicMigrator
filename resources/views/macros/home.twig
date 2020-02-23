@@ -1,5 +1,7 @@
 {% macro menu_links(playlists,source) %}
+    
     {% for playlist in playlists %}
+
         {%  if playlist.count>0 or playlist.folder %}
             <li class="notselected"> 
 

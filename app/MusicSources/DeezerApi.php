@@ -484,7 +484,6 @@ class DeezerApi {
     public function getPlaylistName($playlistID) {
         $userid = $this->getUserInformation()['id'];
         $playlists = $this->api("/user/" . $userid . "/playlists");
-//        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DeezerApi.php(getPlaylistName)" . var_export($playlists, true));
         foreach ($playlists['data'] as $playlist) {
 
             if ($playlistID == $playlist['id']) {

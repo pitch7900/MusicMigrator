@@ -71,6 +71,11 @@ class HomeController extends Controller {
             $arguments['spotifypict'] = $spotifyuserinfo['images'][0];
             $arguments['spotifyusername'] = $spotifyuserinfo['display_name'];
         }
+        if (strcmp($_SESSION['sources'], "spotify") == 0) {
+                $spotifyplaylist = unserialize($_SESSION['spotifyapi'])->getUserPlaylists();
+                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "HomeController.php(SpotifyArguments) Spotify is set as source : " . var_export($spotifyplaylist, true));
+                $arguments['playlists'] = $spotifyplaylist;
+            }
         return $arguments;
     }
 
@@ -131,6 +136,7 @@ class HomeController extends Controller {
 
         if (strcmp($_SESSION['destinations'], "spotify") == 0 || strcmp($_SESSION['sources'], "spotify") == 0) {
             $arguments = array_merge($arguments, $this->SpotifyArguments());
+            $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "HomeController.php(home) arguments after mergin Spotify " . var_export($arguments, true));
         }
         $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "HomeController.php(home) arguments global " . var_export($arguments, true));
         return $this->view->render($response, 'home.twig', $arguments);

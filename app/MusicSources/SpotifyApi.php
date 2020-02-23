@@ -237,6 +237,7 @@ class SpotifyApi {
             $output['folder'] = false;
             $output['count'] = $playlist['tracks']['total'];
             $output['title'] = $playlist['name'];
+            $output['name'] = $playlist['name'];
             $output['id'] = $playlist['id'];
             array_push($filteredplaylists, $output);
 //                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "Spotify.php(getUserPlaylists) Playlist Added");
@@ -536,7 +537,13 @@ class SpotifyApi {
      * @return string
      */
     public function getPlaylistName($playlistID) {
-        
+        $playlists = $this->sendRequest("/v1/me/playlists");
+        foreach ($playlists['items'] as $playlist) {
+            if ($playlistID == $playlist['id']) {
+                return $playlist['name'];
+            }
+        }
+        return "Not Found";
     }
 
     /**
@@ -555,6 +562,24 @@ class SpotifyApi {
      */
     public function getPlaylistItems($playlistID) {
         
+//        $this->logs->write("debug", Logs::$MODE_FILE, "debugspotify.log", "SpotifyApi.php(getPlaylistItems) REQUEST RECIEVED FOR PLAYLIST ID " . $playlistID);
+        $playlist = $this->sendRequest("/v1/playlists/".$playlistID."/tracks");
+//        $this->logs->write("debug", Logs::$MODE_FILE, "debugspotify.log", "SpotifyApi.php(getPlaylistItems)" . var_export($playlist, true));
+        $list = array();
+        foreach ($playlist['items'] as $item) {
+//            $this->logs->write("debug", Logs::$MODE_FILE, "debugspotify.log", "SpotifyApi.php(getPlaylistItems)" . var_export($item, true));
+            
+            array_push($list, ["ID" => $item["track"]["id"],
+                "Artist" => $item["track"]["artists"][0]["name"],
+                "Album" => $item["track"]["album"]["name"],
+                "Song" => $item["track"]["name"],
+                "Time" => intval($item["track"]["duration_ms"]),
+                "Track" => $item["track"]["track_number"],
+                "TotalTracks" => $item["track"]["album"]["total_tracks"]
+            ]);
+        }
+//         $this->logs->write("debug", Logs::$MODE_FILE, "debugspotify.log", "SpotifyApi.php(getPlaylistItems)" . var_export($list, true));
+        return $list;
     }
 
     /**

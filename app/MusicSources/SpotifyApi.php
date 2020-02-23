@@ -99,6 +99,11 @@ class SpotifyApi {
                 ]);
 
 //                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(sendRequest) Full response : " . var_export($response, true));
+                if( $response->getStatusCode()==429) {
+                    $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(sendRequest) Too Many request throwing exception ".$response->getStatusCode());
+                    throw new \Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException("Too many request to Spotify");
+                    
+                }
                 $output = $response->getBody()->getContents();
                 $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(sendRequest) Body : " . var_export($output, true));
                 $RequestToBeDone = false;
@@ -261,7 +266,7 @@ class SpotifyApi {
 
     private function FormatSearchRestults($rawdata) {
         $output = array();
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(FormatSearchRestults) : " . json_encode($rawdata, true));
+//        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(FormatSearchRestults) : " . json_encode($rawdata, true));
         $output['debug'] = "Reformat done";
         $output['accuracy'] = $rawdata['accuracy'];
 
@@ -471,9 +476,9 @@ class SpotifyApi {
         $counter = 0;
         $jsonuri = array();
         foreach ($tracklist as $track) {
-
-            array_push($jsonuri, "spotify:track:" . $track);
-
+            if (strlen($track)!=0) {
+                array_push($jsonuri, "spotify:track:" . $track);
+            }
             $RequestToBeDone = true;
             if ($counter == count($tracklist) - 1 || $counter % 99 == 0)  {
                 do {
@@ -488,7 +493,7 @@ class SpotifyApi {
                         ]);
                         $RequestToBeDone = false;
                         $output = $response->getBody()->getContents();
-                        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(AddTracksToPlaylist) Response is  : " . $output);
+//                        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(AddTracksToPlaylist) Response is  : " . $output);
                     } catch (\Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException $e) {
                         $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(AddTracksToPlaylist) Too many requests. Waiting 1 second ");
                         sleep(1);

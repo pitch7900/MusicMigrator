@@ -43,6 +43,8 @@ $app->group('/deezer', function () {
             ->setName('deezer.playlist.addsongs');
     $this->get('/playlist/{playlistid}.html', 'DeezerController:getPlaylistItems')
             ->setName('deezer.getplaylistitems');
+    $this->get('/playlist/{playlistid}/info.json','DeezerController:getPlaylistInfo')
+            ->setName('deezer.playlist.informations');
 });
 
 $app->group('/spotify', function () {
@@ -58,6 +60,8 @@ $app->group('/spotify', function () {
             ->setName('spotify.getplaylistitems');
     $this->post('/playlist/{playlistid}/addsongs','SpotifyController:postPlaylistAddSongs')
             ->setName('spotify.playlist.addsongs');
+    $this->get('/playlist/{playlistid}/info.json','SpotifyController:getPlaylistInfo')
+            ->setName('spotify.playlist.informations');
 });
 
 

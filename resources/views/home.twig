@@ -12,13 +12,23 @@
         <div class="col-sm-3">
 
             <div class="sidenavbar" linkstyle="btn btn-primary">
-
+                <ul class="">
+                    <div class="input-group flex-nowrap">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="CustomPlaylistLinkWrapping">URL</span>
+                        </div>
+                        <input id="CustomPlaylistLink"  type="text" class="form-control" placeholder="Playlist URL" aria-label="Playlist URL" aria-describedby="addon-wrapping">
+                        <div class="input-group-append">
+                            <button class="btn btn-md btn-secondary m-0 px-3 invisible" type="button" id="AddCustomPlaylist" onclick="click_AddCustomPlaylist();">Add</button>
+                        </div>
+                    </div>
+                </ul>
                 <ul class="sidenavbarlist">
 
                     {{ macrohome.menu_links(playlists,source) }}
 
                 </ul>
-             
+
             </div>
         </div>
         <div class="col-sm-9">

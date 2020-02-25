@@ -1,5 +1,5 @@
 {% macro Deezer(deezerauthurl) %}
-    <div class="card text-center" style="width: 18rem;">
+    <div class="card text-center col-sm-12 col-md-3" style="width: 18rem;">
         <center><img class="card-img-top" src="/img/deezer.png" alt="Deezer"  style="width : 10rem"/></center>
         <div class="card-body">
             <a class="nav-link"  href="{{ deezerauthurl }}">
@@ -16,7 +16,7 @@
 
 
 {% macro Spotify(spotifyurl) %}
-    <div class="card text-center" style="width: 18rem;">
+    <div class="card text-center col-sm-12 col-md-3" style="width: 18rem;">
         <center><img class="card-img-top" src="/img/Spotify.svg" alt="Spotify"  style="width : 10rem"/></center>
         <div class="card-body">
             <a class="nav-link"  href="{{ spotifyurl }}">
@@ -33,7 +33,7 @@
 
 
 {% macro iTunes() %}
-    <div class="card text-center" style="width: 18rem;">
+    <div class="card text-center col-sm-12 col-md-3" style="width: 18rem;">
         <center><img class="card-img-top" src="/img/iTunes_logo.svg" alt="iTunes"  style="width : 10rem"/></center>
         <div class="card-body">
             <a id="ShowLoadFileModal" class="nav-link" data-toggle="modal" data-target="#loadfile_modal">

@@ -1,5 +1,7 @@
+
 var searched = 0;
 var total = 0;
+
 
 var Catalog = function () {
     /**
@@ -8,7 +10,6 @@ var Catalog = function () {
      */
     var handler_click_ShowPlaylist = function () {
         $('body').on('click', '#ShowPlaylist', function () {
-
             $('#songlist').empty();
             $(this).parents("li").parent().children().removeClass('selected');
             $(this).parents("li").parent().children().addClass('notselected');
@@ -25,6 +26,7 @@ var Catalog = function () {
             });
         });
     };
+    
 
     /**
      * Decide to display an input boy named "#InputGroupPlaylistName" for giving 
@@ -65,6 +67,27 @@ var Catalog = function () {
             $(this).parents("#track").remove();
         });
     };
+
+    /**
+     * Handle the click on remove a row
+     * @return {undefined}
+     */
+    var listener_addplaylistUrl = function () {
+        $('input[id="CustomPlaylistLink"]').change(function (e) {
+            console.log("Change triggered");
+            setTimeout(function () {
+                changeInputCustomPlaylistURL();
+            }, 100);
+        });
+        $('body').on('paste keydown', '#CustomPlaylistLink', function () {
+            console.log("Paste or keydown triggered");
+            setTimeout(function () {
+                changeInputCustomPlaylistURL();
+            }, 100);
+        });
+        
+    };
+
     /**
      * Check every minute if we're still have a valid Deezer Token.
      * Otherwise force a page refresh for login.
@@ -102,8 +125,10 @@ var Catalog = function () {
     return {
         init: function () {
             handler_click_ShowPlaylist();
+
             handler_click_ImportToDropDownSelection();
             handler_select_iTunes_File();
+            listener_addplaylistUrl();
             handler_click_delete_row_on_table();
             checkLoginStatus();
         }
@@ -112,6 +137,83 @@ var Catalog = function () {
 $(document).ready(function () {
     Catalog.init();
 });
+
+
+/**
+     * Display the playsit choosen in the main right window
+     * @return {undefined}
+     */
+    function click_AddCustomPlaylist() {
+//        $('body').on('click', '#AddCustomPlaylist', function () {
+            console.log($('#CustomPlaylistLink').val());
+            parseInputCustomPlaylistURL(function (parsedinfo) {
+            console.log(parsedinfo['source'] + " " + parsedinfo['playlistid']);
+            $('#songlist').empty();
+            $.get('/spinner.html', function (spinnerdata) {
+                $('#songlist').html(spinnerdata);
+                $.get('/' + parsedinfo['source'] + '/playlist/' + parsedinfo['playlistid'] + '.html', function (data) {
+                    $('#songlist').html(data);
+                });
+            });
+
+        });
+    };
+
+function parseInputCustomPlaylistURL(callbackFunction) {
+    var informationurl = new Object();
+    var a = $('<a>', {
+        href: $('#CustomPlaylistLink').val()
+    });
+    informationurl['error'];
+    var playlistid = a.prop('pathname').substring(a.prop('pathname').lastIndexOf('/') + 1);
+    console.log("Playlist ID " + playlistid);
+    if (a.prop('hostname').includes("spotify") && playlistid.length !== 0) {
+        informationurl['source'] = "spotify";
+        informationurl['playlistid'] = playlistid;
+        informationurl['icon'] = '<span class="badge badge-pill badge-default">spotify</span>';
+    }
+    if (a.prop('hostname').includes("deezer") && playlistid.length !== 0) {
+        informationurl['source'] = "deezer";
+        informationurl['playlistid'] = playlistid;
+        informationurl['icon'] = '<span class="badge badge-pill badge-default">deezer</span>';
+    }
+    $.get('/' + informationurl['source'] + '/playlist/' + informationurl['playlistid'] + '/info.json', function (data) {
+        if (data['tracks'] !== null) {
+            informationurl['playlistname'] = data['name'];
+            informationurl['description'] = data['description'];
+            informationurl['tracks'] = data['tracks'];
+            informationurl['image'] = data['image'];
+        } else {
+            informationurl['source'] = "error";
+        }
+        console.log(informationurl);
+        if (typeof callbackFunction === 'function')
+        {
+            callbackFunction.call(this, informationurl);
+        }
+    });
+
+}
+
+
+function changeInputCustomPlaylistURL() {
+    var url = $('input[id="CustomPlaylistLink"]').val();
+    console.log("change triggered " + url);
+    parseInputCustomPlaylistURL(function (parsedinfo) {
+        if (parsedinfo['source'] !== "error") {
+            $('#AddCustomPlaylist').removeClass("invisible");
+            $('#CustomPlaylistLinkWrapping').html(parsedinfo['icon']);
+        } else {
+            $('#AddCustomPlaylist').addClass("invisible");
+            $('#CustomPlaylistLinkWrapping').html("URL");
+            
+        }
+    });
+
+
+    //$('#CustomPlaylistLink').text('<span class="badge badge-pill badge-default">' + url + '</span>');
+}
+
 
 /**
  * Update a track with search results

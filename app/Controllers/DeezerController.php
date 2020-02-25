@@ -153,7 +153,7 @@ class DeezerController extends Controller {
     public function postCreatePlaylist(Request $request, Response $response) {
         $playlistname = urlencode($request->getParsedBody()['name']);
         $playlistpublic = urlencode($request->getParsedBody()['public']);
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DeezerController.php(postCreatePlaylist)recieved query to create a playlist :", $playlistname . " - " . $playlistpublic);
+        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DeezerController.php(postCreatePlaylist)recieved query to create a playlist :". $playlistname . " - " . $playlistpublic);
         if (!isset($_SESSION['deezerapi'])) {
             return $this->response
                             ->withStatus(401)
@@ -162,6 +162,16 @@ class DeezerController extends Controller {
             return $response->withJson(unserialize($_SESSION['deezerapi'])->CreatePlaylist($playlistname, $playlistpublic));
         }
     }
+    /**
+     * Return a playlist information in JSON format
+     * @param Request $request
+     * @param Response $response
+     */
+    public function getPlaylistInfo(Request $request, Response $response,$args) {
+        $playlistid = $args['playlistid'];
+        return $response->withJson(unserialize($_SESSION['deezerapi'])->GetPlaylistInfo($playlistid));
+    }
+    
     /**
      * Add tracks to a given Deezer PlaylistID
      * @param Request $request

@@ -9,12 +9,12 @@
 
         <div class="card-deck">
             
-            {% if sourcechoosed|lower != "deezer" %}
+{#            {% if sourcechoosed|lower != "deezer" %}#}
                 {{macro.Deezer(deezerauthurl)}}
-            {% endif %}
-            {% if sourcechoosed|lower != "spotify" %}
+{#            {% endif %}#}
+{#            {% if sourcechoosed|lower != "spotify" %}#}
                 {{macro.Spotify(spotifyauthurl)}}
-            {% endif %}
+{#            {% endif %}#}
         </div>
     </div>
 {% endblock %}

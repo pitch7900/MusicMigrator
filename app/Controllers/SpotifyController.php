@@ -144,8 +144,8 @@ class SpotifyController extends Controller {
     public function postCreatePlaylist(Request $request, Response $response) {
         $playlistname = urlencode($request->getParsedBody()['name']);
         $playlistpublic = urlencode($request->getParsedBody()['public']);
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyController.php(postCreatePlaylist)recieved query to create a playlist :", $playlistname . " - " . $playlistpublic);
-        if (!isset($_SESSION['deezerapi'])) {
+        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyController.php(postCreatePlaylist)recieved query to create a playlist :". $playlistname . " - " . $playlistpublic);
+        if (!isset($_SESSION['spotifyapi'])) {
             return $this->response
                             ->withStatus(401)
                             ->withHeader('Error', 'Not logged in to Spotify');
@@ -153,6 +153,17 @@ class SpotifyController extends Controller {
             return $response->withJson(unserialize($_SESSION['spotifyapi'])->CreatePlaylist($playlistname, $playlistpublic));
         }
     }
+    
+    /**
+     * Return a playlist information in JSON format
+     * @param Request $request
+     * @param Response $response
+     */
+    public function getPlaylistInfo(Request $request, Response $response,$args) {
+        $playlistid = $args['playlistid'];
+        return $response->withJson(unserialize($_SESSION['spotifyapi'])->GetPlaylistInfo($playlistid));
+    }
+    
     /**
      * Add tracks to a given Deezer PlaylistID
      * @param Request $request

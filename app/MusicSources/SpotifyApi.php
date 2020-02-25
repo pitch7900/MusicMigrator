@@ -537,13 +537,21 @@ class SpotifyApi {
      * @return string
      */
     public function getPlaylistName($playlistID) {
-        $playlists = $this->sendRequest("/v1/me/playlists");
-        foreach ($playlists['items'] as $playlist) {
-            if ($playlistID == $playlist['id']) {
-                return $playlist['name'];
-            }
-        }
-        return "Not Found";
+        return $this->sendRequest("/v1/playlists/" . $playlistID . "?fields=fields%3Ddescription")['name'];
+    }
+
+    private function PlaylistInfoFormat($rawdata) {
+        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(PlaylistInfoFormat) ".var_export($rawdata,true));
+        $output['name']=$rawdata['name'];
+        $output['id']=$rawdata['id'];
+        $output['description']=$rawdata['description'];
+        $output['tracks']=$rawdata['tracks']['total'];
+        $output['image']=$rawdata['images'][0]['url'];
+        return $output;
+    }
+
+    public function GetPlaylistInfo($playlistID) {
+        return $this->PlaylistInfoFormat($this->sendRequest("/v1/playlists/" . $playlistID));
     }
 
     /**
@@ -562,13 +570,13 @@ class SpotifyApi {
      * @return array of array ["ID","Artist","Album","Song","Time" in ms,"Track","TotalTracks"]
      */
     public function getPlaylistItems($playlistID) {
-        $numberoftracks = $this->sendRequest("/v1/playlists/" . $playlistID . "/tracks?fields=total%2Climit" )['total'];
+        $numberoftracks = $this->sendRequest("/v1/playlists/" . $playlistID . "/tracks?fields=total%2Climit")['total'];
         $list = array();
         //Loop because of Spotify Api limitation https://developer.spotify.com/documentation/web-api/reference/playlists/get-playlists-tracks/
         for ($i = 0; $i < ($numberoftracks / 100); $i++) {
-            $playlist = $this->sendRequest("/v1/playlists/" . $playlistID . "/tracks?limit=100&offset=" . $i*100);
-            
-            $this->logs->write("debug", Logs::$MODE_FILE, "debugspotify.log", "SpotifyApi.php(getPlaylistItems) query sent: /v1/playlists/" . $playlistID . "/tracks?limit=100&offset=" . $i*100);
+            $playlist = $this->sendRequest("/v1/playlists/" . $playlistID . "/tracks?limit=100&offset=" . $i * 100);
+
+            $this->logs->write("debug", Logs::$MODE_FILE, "debugspotify.log", "SpotifyApi.php(getPlaylistItems) query sent: /v1/playlists/" . $playlistID . "/tracks?limit=100&offset=" . $i * 100);
             foreach ($playlist['items'] as $item) {
                 array_push($list, ["ID" => $item["track"]["id"],
                     "Artist" => $item["track"]["artists"][0]["name"],

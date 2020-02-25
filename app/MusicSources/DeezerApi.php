@@ -482,17 +482,24 @@ class DeezerApi {
      * @return string
      */
     public function getPlaylistName($playlistID) {
-        $userid = $this->getUserInformation()['id'];
-        $playlists = $this->api("/user/" . $userid . "/playlists");
-        foreach ($playlists['data'] as $playlist) {
-
-            if ($playlistID == $playlist['id']) {
-                return $playlist['title'];
-            }
-        }
-        return "Not Found";
+        return $this->api("/playlist/".$playlistID)['title'];        
     }
-
+    
+    private function PlaylistInfoFormat($rawdata){
+        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "DeezerApi.php(PlaylistInfoFormat) ".var_export($rawdata,true));
+        $output['name']=$rawdata['title'];
+        $output['id']=$rawdata['id'];
+        $output['description']=$rawdata['description'];
+        $output['tracks']=$rawdata['nb_tracks'];
+        $output['image']=$rawdata['picture'];
+        return $output;
+    }
+    
+    public function GetPlaylistInfo($playlistID) {
+        return $this->PlaylistInfoFormat($this->api("/playlist/".$playlistID));      
+    }
+    
+    
     /**
      * Return the playlist array for a given PlaylistID
      * @param int $playlistID

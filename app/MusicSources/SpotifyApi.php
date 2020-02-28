@@ -97,13 +97,12 @@ class SpotifyApi {
                     'headers' => $headers,
 //                    'debug' => true
                 ]);
-
-//                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(sendRequest) Full response : " . var_export($response, true));
+                $output = $response->getBody()->getContents();
                 if ($response->getStatusCode() == 429) {
-                    $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(sendRequest) Too Many request throwing exception " . $response->getStatusCode());
+                    $this->logs->write("debug", Logs::$MODE_FILE, "debug429.log", "SpotifyApi.php(sendRequest) Too Many request throwing exception " . $response->getStatusCode()."\n\t".$output);
                     throw new \Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException("Too many request to Spotify");
                 }
-                $output = $response->getBody()->getContents();
+                
                 $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(sendRequest) Body : " . var_export($output, true));
                 $RequestToBeDone = false;
             } catch (\Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException $e) {

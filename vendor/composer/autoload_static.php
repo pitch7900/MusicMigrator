@@ -48,7 +48,6 @@ class ComposerStaticInit42b1586eb693e61119db7c7e66e0c9f9
             'Symfony\\Component\\EventDispatcher\\' => 34,
             'Symfony\\Component\\ErrorHandler\\' => 31,
             'Symfony\\Component\\Debug\\' => 24,
-            'SpotifyWebAPI\\' => 14,
             'Slim\\Views\\' => 11,
             'Slim\\Psr7\\' => 10,
             'Slim\\HttpCache\\' => 15,
@@ -172,10 +171,6 @@ class ComposerStaticInit42b1586eb693e61119db7c7e66e0c9f9
         'Symfony\\Component\\Debug\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/debug',
-        ),
-        'SpotifyWebAPI\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/jwilsson/spotify-web-api-php/src',
         ),
         'Slim\\Views\\' => 
         array (

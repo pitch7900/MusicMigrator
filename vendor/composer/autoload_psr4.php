@@ -24,7 +24,6 @@ return array(
     'Symfony\\Component\\EventDispatcher\\' => array($vendorDir . '/symfony/event-dispatcher'),
     'Symfony\\Component\\ErrorHandler\\' => array($vendorDir . '/symfony/error-handler'),
     'Symfony\\Component\\Debug\\' => array($vendorDir . '/symfony/debug'),
-    'SpotifyWebAPI\\' => array($vendorDir . '/jwilsson/spotify-web-api-php/src'),
     'Slim\\Views\\' => array($vendorDir . '/slim/twig-view/src'),
     'Slim\\Psr7\\' => array($vendorDir . '/slim/psr7/src'),
     'Slim\\HttpCache\\' => array($vendorDir . '/slim/http-cache/src'),

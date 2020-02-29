@@ -1,8 +1,8 @@
 {% extends "main.twig" %}
 
 {% block interactivemenus %}
-    
-{#    Deezer Help Modal#}
+
+    {#    Deezer Help Modal#}
     <div class="modal fade" id="helpdeezermodal" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -26,7 +26,7 @@
         </div>
     </div>
 
-{#    Spotify Help Modal#}
+    {#    Spotify Help Modal#}
     <div class="modal fade" id="helpSpotifymodal" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -42,6 +42,13 @@
                     <p>You can retrieve these informations on : <a href="https://developer.spotify.com/dashboard/applications">https://developer.spotify.com/dashboard/applications</a></p>
                     <p>or</p>
                     <a href="https://developer.spotify.com/web-api/">https://developer.spotify.com/web-api</a>
+                    <p>You should fill the following information on the Spotify Web Api declaration</p>
+                    <ul>
+                        <li>http(s)://yoursiteurl:port/spotify/auth/sources</li>
+                        <li>http(s)://yoursiteurl:port/spotify/auth/destinations</li>
+                        <li>http(s)://yoursiteurl:port/spotify/me/about.json</li>
+                        <li>http(s)://yoursiteurl:port</li>
+                    </ul>
                     <img src="/img/SpotifyApiHelp.png" alt="SpotifyApiHelp" style="width:100%"/>
                 </div>
                 <div class="modal-footer">

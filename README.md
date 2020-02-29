@@ -5,7 +5,11 @@ You need an account on Deezer API for developpers https://developers.deezer.com/
 
 
 You'll also need an account on Spotify WebAPI developpeur page. See : https://developer.spotify.com/web-api
-
+Following URL should be filled in the App declaration :
+ - http(s)://yoursiteurl:port/spotify/auth/sources
+ - http(s)://yoursiteurl:port/spotify/auth/destinations
+ - http(s)://yoursiteurl:port/spotify/me/about.json
+ - http(s)://yoursiteurl:port
 ## 1. Configuration File needed
 You'll need to create a /config/.env file with following parameters:
 ```ini

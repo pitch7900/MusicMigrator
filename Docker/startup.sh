@@ -8,4 +8,4 @@ composer install
 cd ..
 tar -czf musicmigrator.tar.gz musicmigrator
 docker build .
-echo "Start now the container with : docker-compose up --build" 
+echo "Start now the container with : docker-compose up" 

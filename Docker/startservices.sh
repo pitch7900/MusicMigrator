@@ -2,7 +2,6 @@
 SERVICENAME="musicmigrator"
 echo "Init Script starting"
 
-
 files=($(ls /docker-entrypoint-init.d/ -a))
 
 for f in "${files[@]}"; do
@@ -20,19 +19,20 @@ done
 echo "Creating /var/www/$SERVICENAME/log"; mkdir -p /var/www/$SERVICENAME/log ; echo ;
 echo "Changing permissions in /var/www/$SERVICENAME"; chown -R www-data:www-data /var/www/$SERVICENAME ; echo ;
 
-
+#change php.ini values to allow upload fo files bigger than default value
+#This is very usefulle for iTunes plist Libraries which can be huge
 echo "Changing values in php.ini"
 post_max_size=200M
 upload_max_filesize=200M
 max_execution_time=120
 max_input_time=120
 memory_limit=1024M
-
-
+#Path to php.ini file for php 7.2 on ubuntu 18.04
 phpinipath=/etc/php/7.2/apache2/php.ini
+
 for key in upload_max_filesize post_max_size max_execution_time max_input_time memory_limit
 do
- echo "$key"
+ echo "  Changing $key"
  sed -i "s/^\($key\).*/\1 $(eval echo = \${$key})/" $phpinipath
 done
 

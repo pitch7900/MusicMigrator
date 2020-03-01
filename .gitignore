@@ -1,2 +1,4 @@
 /cli/
 /config/.env
+/vendor/
+/nbproject/private/

@@ -1,8 +1,10 @@
-# iTunes2Deezer
-Read an xml plist from iTunes and convert playlist (at your convenience) into a Deezer Playlist. 
+# Music Migrator
+Allow the migration of playlist between 
+- iTunes Plist XML file
+- Spotify
+- Deezer
 
 You need an account on Deezer API for developpers https://developers.deezer.com/ and create an app. https://developers.deezer.com/myapps
-
 
 You'll also need an account on Spotify WebAPI developpeur page. See : https://developer.spotify.com/web-api
 Following URL should be filled in the App declaration :

@@ -7,7 +7,7 @@ Allow the migration of playlist between
 You need an account on Deezer API for developpers https://developers.deezer.com/ and create an app. https://developers.deezer.com/myapps
 
 You'll also need an account on Spotify WebAPI developpeur page. See : https://developer.spotify.com/web-api
-Following URL should be filled in the App declaration :
+Following URL should be filled in the App declaration for Spotify :
  - http(s)://yoursiteurl:port/spotify/auth/sources
  - http(s)://yoursiteurl:port/spotify/auth/destinations
  - http(s)://yoursiteurl:port/spotify/me/about.json
@@ -27,9 +27,16 @@ If "/config" directory and .env files are missing, then a configuration interfac
 A menu will pop up to help you fill the basic informations need to allow the app to run
 
 ## 3. Installation
-Download the project and setup your webserver configuration to point to the /public folder.
+Download the project from github,remove the vendor folder and reinstall composer packages 
+```bash
+git clone https://github.com/pitch7900/MusicMigrator.git
+cd MusicMigrator
+rm -rf vendor
+composer install
+```
+and setup your webserver configuration to point to the /public folder.
 
-For example, the project is downloaded to /var/www/iTunes2Deezer and the virtual host points to /var/www/iTunes2Deezer/public
+For example, the project is downloaded to /var/www/MusicMigrator and the virtual host points to /var/www/MusicMigrator/public
 
 ```ApacheConf
 <VirtualHost *:80>
@@ -38,13 +45,13 @@ For example, the project is downloaded to /var/www/iTunes2Deezer and the virtual
         ServerAlias <WEBSERVERNAME>
         Header set Access-Control-Allow-Origin "*"
         ServerAdmin webmaster@localhost
-        DocumentRoot /var/www/iTunes2Deezer/public
+        DocumentRoot /var/www/MusicMigrator/public
 
-        ErrorLog ${APACHE_LOG_DIR}/itunes2deezer-error.log
-        CustomLog ${APACHE_LOG_DIR}/itunes2deezer-access.log combined
+        ErrorLog ${APACHE_LOG_DIR}/MusicMigrator-error.log
+        CustomLog ${APACHE_LOG_DIR}/MusicMigrator-access.log combined
         LogLevel alert rewrite:trace6
 
-        <Directory "/var/www/iTunes2Deezer/public">
+        <Directory "/var/www/MusicMigrator/public">
                 Options Indexes FollowSymLinks
                 AllowOverride All
         </Directory>

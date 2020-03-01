@@ -61,6 +61,19 @@ For example, the project is downloaded to /var/www/MusicMigrator and the virtual
 For a build under docker see folder /Docker and run the startup.sh.
 
 It will download the git project, recreate the vendor from composer and package everything for a docker image ready to run
+```bash
+#!/bin/bash
+#apt-get install -y composer git libapache2-mod-php php-mbstring
+git clone https://github.com/pitch7900/MusicMigrator.git
+rm -rf ./MusicMigrator/vendor
+mv MusicMigrator musicmigrator
+cd musicmigrator
+composer install
+cd ..
+tar -czf musicmigrator.tar.gz musicmigrator
+docker build .
+echo "Start now the container with : docker-compose up --build" 
+```
 
 ## 5. Credits
 - Throttler : https://github.com/hamburgscleanest/guzzle-advanced-throttle

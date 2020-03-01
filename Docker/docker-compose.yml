@@ -1,0 +1,12 @@
+version: '3.3'
+
+services:
+  musicmigrator:
+    build: .
+    image: musicmigrator
+    container_name: musicmigrator
+    ports:
+      - "82:80"
+    volumes:
+      - ./conf/.env:/docker-entrypoint-init.d/.env
+

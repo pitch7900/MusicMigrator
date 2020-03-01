@@ -57,7 +57,12 @@ For example, the project is downloaded to /var/www/MusicMigrator and the virtual
         </Directory>
 </VirtualHost>
 ```
-## 4. Credits
+## 4. Docker
+For a build under docker see folder /Docker and run the startup.sh.
+
+It will download the git project, recreate the vendor from composer and package everything for a docker image ready to run
+
+## 5. Credits
 - Throttler : https://github.com/hamburgscleanest/guzzle-advanced-throttle
 - Deezer Wrapper : https://github.com/mbuonomo/Deezer-API-PHP-class/
 - Seconds to HMS in twig : https://caffeinecreations.ca/blog/twig-macro-convert-seconds-to-hhmmss/

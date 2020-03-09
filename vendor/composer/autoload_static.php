@@ -62,6 +62,10 @@ class ComposerStaticInitaaaf8116ee2a4998131c165771364449
             'Predis\\' => 7,
             'PhpOption\\' => 10,
         ),
+        'M' => 
+        array (
+            'Monolog\\' => 8,
+        ),
         'I' => 
         array (
             'Illuminate\\Support\\' => 19,
@@ -198,8 +202,8 @@ class ComposerStaticInitaaaf8116ee2a4998131c165771364449
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-message/src',
-            1 => __DIR__ . '/..' . '/psr/http-factory/src',
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
         'Psr\\Container\\' => 
         array (
@@ -212,6 +216,10 @@ class ComposerStaticInitaaaf8116ee2a4998131c165771364449
         'PhpOption\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpoption/phpoption/src/PhpOption',
+        ),
+        'Monolog\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
         ),
         'Illuminate\\Support\\' => 
         array (

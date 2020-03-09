@@ -4,8 +4,6 @@ namespace App\Controllers;
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
-use App\MusicSources\SpotifyApi as SpotifyApi;
-use \App\Utils\Logs as Logs;
 
 /**
  * Description of DeezerController
@@ -14,12 +12,10 @@ use \App\Utils\Logs as Logs;
  */
 class SourcesController extends Controller {
 
-    private $logs;
-
     public function __construct($container) {
 
         parent::__construct($container);
-        $this->logs = new Logs();
+
     }
 
     public function getChooseSources(Request $request, Response $response) {

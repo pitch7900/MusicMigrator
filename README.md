@@ -79,3 +79,4 @@ echo "Start now the container with : docker-compose up --build"
 - Throttler : https://github.com/hamburgscleanest/guzzle-advanced-throttle
 - Deezer Wrapper : https://github.com/mbuonomo/Deezer-API-PHP-class/
 - Seconds to HMS in twig : https://caffeinecreations.ca/blog/twig-macro-convert-seconds-to-hhmmss/
+- Logger (monolog) : https://packagist.org/packages/monolog/monolog, https://github.com/Seldaek/monolog

@@ -8,7 +8,8 @@
 
 namespace App\MusicSources;
 
-use \App\Utils\Logs as Logs;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 use \hamburgscleanest\GuzzleAdvancedThrottle as GuzzleAdvancedThrottle;
 use GuzzleHttp\RequestOptions;
 
@@ -19,24 +20,22 @@ use GuzzleHttp\RequestOptions;
  */
 class SpotifyApi {
 
-    private $logs;
+    private $log;
     private $_sAuthUrl = "https://accounts.spotify.com";
     private $_sApiUrl = "https://api.spotify.com";
     private $ThrottlerRules;
     private $ThrottlerStack;
     private $initialized;
-    private $session;
-    private $api;
     private $sAPIKey;
     private $sAPISecretKey;
-    private $sToken;
 
     public function __construct() {
-        $this->logs = new Logs();
+        $this->initializeLogger();
+
 
         $this->sAPIKey = getenv('SPOTIFY_APIKEY');
         $this->sAPISecretKey = getenv('SPOTIFY_APISECRETKEY');
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(__contruct) New SpotifyApi Constructor called\n\t" .
+        $this->log->debug("(__contruct) New SpotifyApi Constructor called\n\t" .
                 getenv('SPOTIFY_APIKEY') . "\n\t" .
                 getenv('SPOTIFY_APISECRETKEY')
         );
@@ -44,7 +43,14 @@ class SpotifyApi {
     }
 
     public function __sleep() {
-        return array('api', 'session', 'initialized', 'ThrottlerRules', 'ThrottlerStack', 'logs', 'sAPIKey', 'sAPISecretKey', 'sToken');
+        return array('api', 'session', 'initialized', 'ThrottlerRules', 'ThrottlerStack', 'log', 'sAPIKey', 'sAPISecretKey', 'sToken');
+    }
+
+    private function initializeLogger() {
+        if ($this->log == null) {
+            $this->log = new Logger('SpotifyApi.php');
+            $this->log->pushHandler(new StreamHandler(__DIR__ . '/../../logs/debug.log', Logger::DEBUG));
+        }
     }
 
     private function initiateThrotller() {
@@ -90,8 +96,8 @@ class SpotifyApi {
         }
         do {
             try {
-                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(sendRequest) Spotify request recieved : " . $sUrl);
-                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(sendRequest) Spotify request Auth Headers are : " . var_export($headers, true));
+                $this->log->debug("(sendRequest) Spotify request recieved : " . $sUrl);
+                $this->log->debug("(sendRequest) Spotify request Auth Headers are : " . var_export($headers, true));
 
                 $response = $client->get($sUrl, [
                     'headers' => $headers,
@@ -99,21 +105,21 @@ class SpotifyApi {
                 ]);
                 $output = $response->getBody()->getContents();
                 if ($response->getStatusCode() == 429) {
-                    $this->logs->write("debug", Logs::$MODE_FILE, "debug429.log", "SpotifyApi.php(sendRequest) Too Many request throwing exception " . $response->getStatusCode()."\n\t".$output);
+                    $this->log->info("(sendRequest) Too Many request throwing exception " . $response->getStatusCode() . "\n\t" . $output);
                     throw new \Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException("Too many request to Spotify");
                 }
-                
-                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(sendRequest) Body : " . var_export($output, true));
+
+                $this->log->debug("(sendRequest) Body : " . var_export($output, true));
                 $RequestToBeDone = false;
             } catch (\Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException $e) {
-                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(sendRequest) Too many requests. Waiting 1 second");
+                $this->log->info("(sendRequest) Too many requests. Waiting 1 second");
                 sleep(1);
             }
         } while ($RequestToBeDone);
 
 
         if ($output === false) {
-            $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(sendRequest) Error curl : " . curl_error($c), E_USER_WARNING);
+            $this->log->error("(sendRequest) Error curl : " . curl_error($c), E_USER_WARNING);
             trigger_error('Erreur curl : ' . curl_error($c), E_USER_WARNING);
         } else {
             curl_close($c);
@@ -129,19 +135,10 @@ class SpotifyApi {
      * @return string
      */
     public function getAuthUrl($sRedirectUrl = null, $options = ['scope' => ['user-read-email', 'user-read-private', 'user-library-read', 'playlist-modify-public']]) {
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(getAuthUrl) : 1- $sRedirectUrl \n\t" . var_export($options, true));
-//        $this->session = new \SpotifyWebAPI\Session(
-//                        getenv('SPOTIFY_APIKEY'),
-//                        getenv('SPOTIFY_APISECRETKEY'),
-//                        $sRedirectUrl
-//        );
-//        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(getAuthUrl) : 2 \n\t" . var_export(unserialize($_SESSION['spotify_session']), true));
-//        $this->session->setRedirectUri($sRedirectUrl);
+        $this->log->debug("(getAuthUrl) : 1- $sRedirectUrl \n\t" . var_export($options, true));
         $AuthURL = $this->_sAuthUrl . "/authorize?client_id=" . getenv('SPOTIFY_APIKEY') . "&redirect_uri=" . urlencode($sRedirectUrl) . "&response_type=code&scope=" . urlencode(implode(" ", $options['scope']));
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(getAuthUrl) Authentication URL : $AuthURL");
+        $this->log->debug("(getAuthUrl) Authentication URL : $AuthURL");
         return $AuthURL;
-//        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(getAuthUrl) : 3 \n\t" . var_export(unserialize($_SESSION['spotify_session']), true));
-//        return $this->session->getAuthorizeUrl($options);
     }
 
     /**
@@ -177,31 +174,31 @@ class SpotifyApi {
 
         do {
             try {
-                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(apiconnect) Spotify Token Request on : " . $sUrl);
-                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(apiconnect) Spotify Token Request Headers : " . var_export($headers, true));
-                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(apiconnect) Spotify Token Request Parameters : " . var_export($parameters, true));
+                $this->log->debug("(apiconnect) Spotify Token Request on : " . $sUrl);
+                $this->log->debug("(apiconnect) Spotify Token Request Headers : " . var_export($headers, true));
+                $this->log->debug("(apiconnect) Spotify Token Request Parameters : " . var_export($parameters, true));
                 $response = $client->request('POST', $sUrl, [
                     RequestOptions::FORM_PARAMS => $parameters,
                     RequestOptions::HEADERS => $headers
                 ]);
-                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(apiconnect) : " . var_export($response, true));
+                $this->log->debug("(apiconnect) : " . var_export($response, true));
                 $output = $response->getBody();
                 $RequestToBeDone = false;
             } catch (\Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException $e) {
-                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(apiconnect) Too many requests. Waiting 1 second");
+                $this->log->debug("(apiconnect) Too many requests. Waiting 1 second");
                 sleep(1);
             }
         } while ($RequestToBeDone);
 
 
         if ($output === false) {
-            $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(apiconnect) Error curl : " . curl_error($c), E_USER_WARNING);
+            $this->log->debug("(apiconnect) Error curl : " . curl_error($c), E_USER_WARNING);
             trigger_error('Erreur curl : ' . curl_error($c), E_USER_WARNING);
             return false;
         } else {
             curl_close($c);
             $_SESSION['spotifytoken'] = json_decode($output, true)['access_token'];
-            $this->logs->write("debug", Logs::$MODE_FILE, "spotify.log", "SpotifyApi.php(apiconnect) Token Bearer : Bearer " . $_SESSION['spotifytoken']);
+            $this->log->debug("(apiconnect) Token Bearer : Bearer " . $_SESSION['spotifytoken']);
             $_SESSION['spotifyexpiretoken'] = time() + json_decode($output, true)['expires_in'];
             $_SESSION['spotifyrefreshtoken'] = json_decode($output, true)['refresh_token'];
             return json_decode($output, true)['access_token'];
@@ -214,7 +211,8 @@ class SpotifyApi {
      */
     public function getUserInformation() {
         if (isset($_SESSION['spotifyapi'])) {
-            $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(getUserInformation) Token : " . $this->getSToken());
+
+            $this->log->debug("(getUserInformation) Token : " . $this->getSToken());
             return $this->sendRequest($this->_sApiUrl . '/v1/me');
         } else {
             return null;
@@ -230,18 +228,16 @@ class SpotifyApi {
         $playlists = $this->sendRequest("/v1/me/playlists");
         $filteredplaylists = array();
         foreach ($playlists['items'] as $playlist) {
-//            $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "Spotify.php(getUserPlaylists) Analysing : " . var_export($playlist, true));
-            // if ($playlist['creator']['id'] == $userid && $playlist['is_loved_track'] != true) {
+
+
             $output['folder'] = false;
             $output['count'] = $playlist['tracks']['total'];
             $output['title'] = $playlist['name'];
             $output['name'] = $playlist['name'];
             $output['id'] = $playlist['id'];
             array_push($filteredplaylists, $output);
-//                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "Spotify.php(getUserPlaylists) Playlist Added");
-            //}
         }
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "Spotify.php(getUserPlaylists) Playlists : " . var_export($filteredplaylists, true));
+        $this->log->debug("(getUserPlaylists) Playlists : " . var_export($filteredplaylists, true));
         return $filteredplaylists;
     }
 
@@ -259,13 +255,12 @@ class SpotifyApi {
 
     private function search_params($param) {
         $url = $this->_sApiUrl . '/v1/search?q=' . $param . '&type=track';
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(search_params) : " . $url);
+        $this->log->debug("(search_params) : " . $url);
         return $this->sendRequest($url);
     }
 
     private function FormatSearchRestults($rawdata) {
         $output = array();
-//        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(FormatSearchRestults) : " . json_encode($rawdata, true));
         $output['accuracy'] = $rawdata['accuracy'];
 
         $output['total'] = $rawdata['tracks']['total'];
@@ -280,7 +275,6 @@ class SpotifyApi {
         $output['artist']['name'] = $rawdata['tracks']['items'][0]['album']['artists'][0]['name'];
         $output['artist']['id'] = $rawdata['tracks']['items'][0]['album']['artists'][0]['id'];
         $output['artist']['link'] = $rawdata['tracks']['items'][0]['album']['artists'][0]['external_urls']['spotify'];
-//        $output['artist']['picture']=$rawdata['tracks']['items'][0]['album']['artists'][0]['picture'];
         return $output;
     }
 
@@ -295,6 +289,7 @@ class SpotifyApi {
      * @throws \Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException
      */
     private function search($artist, $album, $track, $duration) {
+
         /* Set duration of the track to be more or less 10% of the duration passed */
         $dur_min = (int) ($duration / 1000 * 0.9);
         $dur_max = (int) ($duration / 1000 * 1.1);
@@ -309,20 +304,20 @@ class SpotifyApi {
         $output = $this->search_params($param);
 
         $output['accuracy'] = 6;
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(search) Output : " . var_export($output, true));
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(search) Total matches : " . $output['tracks']['total']);
+        $this->log->debug("(search) Output : " . var_export($output, true));
+        $this->log->debug("(search) Total matches : " . $output['tracks']['total']);
 
         if (strcmp($output['tracks']['total'], '0') == 0) {
             $matches = array();
             preg_match_all('/(.*)\(.*\)| - .*/m', urldecode($track), $matches, PREG_SET_ORDER, 0);
             if (strlen($matches[0][1]) !== 0) {
 
-                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(search) Remove unecesssary chars from title : " . $track . "\n\t" . json_encode($matches));
+                $this->log->debug("(search) Remove unecesssary chars from title : " . $track . "\n\t" . json_encode($matches));
 
                 $track = urlencode($matches[0][1]);
 
                 $param = 'artists:"' . $artist . '"name:"' . $track . '"album:"' . $album . '"';
-                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(search) Spotify Search query " . $param);
+                $this->log->debug("(search) Spotify Search query " . $param);
                 $output = $this->search_params($param);
                 $output['accuracy'] = 5;
             }
@@ -349,8 +344,8 @@ class SpotifyApi {
             preg_match_all('/(.*)\(.*\)| - .*/m', urldecode($track), $matches, PREG_SET_ORDER, 0);
             if (strlen($matches[0][1]) !== 0) {
                 $param = '"' . urlencode($matches[0][1]) . '"';
-                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(search) Remove unecesssary chars from title : " . $track . "\n\t" . json_encode($matches));
-                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(search) Spotify Search query " . $param);
+                $this->log->debug("(search) Remove unecesssary chars from title : " . $track . "\n\t" . json_encode($matches));
+                $this->log->debug("(search) Spotify Search query " . $param);
                 $output = $this->search_params($param);
                 $output['accuracy'] = 1;
             }
@@ -377,14 +372,15 @@ class SpotifyApi {
      * @return array with search results
      */
     public function SearchIndividual($trackid, $artist, $album, $song, $duration) {
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(SearchIndividual) searching for  TrackID : " . $trackid);
+
+        $this->log->debug("(SearchIndividual) searching for  TrackID : " . $trackid);
         $RequestToBeDone = true;
         do {
             try {
                 $search_result = $this->search($artist, $album, $song, $duration);
                 $RequestToBeDone = false;
             } catch (\Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException $e) {
-                $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(SearchIndividual) Too many requests. Waiting 1 second");
+                $this->log->debug("(SearchIndividual) Too many requests. Waiting 1 second");
                 sleep(1);
             }
         } while ($RequestToBeDone);
@@ -399,13 +395,14 @@ class SpotifyApi {
      * @return string playlist id
      */
     public function CreatePlaylist($name, $public) {
+
         $name = str_replace('+', ' ', $name);
         if (strcmp($public, "public") == 0) {
             $public = "true";
         } else {
             $public = "false";
         }
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(CreatePlaylist) Spotify PlaylistCreation recieved: " . $name
+        $this->log->debug("(CreatePlaylist) Spotify PlaylistCreation recieved: " . $name
                 . "\n\tis public : " . $public
         );
         $this->ThrottlerStack = new \GuzzleHttp\HandlerStack();
@@ -418,9 +415,9 @@ class SpotifyApi {
         $client = new \GuzzleHttp\Client(['base_uri' => $this->_sApiUrl, 'handler' => $this->ThrottlerStack]);
 
         $userid = $this->getUserInformation()['id'];
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(CreatePlaylist) UserID Is : " . $userid);
+        $this->log->debug("(CreatePlaylist) UserID Is : " . $userid);
         $sUrl = $this->_sApiUrl . "/v1/users/" . $userid . "/playlists";
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(CreatePlaylist) URL : " . $sUrl);
+        $this->log->debug("(CreatePlaylist) URL : " . $sUrl);
 
         if (isset($_SESSION['spotifytoken'])) {
             $headers = [
@@ -430,16 +427,16 @@ class SpotifyApi {
             ];
         }
         $json = json_encode(['name' => $name, 'public' => $public]);
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(CreatePlaylist) Body : " . $json);
+        $this->log->debug("(CreatePlaylist) Body : " . $json);
         $response = $client->post($sUrl, [
             \GuzzleHttp\RequestOptions::HEADERS => $headers,
             \GuzzleHttp\RequestOptions::BODY => $json
         ]);
         $response->getBody()->rewind();
         $output = $response->getBody()->getContents();
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(CreatePlaylist) Response is  : " . $output);
+        $this->log->debug("(CreatePlaylist) Response is  : " . $output);
         if ($output === false) {
-            $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(CreatePlaylist) Error curl : " . curl_error($c), E_USER_WARNING);
+            $this->log->debug("(CreatePlaylist) Error curl : " . curl_error($c), E_USER_WARNING);
             trigger_error('Erreur curl : ' . curl_error($c), E_USER_WARNING);
         } else {
             curl_close($c);
@@ -453,7 +450,8 @@ class SpotifyApi {
      * @param array $tracklist
      */
     public function AddTracksToPlaylist($playlistid, $tracklist) {
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(AddTracksToPlaylist) Add to Playlist " . $playlistid . " Tracks : " . var_export($tracklist, true));
+
+        $this->log->debug("(AddTracksToPlaylist) Add to Playlist " . $playlistid . " Tracks : " . var_export($tracklist, true));
 
         $this->ThrottlerStack = new \GuzzleHttp\HandlerStack();
         $this->ThrottlerStack->setHandler(new \GuzzleHttp\Handler\CurlHandler());
@@ -484,18 +482,18 @@ class SpotifyApi {
                     try {
                         $sUrl = $this->_sApiUrl . "/v1/playlists/" . $playlistid . "/tracks";
                         $json = json_encode(['uris' => $jsonuri]);
-                        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(AddTracksToPlaylist) URL : " . $sUrl);
-                        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(AddTracksToPlaylist) URL : " . var_export($json, true));
+                        $this->log->debug("(AddTracksToPlaylist) URL : " . $sUrl);
+                        $this->log->debug("(AddTracksToPlaylist) URL : " . var_export($json, true));
                         $response = $client->post($sUrl, [
                             \GuzzleHttp\RequestOptions::HEADERS => $headers,
                             \GuzzleHttp\RequestOptions::BODY => $json
                         ]);
                         $RequestToBeDone = false;
                         $output = $response->getBody()->getContents();
-//                        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(AddTracksToPlaylist) Response is  : " . $output);
+//                        $this->log->debug("(AddTracksToPlaylist) Response is  : " . $output);
                     } catch (\Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException $e) {
-                        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(AddTracksToPlaylist) Response is  : " . $output);
-                        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(AddTracksToPlaylist) Too many requests. Waiting 1 second ");
+                        $this->log->debug("(AddTracksToPlaylist) Response is  : " . $output);
+                        $this->log->debug("(AddTracksToPlaylist) Too many requests. Waiting 1 second ");
                         sleep(1);
                     }
                 } while ($RequestToBeDone);
@@ -503,31 +501,6 @@ class SpotifyApi {
             }
             $counter++;
         }
-    }
-
-    /**
-     * count the number of track
-     * @return int
-     */
-    public function countTracks() {
-        
-    }
-
-    /**
-     * Count the number of playlists
-     * @return int
-     */
-    public function countPlaylists() {
-        
-    }
-
-    /**
-     * Return an array for a given trackId
-     * @param type $trackid
-     * @return array
-     */
-    public function getTrack($trackid) {
-        
     }
 
     /**
@@ -540,12 +513,13 @@ class SpotifyApi {
     }
 
     private function PlaylistInfoFormat($rawdata) {
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyApi.php(PlaylistInfoFormat) ".var_export($rawdata,true));
-        $output['name']=$rawdata['name'];
-        $output['id']=$rawdata['id'];
-        $output['description']=$rawdata['description'];
-        $output['tracks']=$rawdata['tracks']['total'];
-        $output['image']=$rawdata['images'][0]['url'];
+
+        $this->log->debug("(PlaylistInfoFormat) " . var_export($rawdata, true));
+        $output['name'] = $rawdata['name'];
+        $output['id'] = $rawdata['id'];
+        $output['description'] = $rawdata['description'];
+        $output['tracks'] = $rawdata['tracks']['total'];
+        $output['image'] = $rawdata['images'][0]['url'];
         return $output;
     }
 
@@ -569,13 +543,14 @@ class SpotifyApi {
      * @return array of array ["ID","Artist","Album","Song","Time" in ms,"Track","TotalTracks"]
      */
     public function getPlaylistItems($playlistID) {
+
         $numberoftracks = $this->sendRequest("/v1/playlists/" . $playlistID . "/tracks?fields=total%2Climit")['total'];
         $list = array();
         //Loop because of Spotify Api limitation https://developer.spotify.com/documentation/web-api/reference/playlists/get-playlists-tracks/
         for ($i = 0; $i < ($numberoftracks / 100); $i++) {
             $playlist = $this->sendRequest("/v1/playlists/" . $playlistID . "/tracks?limit=100&offset=" . $i * 100);
 
-            $this->logs->write("debug", Logs::$MODE_FILE, "debugspotify.log", "SpotifyApi.php(getPlaylistItems) query sent: /v1/playlists/" . $playlistID . "/tracks?limit=100&offset=" . $i * 100);
+            $this->log->debug("(getPlaylistItems) query sent: /v1/playlists/" . $playlistID . "/tracks?limit=100&offset=" . $i * 100);
             foreach ($playlist['items'] as $item) {
                 array_push($list, ["ID" => $item["track"]["id"],
                     "Artist" => $item["track"]["artists"][0]["name"],

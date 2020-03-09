@@ -4,8 +4,9 @@ namespace App\Controllers;
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
-use App\MusicSources\SpotifyApi as SpotifyApi;
-use \App\Utils\Logs as Logs;
+
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 
 /**
  * Description of DeezerController
@@ -14,12 +15,13 @@ use \App\Utils\Logs as Logs;
  */
 class SpotifyController extends Controller {
 
-    private $logs;
+    private $log;
 
     public function __construct($container) {
 
         parent::__construct($container);
-        $this->logs = new Logs();
+        $this->log = new Logger('SpotifyController.php');
+        $this->log->pushHandler(new StreamHandler(__DIR__.'/../../logs/debug.log', Logger::DEBUG));
         if (!isset($_SESSION['spotifyapi'])) {
             $_SESSION['spotifyapi'] = serialize(new \App\MusicSources\SpotifyApi());
         }
@@ -40,7 +42,7 @@ class SpotifyController extends Controller {
         $duration = urlencode($request->getParsedBody()['duration']);
 
         if (isset($_SESSION['spotifyapi'])) {
-            $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyController.php(postSearch) Searching for : \n\t - " . $artist . "\n\t - " . $album . "\n\t - " . $song . "\n\t - " . $duration);
+            $this->log->debug("(postSearch) Searching for : \n\t - " . $artist . "\n\t - " . $album . "\n\t - " . $song . "\n\t - " . $duration);
             $search = unserialize($_SESSION['spotifyapi'])->SearchIndividual($trackid, $artist, $album, $song, $duration);
             if (isset($search['info']['error'])) {
                 return $this->response
@@ -72,11 +74,11 @@ class SpotifyController extends Controller {
         $code = $request->getQueryParam('code');
         $_SESSION['spotifycode'] = $code;
 
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyController.php(getAuth) Auth Code recieved : " . $code);
+        $this->log->debug("(getAuth) Auth Code recieved : " . $code);
 
         $token = unserialize($_SESSION['spotifyapi'])->apiconnect($code, getenv('SITEURL') . "/spotify/auth/" . $sourceordestination);
         $_SESSION['spotifytokne'] = $token;
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyController.php(getAuth) Auth Code recieved : " . $token);
+        $this->log->debug("(getAuth) Auth Code recieved : " . $token);
         return $this->response
                         ->withStatus(303)
                         ->withHeader('Location', $this->router->pathFor('home'))
@@ -92,14 +94,14 @@ class SpotifyController extends Controller {
      * @return type
      */
     public function getAboutme(Request $request, Response $response) {
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyController.php(getAboutme)");
+        $this->log->debug("(getAboutme)");
         if (!isset($_SESSION['spotifyapi'])) {
             return $this->response
                             ->withStatus(401)
                             ->withHeader('Error', 'Not logged in to Spotify');
         } else {
             $returninformation = unserialize($_SESSION['spotifyapi'])->getUserInformation();
-            $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyController.php(getAboutme) Response is : ", var_export($returninformation, true));
+            $this->log->debug("(getAboutme) Response is : ", var_export($returninformation, true));
             return $response->withJson($returninformation);
         }
     }
@@ -144,7 +146,7 @@ class SpotifyController extends Controller {
     public function postCreatePlaylist(Request $request, Response $response) {
         $playlistname = urlencode($request->getParsedBody()['name']);
         $playlistpublic = urlencode($request->getParsedBody()['public']);
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyController.php(postCreatePlaylist)recieved query to create a playlist :". $playlistname . " - " . $playlistpublic);
+        $this->log->debug("(postCreatePlaylist)recieved query to create a playlist :". $playlistname . " - " . $playlistpublic);
         if (!isset($_SESSION['spotifyapi'])) {
             return $this->response
                             ->withStatus(401)
@@ -176,7 +178,7 @@ class SpotifyController extends Controller {
         $playlistid = $args['playlistid'];
 
         $tracklist = json_decode($request->getParsedBody()['tracklist']);
-        $this->logs->write("debug", Logs::$MODE_FILE, "debug.log", "SpotifyController.php(postPlaylistAddSongs)recieved query to add to a playlist :" . $playlistid . "\n\t" . var_export($tracklist, true));
+        $this->log->debug("(postPlaylistAddSongs)recieved query to add to a playlist :" . $playlistid . "\n\t" . var_export($tracklist, true));
         return $response->withJson(unserialize($_SESSION['spotifyapi'])->AddTracksToPlaylist($playlistid, $tracklist));
     }
 

@@ -18,8 +18,8 @@
         "psr/http-factory": "* 1.0.1",
         "slim/psr7": "0.6",
         "rodneyrehm/plist": "dev-master",
-        "vlucas/phpdotenv": "v4.1.0",
-        "hamburgscleanest/guzzle-advanced-throttle": "v4.1.1",
+        "vlucas/phpdotenv": "v4.2",
+        "hamburgscleanest/guzzle-advanced-throttle": "dev-master",
         "monolog/monolog": "2.0.2"
     },
     "config": {

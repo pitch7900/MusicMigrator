@@ -26,7 +26,6 @@ use DateTimeInterface;
  * Depends on the following methods:
  *
  * @method bool lessThan($date)
- * @method DateInterval diff(\DateTimeInterface $date, bool $absolute = false)
  * @method static copy()
  * @method static resolveCarbon($date = null)
  * @method static Translator translator()
@@ -148,6 +147,19 @@ trait Difference
     public function diffInYears($date = null, $absolute = true)
     {
         return (int) $this->diff($this->resolveCarbon($date), $absolute)->format('%r%y');
+    }
+
+    /**
+     * Get the difference in quarters rounded down.
+     *
+     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
+     * @param bool                                                   $absolute Get the absolute of the difference
+     *
+     * @return int
+     */
+    public function diffInQuarters($date = null, $absolute = true)
+    {
+        return (int) ($this->diffInMonths($date, $absolute) / static::MONTHS_PER_QUARTER);
     }
 
     /**
@@ -483,8 +495,28 @@ trait Difference
     public function floatDiffInDays($date = null, $absolute = true)
     {
         $hoursDiff = $this->floatDiffInHours($date, $absolute);
+        $interval = $this->diff($date, $absolute);
 
-        return ($hoursDiff < 0 ? -1 : 1) * $this->diffInDays($date) + fmod($hoursDiff, static::HOURS_PER_DAY) / static::HOURS_PER_DAY;
+        if ($interval->y === 0 && $interval->m === 0 && $interval->d === 0) {
+            return $hoursDiff / static::HOURS_PER_DAY;
+        }
+
+        $daysDiff = (int) $interval->format('%r%a');
+
+        return $daysDiff + fmod($hoursDiff, static::HOURS_PER_DAY) / static::HOURS_PER_DAY;
+    }
+
+    /**
+     * Get the difference in weeks as float (microsecond-precision).
+     *
+     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
+     * @param bool                                                   $absolute Get the absolute of the difference
+     *
+     * @return float
+     */
+    public function floatDiffInWeeks($date = null, $absolute = true)
+    {
+        return $this->floatDiffInDays($date, $absolute) / static::DAYS_PER_WEEK;
     }
 
     /**
@@ -606,9 +638,24 @@ trait Difference
      */
     public function floatDiffInRealDays($date = null, $absolute = true)
     {
-        $hoursDiff = $this->floatDiffInRealHours($date, $absolute);
+        $date = $this->resolveCarbon($date)->utc();
+        $utc = $this->copy()->utc();
+        $hoursDiff = $utc->floatDiffInRealHours($date, $absolute);
 
-        return ($hoursDiff < 0 ? -1 : 1) * $this->diffInDays($date) + fmod($hoursDiff, static::HOURS_PER_DAY) / static::HOURS_PER_DAY;
+        return ($hoursDiff < 0 ? -1 : 1) * $utc->diffInDays($date) + fmod($hoursDiff, static::HOURS_PER_DAY) / static::HOURS_PER_DAY;
+    }
+
+    /**
+     * Get the difference in weeks as float (microsecond-precision).
+     *
+     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
+     * @param bool                                                   $absolute Get the absolute of the difference
+     *
+     * @return float
+     */
+    public function floatDiffInRealWeeks($date = null, $absolute = true)
+    {
+        return $this->floatDiffInRealDays($date, $absolute) / static::DAYS_PER_WEEK;
     }
 
     /**
@@ -745,14 +792,14 @@ trait Difference
     public function diffForHumans($other = null, $syntax = null, $short = false, $parts = 1, $options = null)
     {
         /* @var CarbonInterface $this */
-        if (is_array($other)) {
-            $other['syntax'] = array_key_exists('syntax', $other) ? $other['syntax'] : $syntax;
+        if (\is_array($other)) {
+            $other['syntax'] = \array_key_exists('syntax', $other) ? $other['syntax'] : $syntax;
             $syntax = $other;
             $other = $syntax['other'] ?? null;
         }
 
         $intSyntax = &$syntax;
-        if (is_array($syntax)) {
+        if (\is_array($syntax)) {
             $syntax['syntax'] = $syntax['syntax'] ?? null;
             $intSyntax = &$syntax['syntax'];
         }
@@ -945,7 +992,7 @@ trait Difference
         $other = null;
 
         if ($syntax instanceof DateTimeInterface) {
-            [$other, $syntax, $short, $parts, $options] = array_pad(func_get_args(), 5, null);
+            [$other, $syntax, $short, $parts, $options] = array_pad(\func_get_args(), 5, null);
         }
 
         return $this->from($other, $syntax, $short, $parts, $options);
@@ -1017,7 +1064,7 @@ trait Difference
         $other = null;
 
         if ($syntax instanceof DateTimeInterface) {
-            [$other, $syntax, $short, $parts, $options] = array_pad(func_get_args(), 5, null);
+            [$other, $syntax, $short, $parts, $options] = array_pad(\func_get_args(), 5, null);
         }
 
         return $this->from($other, $syntax, $short, $parts, $options);
@@ -1044,7 +1091,10 @@ trait Difference
     }
 
     /**
-     * Returns either the close date "Friday 15h30", or a calendar date "10/09/2017" is farthest than 7 days from now.
+     * Returns either day of week + time (e.g. "Last Friday at 3:30 PM") if reference time is within 7 days,
+     * or a calendar date (e.g. "10/29/2017") otherwise.
+     *
+     * Language, date and time formats will change according to the current locale.
      *
      * @param Carbon|\DateTimeInterface|string|null $referenceTime
      * @param array                                 $formats
@@ -1074,6 +1124,6 @@ trait Difference
             $format = $format($current, $other) ?? '';
         }
 
-        return $this->isoFormat(strval($format));
+        return $this->isoFormat(\strval($format));
     }
 }

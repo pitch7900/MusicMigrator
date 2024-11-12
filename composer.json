@@ -10,7 +10,7 @@
     "license": "proprietary",
     "require": {
         "slim/twig-view": "^2.4",
-        "twig/twig": "^2.5",
+        "twig/twig": "^3.11",
         "slim/slim": "^3.11",
         "slim/http-cache": "^0.4.0",
         "psr/log": "^1.1",
